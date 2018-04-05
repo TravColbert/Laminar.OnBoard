@@ -1,16 +1,9 @@
 module.exports = function(app) {
-  app.menu = [
-    {link:"/items/",text:"Items",icon:"devices"},
-    {link:"/lends/",text:"Lends",icon:"content_paste"},
-    /*{link:"/update",text:"Update Database",icon:"update",secured:true},*/
-    {link:"/users/",text:"Users",icon:"people_outline",secured:true},
-    /*{link:"/about",text:"About",icon:"info_outline"},*/
-    {link:"/login/",text:"Log In",icon:"verified_user",secured:false},
-    {link:"/logout/",text:"Log Out",icon:"highlight_off",secured:true},
-  ];
-  // let obj = {
   //   /**
-  //    * The app's menu
+  //    * The app's menu.
+  //    * It is a JSON file object containing prperties representing menu 
+  //    * headings that contain an array 
+  //    * For exmaple: "main":[]
   //    *
   //    * {link,text[,secured]}
   //    *
@@ -29,14 +22,13 @@ module.exports = function(app) {
   //     {link:"/login/",text:"Log In",icon:"verified_user",secured:false},
   //     {link:"/logout/",text:"Log Out",icon:"highlight_off",secured:true},
   //   ]
-  // };
+  app.menu = require(app.locals.navDir + "/menu.json")["main"];
   let obj = {};
   obj.getMenu = function(req,res,next) {
     let myName = "getMenu()";
     app.log("building menu object",myName,5);
     req.appData.menu = [];
     app.menu.forEach(function(v,i,a) {
-    // obj.menu.forEach(function(v,i,a) {
       if(!v.hasOwnProperty("secured")) {
         req.appData.menu.push(v);
       } else {
