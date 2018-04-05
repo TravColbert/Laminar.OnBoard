@@ -9,9 +9,10 @@ block content
         input#email(type="text" name="email" placeholder="email address" autofocus)
       div
         input#password(type="password" name="password" placeholder="Passphrase")
-      div.layout-row.layout-justify-between
+      .layout-row.layout-justify-between
         input#submit.btn.normal.layout-width-1-1(type="submit" value="Login")
-        //- input#logincancel.btn.btn-cancel(type="button" value="Cancel")
+      .layout-row.layout-justify-center Not a user?&nbsp;
+        a(href="/register/") Register here.
 
 block scripts
   script(src='/js/bcrypt.min.js')
