@@ -11,4 +11,50 @@ The config.json file in the root of your project makes a couple references to th
 	<dd>The location to the CRT certificate file. You can technically use any directory you want but the tls directory is there for your convenience.</dd>
 </dl>
 
+## Creating Your SSL keys:
+
 To create these files:
+
+### Generate Private Key
+
+```bash
+openssl genrsa -des3 -out server.key 1024
+```
+
+You'll have to enter and confirm a passphrase eventually here.
+
+### Generate a Certificate Signing Request
+
+```bash
+openssl req -new -key server.key -out server.csr
+```
+
+You'll have to provide some information that comprise the X-509 attributes of your cert.
+
+### Remove Passphrase from Key
+
+```bash
+cp server.key server.key.org
+openssl rsa -in server.key.org -out server.key
+```
+
+### Generate a Self-Signed Certificate
+
+```bash
+openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+```
+
+### Final Setup
+
+Copy the server.crt and the server.key files to your tls directory.
+
+## Edit Your config.json File
+
+Now, edit your config.json file to refer to your new SSL keys.
+
+Your config.json file will look something like this:
+
+```
+  "keyFile":"tls/server.key",
+  "certFile":"tls/server.crt",
+```
