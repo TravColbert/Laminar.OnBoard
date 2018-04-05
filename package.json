@@ -17,5 +17,13 @@
     "pug": "^2.0.1",
     "sequelize": "^4.37.1",
     "sqlite3": "^4.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TravColbert/Laminar.OnBoard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TravColbert/Laminar.OnBoard/issues"
+  },
+  "homepage": "https://github.com/TravColbert/Laminar.OnBoard#readme"
 }
