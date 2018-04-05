@@ -1,12 +1,12 @@
 {
-  "name": "signon",
+  "name": "my_project",
   "version": "1.0.0",
-  "description": "Simple user signon starter setup",
+  "description": "my_project description",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "trav.colbert@gmail.com",
+  "author": "my_email@email.com",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^1.0.3",
