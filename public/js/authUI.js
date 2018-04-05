@@ -16,11 +16,11 @@ let requestElement = function(parentElement) {
     credentials:'include'
   };
   if(parentElement.dataset.hasOwnProperty('params')) requestObj.body = JSON.stringify({params:parentElement.dataset.params});
-  fetch('/authorizedelements/' + parentElement.dataset.fetch, requestObj).
-  then(function(response) {
+  fetch('/authorizedelements/' + parentElement.dataset.fetch, requestObj)
+  .then(function(response) {
     return response.json();
-  }).
-  then(function(elementJson) {
+  })
+  .then(function(elementJson) {
     if(elementJson.hasOwnProperty('error')) {
       console.log(elementJson.error);
     } else {
@@ -35,6 +35,9 @@ let requestElement = function(parentElement) {
       }
     }
   })
+  .catch(function(err){
+    console.log("Caught requested element error: " + err.message);
+  });
 }
 function ready(fn) {
   if (document.readyState != 'loading'){
