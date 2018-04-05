@@ -1,0 +1,94 @@
+extends index.pug
+
+mixin itemRecordGet(item,schema)
+  //- li.layout-col.clickable(onclick="getThis('" + modelName + "')")
+  - let itemId = item.dataValues.id;
+  - let target = "/" + modelName + "/edit/" + item.dataValues.id + "/";
+  - let dataFields = Object.keys(item.dataValues);
+  li.layout-col
+    each dataField in dataFields
+      if schema[dataField]
+        - console.log(schema[dataField]['lm_custom_widget'] + " = " + item.dataValues[dataField]);
+        - let widget = "widget-" + schema[dataField]['lm_custom_widget'];
+        #{widget}(item-id=itemId item-fieldname=dataField item-label=schema[dataField]['lm_label'] item-value=item.dataValues[dataField] item-model=modelName item-mode="get")
+    a(href="/" + modelName + "/edit/" + item.dataValues.id + "/") Edit
+    a(href="/" + modelName + "/delete/" + item.dataValues.id + "/") Delete
+
+mixin itemRecordEdit(item,schema)
+  - let itemId = item.dataValues.id;
+  - let target = "/" + modelName + "/edit/" + item.dataValues.id + "/";
+  - let dataFields = Object.keys(item.dataValues);
+  - console.log("Fields: " + dataFields.length);
+  li.layout-col
+    form(action=target method="post" id=modelName + "_" + itemId)
+      each dataField in dataFields
+        - console.log(dataField);
+        if schema[dataField]
+          - console.log(schema[dataField]['lm_custom_widget'] + " = " + item.dataValues[dataField]);
+          - let widget = "widget-" + schema[dataField]['lm_custom_widget'];
+          input.real_input(type="hidden" name='' + dataField id=modelName + "_" + dataField + "_" + itemId value=item.dataValues[dataField])
+          #{widget}(item-id=itemId item-fieldname=dataField item-label=schema[dataField]['lm_label'] item-value=item.dataValues[dataField] item-model=modelName item-mode="edit")
+      input(type="submit" value="Submit")
+      a(href="/" + modelName + "/" + item.dataValues.id + "/") Cancel
+
+mixin itemRecordDelete(item,schema)
+  - let itemId = item.dataValues.id;
+  - let target = "/" + modelName + "/delete/" + item.dataValues.id + "/";
+  //- - let target = "/" + modelName + "/delete/";
+  - let dataFields = Object.keys(item.dataValues);
+  - console.log("Fields: " + dataFields.length);
+  li.layout-col
+    form(action=target method="post" id=modelName + "_" + itemId)
+      input.real_input(type="hidden" name='id' id=modelName + "_" + itemId value=itemId)
+      each dataField in dataFields
+        if schema[dataField]
+          - console.log(schema[dataField]['lm_custom_widget'] + " = " + item.dataValues[dataField]);
+          - let widget = "widget-" + schema[dataField]['lm_custom_widget'];
+          #{widget}(item-id=itemId item-fieldname=dataField item-label=schema[dataField]['lm_label'] item-value=item.dataValues[dataField] item-model=modelName item-mode="get")
+      input(type="submit" value="Delete")
+      a(href="/" + modelName + "/" + item.dataValues.id + "/") Cancel
+
+mixin itemRecordAdd(schema)
+  //- - let target = "/" + modelName + "/edit/" + item.dataValues.id + "/";
+  //- - console.log(schema)
+  - let dataFields = Object.keys(schema);
+  //- - console.log("Fields: " + dataFields.length);
+  li.layout-col
+    form(action=target method="post" id=modelName + "/")
+      each dataField in dataFields
+        //- - console.log(dataField);
+        if schema[dataField]
+          //- - console.log("Widget type: " + schema[dataField]['lm_custom_widget']);
+          //- - console.log("Widget label: " + schema[dataField]['lm_label']);
+          //- - console.log("Widget placeholder: " + schema[dataField]['lm_placeholder']);
+          //- - console.log("Widget classes: " + schema[dataField]['lm_classlist']);
+          - widgetType = schema[dataField]['lm_custom_widget'] || "text";
+          - widgetLabel = schema[dataField]['lm_label'] || "";
+          - widgetPlaceholder = schema[dataField]['lm_placeholder'] || "";
+          - widgetClasslist = schema[dataField]['lm_classlist'] || "";
+          - let widget = "widget-" + widgetType;
+          input.real_input(name='' + dataField id=modelName + "_" + dataField)
+          #{widget}(item-id=1 item-fieldname=dataField item-label=widgetLabel item-value=null item-model=modelName item-mode="add")
+      input(type="submit" value="Submit")
+      a(href="/" + modelName + "/") Cancel
+
+block content
+  .section-hdg.section-hdg-1 #{modelName} (#{result.rows.length})
+  .layout-row.layout-width-1-1
+    .layout-col.layout-width-1-1
+      ul.itemlist
+        - console.log("Number of rows: " + result.rows.length);
+        each item in result.rows
+          - let targetLoc = result.path;
+          - console.log("METHOD: " + method);
+          - console.log("VIEWFUNCTION: " + viewFunction);
+          if viewFunction=="get"
+            //- If we're in a GET:
+            +itemRecordGet(item,result.schema)
+          else if viewFunction=="edit"
+            //- If we're in an EDIT
+            +itemRecordEdit(item,result.schema)
+          else if viewFunction=="add"
+            +itemRecordAdd(result.schema)
+          else if viewFunction=="delete"
+            +itemRecordDelete(item,result.schema)

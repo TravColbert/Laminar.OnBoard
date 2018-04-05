@@ -1,0 +1,26 @@
+extends index.pug
+
+block content
+  .section-hdg.section-hdg-1 Roles (#{rows.length})
+  .layout-row.layout-width-1-1
+    .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
+      a(href="/rolecreate/") Create
+      ul.itemlist
+        each item in rows
+          - let targetLoc = "/role/" + item.id;
+          li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
+            .itemdetail.layout-col
+              .label Role:
+              .data #{item.name}
+            - let description = item.description || null
+            if description
+              .itemdetail.layout-col
+                .label Description:
+                .data #{item.description}
+      #user_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="role_add" data-href="/roles/add")
+        //- a.btn.normal(href="/roles/add")
+        //-   i.material-icons add_circle_outline
+        //-   span Add User
+    .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
+      .infotext.section-hdg.section-hdg-3 Role List View
+      .infotext This is a list of roles.

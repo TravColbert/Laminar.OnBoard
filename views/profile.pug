@@ -1,0 +1,38 @@
+extends index.pug
+
+block content
+  .layout-col
+    .section-hdg.section-hdg-1 My Profile
+    .layout-row.layout-width-1-1
+      .user-listing.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
+        form(action="/user/edit" method="post")
+          input(id="userid" type="hidden" name="userid" value=user.id)
+          .itemdetail.layout-col
+            label.label(for="email") Email:
+            .data #{user.email}
+          .itemdetail.layout-col
+            label.label(for="partnum") First Name:
+            .data #{user.firstname}
+          .itemdetail.layout-col
+            label.label(for="partnum") Last Name:
+            .data #{user.lastname}
+          - let role = user.role || null
+          if role
+            .itemdetail.layout-col
+              label.label(file="role") Role:
+              .data #{role.name}
+          //- .itemdetail.layout-col
+          //-   label.label Actions:
+          //-   .data.layout-row
+          //-     input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")
+          //-     a.btn.cancel(href="/user/" + user.id) Cancel
+      .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
+        .infotext.section-hdg.section-hdg-3 Edit User View
+        .infotext You can edit a user with this view.
+        .infotext Modify the details for the user.
+        .infotext.section-hdg.section-hdg-3 Email
+        .infotext Enter the user's email address here. This should be a valid email address
+        .infotext.example.layout-col
+          .infotext.heading Examples:
+          .infotext tommy@test.com
+        .infotext.important This is a required field.

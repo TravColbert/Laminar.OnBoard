@@ -1,0 +1,229 @@
+#!/usr/bin/node
+const fs = require('fs');
+const https = require('https');
+const express = require('express');
+const session = require('express-session');
+const bodyParser = require('body-parser');
+const app = express();
+
+app.locals = JSON.parse(fs.readFileSync('config.json'));
+app.locals.url = "https://" + app.locals.addr;
+if(app.locals.port!="443") app.locals.url += ":" + app.locals.port;
+const options = {
+  key: fs.readFileSync(app.locals.keyFile),
+  cert: fs.readFileSync(app.locals.certFile)
+}
+
+const Sequelize = require('sequelize');
+var sequelize = new Sequelize(
+  app.locals.dbConnection.sqlite.database,
+  app.locals.dbConnection.sqlite.user,
+  app.locals.dbConnection.sqlite.password,
+  {
+    host:app.locals.dbConnection.sqlite.host,
+    dialect:"sqlite",
+    // For SQLite only :
+    storage:app.locals.dbConnection.sqlite.storage
+  }
+)
+
+let sessionConfig = {
+  secret:app.locals.sessionSecret,
+  resave:false,
+  saveUninitialized:false
+};
+
+app.tools = require('./apputils')(app);
+const navigation = require('./navigation')(app);
+// const mailutils = require('./mailutils')(app);
+
+/**
+ * Configuration
+ */
+app.set('views',app.locals.viewsDir);
+app.set('view engine','pug');
+app.set('query parser',true);
+app.use(express.static(app.locals.staticDir));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(session(sessionConfig));
+app.disable('x-powered-by');
+
+app.paths = {};
+app.models = {};
+app.modelDefinitions = {};
+app.controllers = {};
+app.routes = {};
+
+/**
+ * MODEL DEFINITION
+ */
+// Find some models defined in the models folder...
+let modelFiles = fs.readdirSync(app.locals.modelsDir);
+for(let c=0;c<modelFiles.length;c++) {
+  // Pick only certain file-types
+  let fileNameParts = modelFiles[c].split(".");
+  if(fileNameParts[fileNameParts.length-1]!="js") continue;
+  let modelName = fileNameParts[0].toLowerCase();  // e.g. 'users'
+  app.modelDefinitions[modelName] = require("./" + app.locals.modelsDir + "/" + modelFiles[c])(Sequelize,app);
+  // Define the model's table:
+  app.models[modelName] = sequelize.define(app.modelDefinitions[modelName].tablename,app.modelDefinitions[modelName].schema,app.modelDefinitions[modelName].options);
+}
+
+/**
+ * MODEL ASSOCIATIONS
+ * These statements determine the relationships between models.
+ */
+app.models["users"].belongsTo(app.models["roles"]);
+
+/**
+ * Bring all models on-line!
+ */
+for(let model in app.models) {
+  app.log("Prepping model: " + model,6);
+  // Sync tables
+  app.models[model].sync().then(function(){
+    app.log("Checking for post-preparations for model: " + model,6);
+    // Run any post-operations after sync()'ing table
+    if(app.modelDefinitions[model].hasOwnProperty("afterSync")) {
+      app.log("Running post-preparations on model: " + model,6);
+      app.modelDefinitions[model].afterSync(app.models[model]);
+    }
+  });
+}
+
+/**
+ * FINAL MODEL PREP
+ * Any last-minute stuff that should be done to the model(s)
+ */
+{
+  /**
+   * Assign administrator role to the admin user
+   */
+  var adminRoleId;
+  app.log("Setting admin role permissions...");
+  app.models["roles"]
+  .find({where:{name:'administrator'}})
+  .then(function(record){
+    adminRoleId = record.id;
+    app.log("Admin role ID is: " + adminRoleId);
+  })
+  .then(function(record){
+    app.log("Setting admin user with role ID: " + adminRoleId);
+    app.models["users"]
+    .update({roleId:adminRoleId},{where:{email:'admin@test.com'}})
+    .then(function(resultArray){
+      app.log("Result array: " + JSON.stringify(resultArray));
+      if(resultArray[0]==1) {
+        app.log("Ok... I think we've set the admin user with admin rights");
+      } else {
+        app.log("Hmm... something might have gone wrong with the assignment");
+      }
+    });
+  });
+}
+
+/**
+ * CONTROLLER DEFINITIONS
+ */
+let controllerFiles = fs.readdirSync(app.locals.controllersDir);
+for(let c=0;c<controllerFiles.length;c++) {
+  // Pick only certain file-types
+  let fileNameParts = controllerFiles[c].split(".");
+  if(fileNameParts[fileNameParts.length-1]!="js") continue;
+  let controllerName = fileNameParts[0].toLowerCase();
+  app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + controllerFiles[c])(app,controllerName);
+}
+
+/**
+ * SET BASE APP CONFIGURATON
+ */
+app.use(
+  app.tools.ignoreFavicon,
+  app.tools.setOriginalUrl,
+  app.tools.setAppData,
+  app.tools.timeStart
+);
+
+/**
+ * SET SESSION AND ACCOUNT DATA
+ */
+app.use(
+  app.tools.setSessionData,
+  app.tools.setMessage,
+  app.tools.setUserAccount,
+  app.tools.printSessionData
+);
+
+/**
+ * START BUILDING THE INTERFACE
+ */
+app.use(
+  navigation.getMenu
+);
+
+/**
+ * ROUTE DEFINITIONS
+ *
+ * These are derived from route files placed in the routesDir directory
+ * Any route definitions found there will be defined here and mounted
+ * The mount point will be the name of the route file.
+ * There are some 'standard' routes:
+ * /login : standard routes to allow loging-in
+ * /logout : standard routes for logging-out
+ * /register : a simple user-registration system that allows new users to
+ *  be created and submitted for approval.
+ * /roles : a role-management system.
+ * /authtest : can be used to simply test authentication
+ *
+ * All of these routes can be excluded or replaced.
+ */
+let routeFiles = fs.readdirSync(app.locals.routesDir);
+for(let c=0;c<routeFiles.length;c++) {
+  // Pick only certain file-types
+  let fileNameParts = routeFiles[c].split(".");
+  if(fileNameParts[fileNameParts.length-1]!="js") continue;
+  let routeName = fileNameParts[0].toLowerCase();
+  app.routes[routeName] = require('./' + app.locals.routesDir + '/' + routeFiles[c])(app);
+  app.use('/' + routeName + "/",app.routes[routeName]);
+}
+
+/**
+ * YOUR APPLICATION ROUTES HERE
+ *
+ * This is where you would put your application's custom routes.
+ */
+
+app.get('/profile/',app.tools.checkAuthentication,app.controllers["users"].getProfile);
+
+/**
+ * CLOSING ROUTES
+ */
+ // A route to fetch authorized UI elements
+ // app.get('/authorizedelements/:element',appCheckAuthentication,appGetElement);
+
+/**
+ * HOME PAGE ROUTE
+ */
+app.get('/',app.tools.homePage);
+/**
+ * CLOSE THE APP AND SHIP IT!
+ */
+app.use(
+  app.tools.timeEnd,
+  app.tools.render
+);
+/**
+ * HANDLE ERRORS
+ */
+// app.use(
+//  app.tools.errorHandler
+// );
+
+/**
+ * START THE SERVER
+ */
+https.createServer(options,app).listen(app.locals.port,function() {
+  app.log(app.locals.appName + " server listening on port " + app.locals.port,4);
+  app.log("logLevel: " + app.locals.logLevel,4);
+});

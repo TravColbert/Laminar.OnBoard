@@ -1,0 +1,10 @@
+doctype html
+html
+  include head.pug
+  body.header-static.footer-static.layout-align-center
+    include navigation.pug
+    #main.content.layout-height-1-1.layout-width-sd.layout-col
+      include messages.pug
+      block content
+    block scripts
+    include foot.pug
