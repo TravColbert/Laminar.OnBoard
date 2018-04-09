@@ -9,7 +9,7 @@ module.exports = function(app,model) {
   obj = {
     authenticate : function(req,res,next) {
       app.log("Authenticating user: " + req.body.email);
-      app.models[model].findOne({where:{email:req.body.email}}).then((user) => {
+      app.models[model].findOne({where:{email:req.body.email,disabled:false}}).then((user) => {
         app.log("info: Checking password: %s with %s",req.body.password,user.password);
         bcrypt.compare(req.body.password,user.password,(err,match) => {
           if(err) {
@@ -23,7 +23,6 @@ module.exports = function(app,model) {
               email:user.email
             };
             app.log(req.originalUrl + " : " + req.session.originalReq);
-            // req.appData.view = "home";
             return next();
           }
           app.log("Authenticate failed!");
@@ -61,17 +60,25 @@ module.exports = function(app,model) {
         if(count>0) return res.send("An account with this email already exists... try again");
         app.log("Email address is free to use. Continuing with registration...",myName,5);
         delete userRegistrationObj.passwordverify;
+        app.models[model].create(userRegistrationObj).then((record) => {
+          req.appData.view = "registrationComplete";
+          return next();
+          // ...or you could re-direct with res.redirect("/.../.../");
+        });
         // app.log(JSON.stringify(userRegistrationObj),myName,5);
         // Since this is a registration, we want to set the user's role to 'applicant'
-        app.models["roles"].findOne({where:{name:defaultRoleAtRegistration}}).then(function(record) {
-          if(record==null) return res.send("Error - can't assign applicant role to new user");
-          userRegistrationObj.roleId = record.id;
-          app.models[model].create(userRegistrationObj).then((record) => {
-            req.appData.view = "registrationComplete";
-            return next();
-            // ...or you could re-direct with res.redirect("/.../.../");
-          });
-        });
+        //
+        // We don't need to assign any specific roles to users now...
+        // 
+        // app.models["roles"].findOne({where:{name:defaultRoleAtRegistration}}).then(function(record) {
+        //   if(record==null) return res.send("Error - can't assign applicant role to new user");
+        //   userRegistrationObj.roleId = record.id;
+        //   app.models[model].create(userRegistrationObj).then((record) => {
+        //     req.appData.view = "registrationComplete";
+        //     return next();
+        //     // ...or you could re-direct with res.redirect("/.../.../");
+        //   });
+        // });
       });
     },
     getProfile : function(req,res,next) {
@@ -95,7 +102,13 @@ module.exports = function(app,model) {
       let myName = "getUsers()";
       // Get all users
       app.log("Getting all users",myName,6);
-      app.models[model].findAll()
+      app.models[model].findAll({
+        include:[
+          {
+            model: app.models.roles
+          }
+        ]
+      })
       .then(function(records) {
         app.log("Found " + records.length + " users",myName,6);
         req.appData.users = records;

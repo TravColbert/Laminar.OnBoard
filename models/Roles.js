@@ -15,7 +15,7 @@ module.exports = function(Sequelize,app) {
         allowNull: true,
         lm_order: 1,
         lm_label:"Description",
-        lm_placeholder:"description of the role?",
+        lm_placeholder:"description of the role",
         lm_classlist:["lm_textarea","layout-width-1-2"]
       }
     },

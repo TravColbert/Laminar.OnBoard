@@ -16,6 +16,13 @@ block content
               .itemdetail.layout-col
                 .label Email:
                 .data #{item.email}
+            - let roles = item.roles || null
+            if roles
+              .itemdetail.layout-col
+                - let labelLabel = (roles.length>1) ? "Roles" : "Role"
+                .label #{labelLabel}:
+                each role in roles
+                  .data #{role.name}
             //- if item.roleuser
             //-   .itemdetail.layout-col
             //-     .label User Manager Role:

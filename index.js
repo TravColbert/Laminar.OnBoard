@@ -75,8 +75,8 @@ for(let c=0;c<modelFiles.length;c++) {
  * These statements determine the relationships between models.
  */
 // app.models["users"].belongsTo(app.models["roles"]);
-app.models["users"].belongsToMany(app.models["roles"],{through:'UsersRoles'});
-app.models["roles"].belongsToMany(app.models["users"],{through:"UsersRoles"});
+app.models["users"].belongsToMany(app.models["roles"],{through:app.models["usersroles"]});
+app.models["roles"].belongsToMany(app.models["users"],{through:app.models["usersroles"]});
 
 /**
  * Bring all models on-line!
@@ -105,25 +105,20 @@ for(let model in app.models) {
    * Assign administrator role to the admin user
    */
   var adminRoleId;
+  var adminUserId;
   app.log("Setting admin role permissions...");
-  app.models["roles"]
-  .find({where:{name:'Super Admin'}})
-  .then(function(record){
-    adminRoleId = record.id;
-    app.log("Super admin role ID is: " + adminRoleId);
-  })
-  .then(function(record){
-    app.log("Setting admin user with role ID: " + adminRoleId);
-    app.models["users"]
-    .update({roleId:adminRoleId},{where:{email:'admin@test.com'}})
-    .then(function(resultArray){
-      app.log("Result array: " + JSON.stringify(resultArray));
-      if(resultArray[0]==1) {
-        app.log("Ok... I think we've set the admin user with admin rights");
-      } else {
-        app.log("Hmm... something might have gone wrong with the assignment");
-      }
-    });
+
+  app.models.users.findOne({where:{email:'admin@test.com'}})
+  .then(record => {
+    app.log(JSON.stringify(record));
+    app.models.roles.findAll()
+    .then(roles => {
+      record.addRoles(roles,{through:{comment:"Initial role-assignment for admin user"}})
+      .then(function(err) {
+        if(err) return app.log(err.message);
+        app.log("Admin user has all admin roles");
+      })
+    })
   });
 }
 
@@ -137,7 +132,7 @@ for(let c=0;c<controllerFiles.length;c++) {
   if(fileNameParts[fileNameParts.length-1]!="js") continue;
   let controllerName = fileNameParts[0].toLowerCase();
   app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + controllerFiles[c])(app,controllerName);
-}
+};
 
 /**
  * SET BASE APP CONFIGURATON
@@ -190,7 +185,7 @@ for(let c=0;c<routeFiles.length;c++) {
   let routeName = fileNameParts[0].toLowerCase();
   app.routes[routeName] = require('./' + app.locals.routesDir + '/' + routeFiles[c])(app);
   app.use('/' + routeName + "/",app.routes[routeName]);
-}
+};
 
 /**
  * YOUR APPLICATION ROUTES HERE

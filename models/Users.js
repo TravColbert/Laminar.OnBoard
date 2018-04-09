@@ -42,12 +42,12 @@ module.exports = function(Sequelize,app) {
         lm_label:"Last Name",
         lm_placeholder:"last (family) name"
       },
-      "activated":{
+      "disabled":{
         type: Sequelize.BOOLEAN,
-        defaultValue: false,
+        defaultValue: true,
         lm_order:4,
-        lm_label:"User verified for activity",
-        lm_placeholder:"active user"
+        lm_label:"User disabled for activity",
+        lm_placeholder:"disabled user"
       },
       "password":{
         type: Sequelize.STRING,
@@ -110,6 +110,7 @@ module.exports = function(Sequelize,app) {
             firstname:'Administrative',
             lastname:'User',
             email:'admin@test.com',
+            disabled:false,
             password:'test123!'
           }).then((record) => {
             app.log("Inserted: " + JSON.stringify(record));
