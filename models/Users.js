@@ -42,6 +42,13 @@ module.exports = function(Sequelize,app) {
         lm_label:"Last Name",
         lm_placeholder:"last (family) name"
       },
+      "activated":{
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        lm_order:4,
+        lm_label:"User verified for activity",
+        lm_placeholder:"active user"
+      },
       "password":{
         type: Sequelize.STRING,
         allowNull: false,
@@ -50,7 +57,7 @@ module.exports = function(Sequelize,app) {
             if(val.length<8) throw new Error('Password too short');
           }
         },
-        lm_order: 4,
+        lm_order: 5,
         lm_label:"User's Passphrase"
       }
     },

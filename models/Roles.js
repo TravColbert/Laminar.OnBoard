@@ -20,28 +20,20 @@ module.exports = function(Sequelize,app) {
       }
     },
     afterSync:function(db){
-      let roleApplicant = {
-          name:"applicant",
-          description:"user cannot log into website but is not blacklisted"
+      let roleEventAdmin = {
+          name:"Event Admin",
+          description:"user can manager events"
         };
-      let roleValidated = {
-          name:"validated",
-          description:"user can log into the site"
+      let roleUserAdmin = {
+          name:"User Admin",
+          description:"user can manage users"
         };
-      let roleAdmin = {
-          name:"administrator",
-          description:"user can log into the site and make changes to all models"
+      let roleSuperAdmin = {
+          name:"Super Admin",
+          description:"user can manage all application models"
         };
-      let roleBlacklisted = {
-          name:"blacklisted",
-          description:"user can't log into the site and most passive services (like emails) don't work"
-        };
-      let roleFrozen = {
-          name:"frozen",
-          description:"user account is dormant and can't log into the site"
-        };
-      db.count({where:{}}).then()
-      let initialRecords = [roleAdmin,roleApplicant,roleValidated,roleBlacklisted,roleFrozen];
+      // db.count({where:{}}).then()
+      let initialRecords = [roleSuperAdmin,roleUserAdmin,roleEventAdmin];
       for(let c=0;c<initialRecords.length;c++) {
         app.log("Checking for role: '" + initialRecords[c].name + "'...");
         db.count({where:initialRecords[c]}).then(function(count) {

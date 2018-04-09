@@ -74,7 +74,9 @@ for(let c=0;c<modelFiles.length;c++) {
  * MODEL ASSOCIATIONS
  * These statements determine the relationships between models.
  */
-app.models["users"].belongsTo(app.models["roles"]);
+// app.models["users"].belongsTo(app.models["roles"]);
+app.models["users"].belongsToMany(app.models["roles"],{through:'UsersRoles'});
+app.models["roles"].belongsToMany(app.models["users"],{through:"UsersRoles"});
 
 /**
  * Bring all models on-line!
@@ -82,7 +84,9 @@ app.models["users"].belongsTo(app.models["roles"]);
 for(let model in app.models) {
   app.log("Prepping model: " + model,6);
   // Sync tables
-  app.models[model].sync().then(function(){
+  app.models[model]
+  .sync()
+  .then(function(){
     app.log("Checking for post-preparations for model: " + model,6);
     // Run any post-operations after sync()'ing table
     if(app.modelDefinitions[model].hasOwnProperty("afterSync")) {
@@ -103,10 +107,10 @@ for(let model in app.models) {
   var adminRoleId;
   app.log("Setting admin role permissions...");
   app.models["roles"]
-  .find({where:{name:'administrator'}})
+  .find({where:{name:'Super Admin'}})
   .then(function(record){
     adminRoleId = record.id;
-    app.log("Admin role ID is: " + adminRoleId);
+    app.log("Super admin role ID is: " + adminRoleId);
   })
   .then(function(record){
     app.log("Setting admin user with role ID: " + adminRoleId);
