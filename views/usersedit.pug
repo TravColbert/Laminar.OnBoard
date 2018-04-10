@@ -18,6 +18,14 @@ block content
             label.label(for="lastname") Last Name:
             .data 
               input(id="lastname" type="text" name="lastname" value=user.lastname)
+          //- Roles object
+          - let userRoles = user.roles || null
+          if userRoles
+            .itemdetail.layout-col
+              .label Roles:
+              each role in roles
+                .data input(id=role.id type="checkbox") role.name
+
           .itemdetail.layout-col
             label.label(for="roleId") Role:
             .data

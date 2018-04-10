@@ -107,14 +107,13 @@ for(let model in app.models) {
   var adminRoleId;
   var adminUserId;
   app.log("Setting admin role permissions...");
-
   app.models.users.findOne({where:{email:'admin@test.com'}})
   .then(record => {
     app.log(JSON.stringify(record));
     app.models.roles.findAll()
     .then(roles => {
       record.addRoles(roles,{through:{comment:"Initial role-assignment for admin user"}})
-      .then(function(err) {
+      .then(err => {
         if(err) return app.log(err.message);
         app.log("Admin user has all admin roles");
       })
