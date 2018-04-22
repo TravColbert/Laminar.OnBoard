@@ -1,18 +1,3 @@
-const bcrypt = require('bcrypt');
-// const cryptPassword = function(password) {
-//   console.log("cryptPassword: " + password);
-//   return new Promise(function(resolve, reject) {
-//     bcrypt.genSalt(10, function(err, salt) {
-//       if (err) return reject(err);
-//       console.log("Encrypting " + password + " with " + salt + "...");
-//       bcrypt.hash(password, salt, (err, hash) => {
-//         if (err) return reject(err);
-//         console.log("Got this: " + hash);
-//         return resolve(hash);
-//       });
-//     });
-//   });
-// }
 module.exports = function(Sequelize,app) {
   return {
     tablename:"users",

@@ -111,12 +111,12 @@ for(let model in app.models) {
   app.models.users.findOne({where:{email:'admin@test.com'}})
   .then(record => {
     app.log(JSON.stringify(record));
-    app.models.roles.findAll()
-    .then(roles => {
-      record.addRoles(roles,{through:{comment:"Initial role-assignment for admin user"}})
+    app.models.roles.findOne({where:{name:"Super Admin"}})
+    .then(role => {
+      record.addRoles(role,{through:{comment:"Initial role-assignment for admin user"}})
       .then(function(err) {
         if(err) return app.log(err.message);
-        app.log("Admin user has all admin roles");
+        app.log("Admin user has Super Admin roles");
       })
     })
   });

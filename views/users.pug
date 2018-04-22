@@ -16,7 +16,8 @@ block content
               .itemdetail.layout-col
                 .label Email:
                 .data #{item.email}
-            - let roles = item.roles || null
+            - let roles = item.roles || null;
+            - console.log("Roles: " + item.roles);
             if roles
               .itemdetail.layout-col
                 - let labelLabel = (roles.length>1) ? "Roles" : "Role"
