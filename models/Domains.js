@@ -25,13 +25,36 @@ module.exports = function(Sequelize,app) {
           app.log("===> Creating default role(s) for domain '" + domain.name + "'");
           let domainAdminRole = {
             name:"Admin Role",
-            description:"Administrative role for the " + domain.name + " domain",
-            domainId:domain.id
+            description:"Administrative role for the " + domain.name + " domain"
           };
+          let domainDefaultRole = {
+            name:"Default Role",
+            description:"Default role for the " + domain.name + " domain"
+          };
+          let newRoles = [domainAdminRole,domainDefaultRole];
+          for(let c=0;c<newRoles.length;c++) {
+            app.models["roles"]
+            .create(newRoles[c])
+            .then(role => {
+              app.log("Adding role '" + role.name + "' to domain '" + domain.name + "'");
+              domain.addRoles(role,{through:{comment:"'" + role.name + "' auto-added by domain after-create routine"}})
+              .then(function() {
+                app.log("'" + role.name + "' role has been created for the '" + domain.name + "' domain");
+              })
+              .catch(err => {
+                app.log(err.message);
+              });
+            });
+          }
+          // Remember to add 'Super Admin' role to all created domains!
           app.models["roles"]
-          .create(domainAdminRole)
+          .findOne({where:{name:'Super Admin'}})
           .then(role => {
-            app.log("'" + role.name + "' role has been created for the '" + domain.name + "' domain");
+            app.log("Adding role '" + role.name + "' to domain '" + domain.name + "'");
+            domain.addRoles(role,{through:{comment:"'" + role.name + "' auto-added by domain after-create routine"}});
+          })
+          .catch(err => {
+            app.log(err.message);
           });
         }
       }

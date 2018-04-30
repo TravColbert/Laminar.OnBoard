@@ -1,12 +1,12 @@
 extends index.pug
 
 block content
-  .section-hdg.section-hdg-1 Roles (#{rows.length})
+  .section-hdg.section-hdg-1 Roles (#{roles.length})
   .layout-row.layout-width-1-1
     .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
       a(href="/rolecreate/") Create
       ul.itemlist
-        each item in rows
+        each item in roles
           - let targetLoc = "/roles/" + item.id + "/";
           li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
             .itemdetail.layout-col

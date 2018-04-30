@@ -7,8 +7,9 @@ module.exports = function(app,model) {
       let myName = "getRoles()";
       app.models[model]
       .findAll()
-      .then(results => {
-        req.appData.rows = results;
+      .then(roles => {
+        if(roles===null) return res.redirect('/');
+        req.appData.roles = roles;
         req.appData.view = "roles";
         return next();
       })
@@ -21,6 +22,7 @@ module.exports = function(app,model) {
       app.models[model]
       .findById(req.params.id)
       .then(role => {
+        if(role===null) return res.redirect('/');
         req.appData.role = role;
         req.appData.view = "role";
         return next();
@@ -29,25 +31,29 @@ module.exports = function(app,model) {
         return res.send(err.message);
       });
     },
-    getRolesByDomainId : function(req,res,next) {
-      let myName = "getRolesByDomainId()";
-      let domainId = req.params.domainid;
+    getUsersByRoleId : function(req,res,next) {
+      let myName = "getUsersByRoleId";
       app.models[model]
-      .findAll({where:{domainId:domainId}})
-      .then(roles => {
-        return res.send(roles);
+      .findById(req.params.id,{include:[app.models["users"]]})
+      .then(role => {
+        if(role===null) res.redirect('/');
+        req.appData.role = role;
+        req.appData.view = "roleusers";
+        return next();
       })
       .catch(err => {
         return res.send(err.message);
-      });
+      })
     },
-    getDomainsByRole : function(req,res,next) {
+    getDomainsByRoleId : function(req,res,next) {
       let myName = "getDomainsByRole()";
-      let roleId = req.params.id;
       app.models[model]
-      .findById(roleId)
+      .findById(req.params.id,{include:[app.models["domains"]]})
       .then(role => {
-        return res.send(role);
+        if(role===null) res.redirect('/');
+        req.appData.role = role;
+        req.appData.view = "roledomains";
+        return next();
       })
       .catch(err => {
         return res.send(err.message);

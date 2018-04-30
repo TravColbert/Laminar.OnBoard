@@ -5,41 +5,58 @@ module.exports = function(app,model) {
   obj = {
     getDomains : function(req,res,next) {
       let myName = "getRoles()";
-      app.log("Model is: " + model);
       app.models[model]
       .findAll()
-      .then(function(results) {
-        app.log(JSON.stringify(results));
-        app.log("Length: " + results.length);
-        app.log("SQL GET results:",myName,6);
-        req.appData.domains = results;
+      .then((domains) => {
+        if(domains===null) return res.redirect('/');
+        req.appData.domains = domains;
         req.appData.view = "domains";
+        return next();
+      })
+      .catch(err => {
+        return res.send(err.message);
+      });
+    },
+    getDomain : function(req,res,next) {
+      let myName = "getDomain()";
+      app.models[model]
+      .findById(req.params.id,{include:[app.models["roles"]]})
+      .then(domain => {
+        if(domain===null) return res.redirect('/');
+        req.appData.domain = domain;
+        req.appData.view = "domain";
         return next();
       })
       .catch(err => {
         res.send(err.message);
       });
     },
-    getDomain : function(req,res,next) {
-      let myName = "getDomain()";
-      let domainId = req.params.id;
-      app.log("Domain ID: " + domainId,myName,6);
+    getRolesByDomainId : function(req,res,next) {
+      let myName = "getRolesByDomainId()";
       app.models[model]
-      .findById(domainId)
-      .then(record => {
-        record.getRoles()
-        .then(roles => {
-          req.appData.domain = record;
-          req.appData.roles = roles;
-          req.appData.view = "domain";
-          return next();
-        })
-        .catch(err => {
-          res.send(err.message);
-        });
+      .findById(req.params.id,{include:[app.models["roles"]]})
+      .then((domain) => {
+        if(domain===null) return res.redirect('/');
+        req.appData.domain = domain;
+        req.appData.view = "domainroles";
+        return next();
       })
       .catch(err => {
-        res.send(err.message);
+        return res.send(err.message);
+      });
+    },
+    getUsersByDomainId : function(req,res,next) {
+      let myName = "getUsersByDomainId()";
+      app.models[model]
+      .findById(req.params.id,{include:[{model:app.models["roles"],include:[app.models["users"]]}]})
+      .then((domain) => {
+        if(domain===null) return res.redirect('/');
+        req.appData.domain = domain;
+        req.appData.view = "domainusers";
+        return next();
+      })
+      .catch(err => {
+        return res.send(err.message);
       });
     },
     getDomainList : function(req,res,next) {

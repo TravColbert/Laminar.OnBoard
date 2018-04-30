@@ -88,11 +88,14 @@ module.exports = function(app,model) {
       // Check that the passwords are verified...
       if(userRegistrationObj.password!=userRegistrationObj.passwordverify) return res.send("Passwords do not match... try again");
       // That the email address has not been used already...
-      app.models[model].count({where:{email:userRegistrationObj.email}}).then((count) => {
+      app.models[model].count({where:{email:userRegistrationObj.email}})
+      .then((count) => {
         if(count>0) return res.send("An account with this email already exists... try again");
         app.log("Email address is free to use. Continuing with registration...",myName,5);
         delete userRegistrationObj.passwordverify;
-        app.models[model].create(userRegistrationObj).then((record) => {
+        app.models[model]
+        .create(userRegistrationObj)
+        .then((record) => {
           req.appData.view = "registrationComplete";
           return next();
           // ...or you could re-direct with res.redirect("/.../.../");
@@ -115,30 +118,48 @@ module.exports = function(app,model) {
     },
     verifyUser : function(req,res,next) {
       let myName = "verufyUser()";
-      let id = req.params["id"];
-      app.models[model].update({verified:true},{where:{'appid':id,verified:false}})
+      app.models[model]
+      .update({verified:true},{where:{'appid':req.params.id,verified:false}})
       .then(affectedCount => {
         if(affectedCount!=1) {
           res.send("Something wrong happened with that verification step!");
         }
+        // Make other enrollment settings: like put into default role->default domain:
+        
         res.send("Congratulations! Your email address has been verified. You're ready to begin! <a href='/login/'>Log in</a> to begin");
+      });
+    },
+    enrollUserInRoleById : function(userId,roleId) {
+      let myName = "enrollUserInRoleById()";
+      app.models[model]
+      .findById(userId)
+      .then(user => {
+        if(user===null) return res.redirect('/');
+        user.addRole(roleId)
+        .then(function() {
+          return true;
+          // return res.redirect('/users/' + userId);
+        });
+      })
+      .catch(err => {
+        return res.send(err.messages);
       });
     },
     getProfile : function(req,res,next) {
       let myName = "getProfile()";
-      // Get the user ID from the session
-      app.log(JSON.stringify(req.session.user),myName,5);
-      // Query for the user's data
       let userObj = app.tools.pullParams(req.session.user,["id","email"]);
-      app.models[model].findOne({where:userObj})
-      .then(record => {
-        // This may not be the exact way to catch an error...
-        if(!record) res.send("There was some kind of error");
-        delete record.password; // Hide password? Maybe a better way???
-        app.log("Found a user: " + JSON.stringify(record));
-        req.appData.user = record.toJSON();
+      if(!userObj) return res.redirect('/');
+      app.models[model]
+      .findById(userObj.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      .then(user => {
+        if(user===null) return res.redirect('/');
+        // return res.send(user);
+        req.appData.user = user;
         req.appData.view = "profile";
         return next();
+      })
+      .catch(err => {
+        return res.send(err.message);
       });
     },
     getUsers : function(req,res,next) {
@@ -162,25 +183,17 @@ module.exports = function(app,model) {
     },
     getUser : function(req,res,next) {
       let myName = "getUser()";
-      // Get one user by ID
       let userObj = app.tools.pullParams(req.params,["id"]);
-      app.log("Getting user with ID: " + userObj.id,myName,6);
-      app.log("UserObj: " + JSON.stringify(userObj),myName,6);
-      app.models[model].findOne({
-        where:userObj,
-        include: [
-          {model:app.models["roles"]}
-        ]
+      app.models[model]
+      .findById(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      .then(user => {
+        if(user===null) return res.redirect('/');
+        req.appData.user = user;
+        req.appData.view = "user";
+        return next();
       })
-      .then(record => {
-        if(record!==null) {
-          app.log("Record does not appear to be NULL");
-          req.appData.user = record.get();
-          req.appData.view = "profile";
-          return next();
-        }
-        app.log("Couldn't find a user...",myName,4);
-        return res.redirect("/users/");
+      .catch(err => {
+        return res.send(err.message);
       });
     },
     editUserForm : function(req,res,next) {
@@ -231,8 +244,32 @@ module.exports = function(app,model) {
       delete userObj.id;
       app.models[model]
       .update(userObj,{where:{id:req.params.id},include:[{model:app.models["roles"]}]})
-      .then(function(records) {
+      .then((records) => {
         return res.redirect("/users/" + requestedUser + "/");
+      });
+    },
+    getDomainsByUserId : function(req,res,next) {
+      let myName = "getDomainsByUserId()";
+      // let userId = req.params.id;
+      // users -> roles ->domains
+      app.models[model]
+      .findById(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      .then(user => {
+        req.appData.user = user;
+        req.appData.view = "userdomains"
+        return next();
+      });
+    },
+    getRolesByUserId : function(req,res,next) {
+      let myName = "getRolesByUserId()";
+      // let userId = req.params.id;
+      // users -> roles
+      app.models[model]
+      .findById(req.params.id,{include:[{model:app.models["roles"]}]})
+      .then(user => {
+        req.appData.user = user;
+        req.appData.view = "userroles"
+        return next();
       });
     },
     logout : function(req,res,next) {
