@@ -1,6 +1,6 @@
 module.exports = function(Sequelize,app) {
   return {
-    tablename:"usersroles",
+    tablename:"usersdomains",
     schema:{
       "comment":{
         type: Sequelize.STRING

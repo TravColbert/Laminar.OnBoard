@@ -2,6 +2,7 @@ const fs = require('fs');
 
 module.exports = function(app) {
   let obj = {
+    name : "App",
     log : function(string,caller,debugLevel,prefix) {
       caller = caller || module.id;
       /**
@@ -16,20 +17,18 @@ module.exports = function(app) {
        */
       debugLevel = debugLevel || 0;
       prefix = prefix || ":";
-      if(app.locals.logLevel>=debugLevel) {
+      if(debugLevel <= app.locals.logLevel) {
         return console.log(caller,prefix,string);
       }
       return false;
     },
     generateString : function(length) {
       let myName = "generateString()";
-      length = parseInt(length);
+      length = parseInt(length) || 12;
       let sauce = '';
       while(sauce.length<length) {
         sauce += (Math.random()+1).toString(36).substring(2);
-        // log("more sauce: " + sauce,myName,5);
       }
-      // log("final sauce (length " + length + "): " + sauce,myName,6);
       return sauce.substring(null,length);
     }
   };
@@ -38,8 +37,6 @@ module.exports = function(app) {
     return next();
   };
   obj.logThis = function(string,caller,debugLevel) {
-    caller = caller || module.id;
-    debugLevel = debugLevel || 0;
     return this.log(string,caller,debugLevel,">");
   };
   obj.timeStart = function(req,res,next) {
@@ -152,16 +149,13 @@ module.exports = function(app) {
     obj.logThis("session cookie exists...",myName,5);
     if(!req.session.user) return res.redirect("/login");
     obj.logThis("session user object exists...",myName,5);
-    // if(!req.user.username) return false;
     if(!req.session.user.email) return res.redirect("/login");
     obj.logThis("session user email exists...",myName,5);
     if(!req.session.user.id) return res.redirect("/login");
     obj.logThis("session user id is set...",myName,5);
     obj.logThis("found all session info: " + req.session.user.email,myName,5);
-    obj.logThis("final confirmation that " + req.session.user.email + ", " + req.session.user.id + " exists",myName,5);
-    // if(app.controllers["users"].userExists({email:req.session.user.email,id:req.session.user.id})) return true;
+    obj.logThis("final confirmation that " + req.session.user.email + " user id (" + req.session.user.id + ") exists",myName,5);
     app.models["users"].count({where:{email:req.session.user.email,id:req.session.user.id}}).then((count) => {
-      // obj.logThis(JSON.stringify(record),myName,5);
       obj.logThis("Number of matching user records: " + count,myName,5);
       if(count==1) return next();
       obj.logThis("Incorrect number of user records returned - this is a problem!",myName,3);
@@ -169,18 +163,6 @@ module.exports = function(app) {
     });
     // return res.redirect("/login");
   };
-  // obj.checkAuthentication = function(req,res,next) {
-  //   let myName = "checkAuthentication()";
-  //   obj.logThis("starting authentication check...",myName,4);
-  //   obj.isAuthenticated(req,res,next);
-  //   // if(!obj.isAuthenticated(req)) {
-  //   //   obj.logThis("failed authentication. redirecting to login page",myName,4)
-  //   //   return res.redirect('/login/');
-  //   // }
-  //   // obj.logThis("found session for: " + JSON.stringify(req.session.user.email),myName,5);
-  //   // obj.logThis("session is authenticated",myName,4);
-  //   // return next();
-  // };
   obj.setUserAccount = function(req,res,next) {
     var myName = "setUserAccount()";
     obj.logThis("setting user account data...",myName,5);
@@ -207,6 +189,11 @@ module.exports = function(app) {
   obj.homePage = function(req,res,next) {
     let myName = "homePage()";
     obj.logThis("queueing home page",myName,5);
+    if(req.session.user) {
+      req.appData.user = req.session.user;
+      req.appData.domains = app.controllers["domains"].getDomainList();
+      app.log("DOMAIN RECORDS: " + JSON.stringify(req.appData.domains),myName,5);
+    }
     req.appData.view = "home";
     return next();
   };
@@ -247,8 +234,8 @@ module.exports = function(app) {
     let myName = "redirectToOriginalReq()";
     app.log("Original request: " + req.session.originalReq,myName,5);
     let redirectTo = req.session.originalReq || '/';
-    if(redirectTo=="/login") {
-      app.log("original request was /login but redirecting to home");
+    if(redirectTo=="/login" || redirectTo=="/login/") {
+      app.log("original request was " + redirectTo + " but redirecting to /");
       redirectTo = "/";
     }
     app.log("queueing to original request: " + redirectTo,myName,5);
@@ -280,8 +267,10 @@ module.exports = function(app) {
     return res.redirect('/');
   };
 
-  app.log = function(string,caller,debugLevel) {
-    return obj.log(string,this.name,debugLevel,"==> ");
+  app.log = function(string,caller,debugLevel,prefix) {
+    caller = caller || this.name;
+    debugLevel = debugLevel || 6;
+    return obj.log(string,caller,debugLevel,prefix);
   };
   app.checkFileList = function(fileList,callBack) {
     return obj.checkFile(fileList,callBack);
