@@ -2,5 +2,21 @@ extends index.pug
 
 block content
   .layout-width-6-8.layout-col
-    .layout-width-1-1 It Works!
+    if(user)
+      .layout-width-1-1 Hello #{user.email}!
+    else
+      .layout-width-1-1 It Works!
     .layout-width-1-1 Welcome to your web app!
+    if(user)
+      .layout-width-1-1.layout-row
+        .layout-width-1-2.layout-col Request to join a domain!
+          .layout-width-1-1
+            Here are some:
+          if(domains)
+            each domain in domains
+              .layout-width-1-1
+                domain.name
+        .layout-width-1-2.layout-col
+          .layout-width-1-1 Create a new domain!
+          .layout-width-1-1
+            input#domain(type="text")

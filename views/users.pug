@@ -24,18 +24,7 @@ block content
                 .label #{labelLabel}:
                 each role in roles
                   .data #{role.name}
-            //- if item.roleuser
-            //-   .itemdetail.layout-col
-            //-     .label User Manager Role:
-            //-     .data
-            //-       i.material-icons.roleuser people
-            //-       .note This user can manage users
-            //- if item.roleparts
-            //-   .itemdetail.layout-col
-            //-     .label Parts Manager Role:
-            //-     .data
-            //-       i.material-icons.roleparts build
-            //-       .note This user can manage parts
+
       #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/users/add")
         //- a.btn.normal(href="/users/add")
         //-   i.material-icons add_circle_outline

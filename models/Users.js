@@ -27,6 +27,10 @@ module.exports = function(Sequelize,app) {
         lm_label:"Last Name",
         lm_placeholder:"last (family) name"
       },
+      "verified":{
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       "disabled":{
         type: Sequelize.BOOLEAN,
         defaultValue: true,
@@ -44,16 +48,24 @@ module.exports = function(Sequelize,app) {
         },
         lm_order: 5,
         lm_label:"User's Passphrase"
+      },
+      "appid":{
+        type: Sequelize.STRING
       }
     },
     options:{
       getterMethods: {
-        fullname() {
+        fullname : function() {
           return this.lastname + ", " + this.firstname;
+        },
+        uniqueAppId: function() {
+          return this.appid + this.id;
         }
       },
       hooks:{
         beforeCreate:(user) => {
+          app.log("Generating app-wide ID for user: " + user.id);
+          user.appid = app.tools.generateString();
           console.log("Hashing user password: " + user.password);
           return app.controllers.users.cryptPassword(user.password)
           .then(success => {
@@ -89,19 +101,20 @@ module.exports = function(Sequelize,app) {
     },
     afterSync:function(db){
       db.count({where:{email:'admin@test.com'}}).then(function(count) {
-        app.log("Found " + count + " records",6);
-        if(count==0) {
+        app.log("Found " + count + " records",null,6);
+        if(count===0) {
           db.create({
             firstname:'Administrative',
             lastname:'User',
             email:'admin@test.com',
+            verified:true,
             disabled:false,
             password:'test123!'
           }).then((record) => {
-            app.log("Inserted: " + JSON.stringify(record));
+            app.log("Inserted: '" + record.email + "' user");
           });
-        };
+        }
       });
     }
-  }
-}
+  };
+};

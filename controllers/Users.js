@@ -9,28 +9,36 @@ module.exports = function(app,model) {
   obj = {
     authenticate : function(req,res,next) {
       app.log("Authenticating user: " + req.body.email);
-      app.models[model].findOne({where:{email:req.body.email,disabled:false}}).then((user) => {
-        app.log("info: Checking password: %s with %s",req.body.password,user.password);
-        bcrypt.compare(req.body.password,user.password,(err,match) => {
-          if(err) {
-            app.log("Some kind of error in bcrypt...");
-            return false;
-          }
-          app.log(match);
-          if(match) {
-            req.session.user = {
-              id:user.id,
-              email:user.email
-            };
-            app.log(req.originalUrl + " : " + req.session.originalReq);
-            return next();
-          }
+      app.models[model].findOne({where:{email:req.body.email,verified:true,disabled:false}})
+      .then((user) => {
+        if(user===null) {
+          app.log("User is not found or not verified or not allowed");
           app.log("Authenticate failed!");
-          req.appData.view = "login";
-          return next();
-          // return res.redirect('/login/');
-          // return cb(new Error("Incorrect username or password"));
-        });
+          // req.appData.view = "login";
+          // return next();
+          return res.redirect('/login/');
+        } else {
+          app.log("info: Checking password: %s with %s",req.body.password,user.password);
+          bcrypt.compare(req.body.password,user.password,(err,match) => {
+            if(err) {
+              app.log("Some kind of error in bcrypt...");
+              return false;
+            }
+            if(match) {
+              req.session.user = {
+                id:user.id,
+                email:user.email
+              };
+              app.log(req.originalUrl + " : " + req.session.originalReq);
+              return next();
+            }
+            app.log("Authenticate failed!");
+            req.appData.view = "login";
+            return next();
+            // return res.redirect('/login/');
+            // return cb(new Error("Incorrect username or password"));
+          });
+        };
       });
     },
     cryptPassword : function(password) {
@@ -45,6 +53,30 @@ module.exports = function(app,model) {
             return resolve(hash);
           });
         });
+      });
+    },
+    ifUserHasRole : function(roleName,user,cb) {
+      let myName = "userHasRole()";
+      let result = false;
+      // User must be the current session-user
+      app.log("Checking if user has role: " + roleName,myName,6);
+      let userObj = app.tools.pullParams(user,["id","email"]);
+      app.log("Query object: " + JSON.stringify(userObj),myName,6);
+      app.models[model].findOne({
+        where:userObj,
+        include: [
+          {
+            model:app.models["roles"],
+            where:{name:roleName}
+          }
+        ]
+      })
+      .then(function(record) {
+        if(record) {
+          app.log("Found a record!");
+          return cb(true);
+        }
+        return cb(false);
       });
     },
     registerUser : function(req,res,next) {
@@ -69,7 +101,7 @@ module.exports = function(app,model) {
         // Since this is a registration, we want to set the user's role to 'applicant'
         //
         // We don't need to assign any specific roles to users now...
-        // 
+        //
         // app.models["roles"].findOne({where:{name:defaultRoleAtRegistration}}).then(function(record) {
         //   if(record==null) return res.send("Error - can't assign applicant role to new user");
         //   userRegistrationObj.roleId = record.id;
@@ -81,19 +113,30 @@ module.exports = function(app,model) {
         // });
       });
     },
+    verifyUser : function(req,res,next) {
+      let myName = "verufyUser()";
+      let id = req.params["id"];
+      app.models[model].update({verified:true},{where:{'appid':id,verified:false}})
+      .then(affectedCount => {
+        if(affectedCount!=1) {
+          res.send("Something wrong happened with that verification step!");
+        }
+        res.send("Congratulations! Your email address has been verified. You're ready to begin! <a href='/login/'>Log in</a> to begin");
+      });
+    },
     getProfile : function(req,res,next) {
       let myName = "getProfile()";
       // Get the user ID from the session
       app.log(JSON.stringify(req.session.user),myName,5);
       // Query for the user's data
       let userObj = app.tools.pullParams(req.session.user,["id","email"]);
-      app.models[model].findOne({where:userObj}).then(record => {
+      app.models[model].findOne({where:userObj})
+      .then(record => {
         // This may not be the exact way to catch an error...
         if(!record) res.send("There was some kind of error");
         delete record.password; // Hide password? Maybe a better way???
         app.log("Found a user: " + JSON.stringify(record));
-        req.appData.user = record;
-        // Render it
+        req.appData.user = record.toJSON();
         req.appData.view = "profile";
         return next();
       });
@@ -122,19 +165,19 @@ module.exports = function(app,model) {
       // Get one user by ID
       let userObj = app.tools.pullParams(req.params,["id"]);
       app.log("Getting user with ID: " + userObj.id,myName,6);
+      app.log("UserObj: " + JSON.stringify(userObj),myName,6);
       app.models[model].findOne({
         where:userObj,
         include: [
           {model:app.models["roles"]}
         ]
       })
-      .then(function(record){
-        app.log(JSON.stringify(record));
-        // 'findOne()' returns an object - not an array
-        if(record!=null) {
-          req.appData.user = record.toJSON();
+      .then(record => {
+        if(record!==null) {
+          app.log("Record does not appear to be NULL");
+          req.appData.user = record.get();
           req.appData.view = "profile";
-          return next();  
+          return next();
         }
         app.log("Couldn't find a user...",myName,4);
         return res.redirect("/users/");
@@ -142,30 +185,42 @@ module.exports = function(app,model) {
     },
     editUserForm : function(req,res,next) {
       let myName = "editUserForm()";
-      // We have to mainly collect the role information for the user
-      let userObj = app.tools.pullParams(req.params,["id"]);
-      app.log("Getting user with ID: " + userObj.id,myName,6);
-      app.models[model].findOne({
-        where:userObj,
-        include:[
-          {model:app.models["roles"]}
-        ]
-      })
-      .then(function(record) {
-        if(record!=null) {
-          // Get a list of roles
-          app.models["roles"].findAll()
-          .then(function(roleList) {
-            req.appData.user = record;
-            req.appData.roles = roleList;
-            req.appData.view = "usersedit";
-            return next();
-          });
-        } else {
-          app.log("Couldn't find a user...",myName,4);
-          return res.redirect("/users/");  
+      // Does user have rights to edit this user record?
+      // Does user have:
+      //  - 'User Admin' role?
+      //  - 'Super Admin' role?
+      // let requesterObj = app.tools.pullParams(req.session.user,["id","email"]);
+      let prepareEditUserForm = function(authorized) {
+        if(!authorized) {
+          app.log("User is NOT authorized to edit user!",myName,6);
+          return res.send("User not authorized for this view");
         }
-      })
+        app.log("User is authorized to edit user",myName,6);
+        let userObj = app.tools.pullParams(req.params,["id"]);
+        app.log("Getting user with ID: " + userObj.id,myName,6);
+        app.models[model].findOne({
+          where:userObj,
+          include:[
+            {model:app.models["roles"]}
+          ]
+        })
+        .then(function(record) {
+          if(record!=null) {
+            // Get a list of roles
+            app.models["roles"].findAll()
+            .then(function(roleList) {
+              req.appData.user = record;
+              req.appData.roles = roleList;
+              req.appData.view = "usersedit";
+              return next();
+            });
+          } else {
+            app.log("Couldn't find a user...",myName,4);
+            return res.redirect("/users/");
+          }
+        });
+      };
+      app.controllers["users"].ifUserHasRole("Super Admin",req.session.user,prepareEditUserForm);
     },
     editUser : function(req,res,next) {
       let myName = "userUser()";
@@ -174,7 +229,7 @@ module.exports = function(app,model) {
       app.log(userObj.id + " " + requestedUser);
       if(userObj.id!=requestedUser) return res.send("Didn't request the requested user");
       delete userObj.id;
-      app.models["users"]
+      app.models[model]
       .update(userObj,{where:{id:req.params.id},include:[{model:app.models["roles"]}]})
       .then(function(records) {
         return res.redirect("/users/" + requestedUser + "/");

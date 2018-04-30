@@ -25,14 +25,16 @@
       "user":"onboard",
       "password":"test123!",
       "dialect":"sqlite",
-      "storage":"db/onboard.db"
+      "storage":"db/onboard.db",
+      "logging":false
     },
     "mysql":{
       "host":"127.0.0.1",
       "user":"onboard",
       "password":"test123!",
       "database":"onboard",
-      "charset":"utf8"
+      "charset":"utf8",
+      "logging":true
     }
   }
 }

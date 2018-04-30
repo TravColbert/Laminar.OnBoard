@@ -4,7 +4,6 @@ module.exports = function(Sequelize,app) {
     schema:{
       "name":{
         type: Sequelize.STRING,
-        unique: true,
         allowNull: false,
         lm_order: 0,
         lm_description: "Name",
@@ -20,33 +19,27 @@ module.exports = function(Sequelize,app) {
       }
     },
     afterSync:function(db){
-      let roleEventAdmin = {
-          name:"Event Admin",
-          description:"user can manager events"
-        };
-      let roleUserAdmin = {
-          name:"User Admin",
-          description:"user can manage users"
-        };
       let roleSuperAdmin = {
+          id:0,
           name:"Super Admin",
-          description:"user can manage all application models"
+          description:"Role can manage all models in all domains (super-admin users)"
         };
-      // db.count({where:{}}).then()
-      let initialRecords = [roleSuperAdmin,roleUserAdmin,roleEventAdmin];
+      let initialRecords = [roleSuperAdmin];
       for(let c=0;c<initialRecords.length;c++) {
         app.log("Checking for role: '" + initialRecords[c].name + "'...");
-        db.count({where:initialRecords[c]}).then(function(count) {
-          if(count==0) {
-            app.log("Couldn't find role. Creating...");
-            db.create(initialRecords[c]).then(function(record) {
-              app.log("Inserted " + JSON.stringify(record));
+        db.count({where:{name:initialRecords[c].name}})
+        .then((count) => {
+          if(count===0) {
+            app.log("Couldn't find role '" + initialRecords[c].name + "'. Creating...");
+            db.create(initialRecords[c])
+            .then((record) => {
+              app.log("Inserted '" + record.name + "' role");
             });
           } else {
             app.log("Role '" + initialRecords[c].name + "' exists - no need to create it.");
           }
         });
-      };
+      }
     }
-  }
-}
+  };
+};

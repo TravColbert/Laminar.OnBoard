@@ -6,13 +6,15 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 
+let myName = "setup";
+
 app.locals = JSON.parse(fs.readFileSync('config.json'));
 app.locals.url = "https://" + app.locals.addr;
 if(app.locals.port!="443") app.locals.url += ":" + app.locals.port;
 const options = {
   key: fs.readFileSync(app.locals.keyFile),
   cert: fs.readFileSync(app.locals.certFile)
-}
+};
 
 const Sequelize = require('sequelize');
 var sequelize = new Sequelize(
@@ -23,9 +25,11 @@ var sequelize = new Sequelize(
     host:app.locals.dbConnection.sqlite.host,
     dialect:"sqlite",
     // For SQLite only :
-    storage:app.locals.dbConnection.sqlite.storage
+    storage:app.locals.dbConnection.sqlite.storage,
+    // Logging:
+    logging: app.locals.dbConnection.sqlite.logging
   }
-)
+);
 
 let sessionConfig = {
   secret:app.locals.sessionSecret,
@@ -74,7 +78,14 @@ for(let c=0;c<modelFiles.length;c++) {
  * MODEL ASSOCIATIONS
  * These statements determine the relationships between models.
  */
-// app.models["users"].belongsTo(app.models["roles"]);
+// app.models["users"].belongsToMany(app.models["domains"],{through:app.models["usersdomains"]});
+// app.models["domains"].belongsToMany(app.models["users"],{through:app.models["usersdomains"]});
+
+app.models["domains"].hasMany(app.models["roles"]);
+
+// app.models["roles"].belongsToMany(app.models["domains"],{through:app.models["rolesdomains"]});
+// app.models["domains"].belongsToMany(app.models["roles"],{through:app.models["rolesdomains"]});
+
 app.models["users"].belongsToMany(app.models["roles"],{through:app.models["usersroles"]});
 app.models["roles"].belongsToMany(app.models["users"],{through:app.models["usersroles"]});
 
@@ -82,17 +93,21 @@ app.models["roles"].belongsToMany(app.models["users"],{through:app.models["users
  * Bring all models on-line!
  */
 for(let model in app.models) {
-  app.log("Prepping model: " + model,6);
+  app.log("Prepping model: " + model,myName,6);
   // Sync tables
   app.models[model]
   .sync()
   .then(function(){
-    app.log("Checking for post-preparations for model: " + model,6);
+    app.log("Checking for post-preparations for model: " + model,myName,6);
     // Run any post-operations after sync()'ing table
     if(app.modelDefinitions[model].hasOwnProperty("afterSync")) {
-      app.log("Running post-preparations on model: " + model,6);
+      app.log("Running post-preparations on model: " + model,myName,6);
       app.modelDefinitions[model].afterSync(app.models[model]);
     }
+
+
+
+
   });
 }
 
@@ -104,21 +119,50 @@ for(let model in app.models) {
   /**
    * Assign administrator role to the admin user
    */
-  var adminRoleId;
-  var adminUserId;
-  app.log("Setting admin role permissions...");
+  app.log("Setting up admin user...",myName,6);
 
   app.models.users.findOne({where:{email:'admin@test.com'}})
-  .then(record => {
-    app.log(JSON.stringify(record));
+  .then(user => {
+    if(user===null) {
+      app.log("!!! Couldn't find the admin user! I have to quit now.",myName,4);
+      return false;
+    }
+    app.log("!!! Found '" + user.email + "' user.",myName,6);
     app.models.roles.findOne({where:{name:"Super Admin"}})
     .then(role => {
-      record.addRoles(role,{through:{comment:"Initial role-assignment for admin user"}})
-      .then(function(err) {
-        if(err) return app.log(err.message);
-        app.log("Admin user has Super Admin roles");
+      user.addRole(role)
+      .then(function() {
+        app.log("Admin user has been granter Super Admin roles",myName,6);
       })
+      .catch(err => {
+        app.log(err.message);
+      });
     })
+    .catch(err => {
+      app.log(err.message);
+    });
+
+
+    // app.models.roles.findOne({where:{name:"Super Admin"}})
+    // .then(role => {
+    //   app.log("!!! Found '" + role.name + "' role.",myName,6);
+    //   record.addRoles(role,{through:{comment:"Initial 'Super Admin' role-assignment for admin user"}})
+    //   .then(function(err) {
+    //     if(err) return app.log(err.message,myName,4);
+    //     app.log("Admin user has Super Admin roles",myName,6);
+    //   });
+    // });
+    // app.models.domains.findOne({where:{name:"Default Domain"}})
+    // .then(domain => {
+    //   record.addDomains(domain,{through:{comment:"Initial 'Default Domain' domain-assignment for admin user"}})
+    //   .then(function(err) {
+    //     if(err) return app.log(err.message);
+    //     app.log("Admin user has been assigned to Default domain",myName,6);
+    //   });
+    // });
+  })
+  .catch(err => {
+    app.log(err.message,myName,1);
   });
 }
 
@@ -223,6 +267,6 @@ app.use(
  * START THE SERVER
  */
 https.createServer(options,app).listen(app.locals.port,function() {
-  app.log(app.locals.appName + " server listening on port " + app.locals.port,4);
-  app.log("logLevel: " + app.locals.logLevel,4);
+  app.log(app.locals.appName + " server listening on port " + app.locals.port,myName,4);
+  app.log("logLevel: " + app.locals.logLevel,myName,4);
 });

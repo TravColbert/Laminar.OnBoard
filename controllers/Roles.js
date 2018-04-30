@@ -5,19 +5,53 @@ module.exports = function(app,model) {
   obj = {
     getRoles : function(req,res,next) {
       let myName = "getRoles()";
-      app.log("Model is: " + model);
-      app.models[model].findAll()
-      .then(function(results) {
-        app.log(JSON.stringify(results));
-        app.log("Length: " + results.length);
-        app.log("SQL GET results:",myName,6);
+      app.models[model]
+      .findAll()
+      .then(results => {
         req.appData.rows = results;
         req.appData.view = "roles";
         return next();
       })
       .catch(err => {
-        res.send(err.message);
+        return res.send(err.message);
       });
+    },
+    getRole : function(req,res,next) {
+      let myName = "getRole()";
+      app.models[model]
+      .findById(req.params.id)
+      .then(role => {
+        req.appData.role = role;
+        req.appData.view = "role";
+        return next();
+      })
+      .catch(err => {
+        return res.send(err.message);
+      });
+    },
+    getRolesByDomainId : function(req,res,next) {
+      let myName = "getRolesByDomainId()";
+      let domainId = req.params.domainid;
+      app.models[model]
+      .findAll({where:{domainId:domainId}})
+      .then(roles => {
+        return res.send(roles);
+      })
+      .catch(err => {
+        return res.send(err.message);
+      });
+    },
+    getDomainsByRole : function(req,res,next) {
+      let myName = "getDomainsByRole()";
+      let roleId = req.params.id;
+      app.models[model]
+      .findById(roleId)
+      .then(role => {
+        return res.send(role);
+      })
+      .catch(err => {
+        return res.send(err.message);
+      })
     },
     createRole : function(req,res,next) {
       let myName = "createRole()";
@@ -30,7 +64,6 @@ module.exports = function(app,model) {
         return next();
       });
     }
-  }
-  app.log("Model is: " + model,obj.myName,6);
+  };
   return obj;
-}
+};
