@@ -125,7 +125,10 @@ module.exports = function(app,model) {
           res.send("Something wrong happened with that verification step!");
         }
         // Make other enrollment settings: like put into default role->default domain:
-        
+        // let domainId = app.models["domains"].fetchDomainIdByName("Default Domain");
+        let role = app.controllers["domains"].fetchRoleByName("Default Domain","Default Role");
+        // app.log("Target domain id: '" + domainId + "'",myName,6);
+        // let roleId = app.models["roles"].fetchRoleIdByName
         res.send("Congratulations! Your email address has been verified. You're ready to begin! <a href='/login/'>Log in</a> to begin");
       });
     },

@@ -71,6 +71,32 @@ module.exports = function(app,model) {
         res.send(err.message);
       });
     },
+    // These functions are designed to be used by other functions
+    fetchDomainIdByName : function(domainName) {
+      let myName = "fetchDomainIdByName()";
+      app.models[model]
+      .findOne({where:{name:domainName}})
+      .then(domain => {
+        if(domain===null) return false;
+        return domain.id;
+      })
+      .catch(err => {
+        app.log(err.message,2);
+        return false;
+      })
+    },
+    fetchRoleByName : function(domainName,roleName) {
+      let myName = "fetchRoleByName()";
+      app.models[model]
+      .find({where:{name:domainName},include:[{model:app.models["roles"],where:{name:roleName}}]})
+      .then(domain => {
+        if(domain===null) return false;
+        return domain;
+      })
+      .catch(err => {
+        return false;
+      })
+    },
     createDomain : function(req,res,next) {
       let myName = "createDomain()";
       let newDomain = app.tools.pullParams(req.body,["name"]);
