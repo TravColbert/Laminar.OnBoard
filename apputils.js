@@ -191,8 +191,22 @@ module.exports = function(app) {
     obj.logThis("queueing home page",myName,5);
     if(req.session.user) {
       req.appData.user = req.session.user;
-      req.appData.domains = app.controllers["domains"].getDomainList();
-      app.log("DOMAIN RECORDS: " + JSON.stringify(req.appData.domains),myName,5);
+      /* Prepare a call-back function that will continue the login process by
+       * collecting all the domains that the authenticated user has access to.
+       */
+      let cb = function(err,user) {  // domain list is in user
+        if(err) return res.send(err.message);
+        if(user===null) return res.send("No user found");
+        let domainList = [];
+        for(let c=0;c<user.roles.length;c++) {
+          for(let i=0;i<user.roles[c].domains.length;i++) {
+            domainList.push(user.roles[c].domains[i]);
+          }
+        }
+        req.appData.domains = domainList;
+        return next();
+      }
+      return app.controllers["users"].fetchDomainsByUserId(req.session.user.id,cb);
     }
     req.appData.view = "home";
     return next();
