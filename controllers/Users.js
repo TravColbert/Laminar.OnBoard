@@ -128,7 +128,7 @@ module.exports = function(app,model) {
           .then(function() {
             // return res.send("Congrats! User '" + user.fullname + "' has been enrolled in: '" + domain.roles[0].name + "' (" + domain.roles[0].id + ")");
             req.appData.user = user;
-            req.appData.view = "registrationcomplete";
+            req.appData.view = "verificationcomplete";
             return next();
           })
           .catch(err => {

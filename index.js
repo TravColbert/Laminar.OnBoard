@@ -78,16 +78,8 @@ for(let c=0;c<modelFiles.length;c++) {
  * MODEL ASSOCIATIONS
  * These statements determine the relationships between models.
  */
-// app.models["users"].belongsToMany(app.models["domains"],{through:app.models["usersdomains"]});
-// app.models["domains"].belongsToMany(app.models["users"],{through:app.models["usersdomains"]});
-
-// app.models["domains"].hasMany(app.models["roles"]);
-
 app.models["domains"].belongsToMany(app.models["roles"],{through:app.models["domainsroles"]});
 app.models["roles"].belongsToMany(app.models["domains"],{through:app.models["domainsroles"]});
-// app.models["roles"].belongsToMany(app.models["domains"],{through:app.models["rolesdomains"]});
-// app.models["domains"].belongsToMany(app.models["roles"],{through:app.models["rolesdomains"]});
-
 app.models["users"].belongsToMany(app.models["roles"],{through:app.models["usersroles"]});
 app.models["roles"].belongsToMany(app.models["users"],{through:app.models["usersroles"]});
 
