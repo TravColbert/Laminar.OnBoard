@@ -25,11 +25,11 @@ module.exports = function(app,model) {
               return false;
             }
             if(match) {
+              app.log("Passwords match for user: " + user.email,myName,4);
               req.session.user = {
                 id:user.id,
                 email:user.email
               };
-              app.log(req.originalUrl + " : " + req.session.originalReq);
               return next();
             }
             app.log("Authenticate failed!");
@@ -98,22 +98,7 @@ module.exports = function(app,model) {
         .then((record) => {
           req.appData.view = "registrationComplete";
           return next();
-          // ...or you could re-direct with res.redirect("/.../.../");
         });
-        // app.log(JSON.stringify(userRegistrationObj),myName,5);
-        // Since this is a registration, we want to set the user's role to 'applicant'
-        //
-        // We don't need to assign any specific roles to users now...
-        //
-        // app.models["roles"].findOne({where:{name:defaultRoleAtRegistration}}).then(function(record) {
-        //   if(record==null) return res.send("Error - can't assign applicant role to new user");
-        //   userRegistrationObj.roleId = record.id;
-        //   app.models[model].create(userRegistrationObj).then((record) => {
-        //     req.appData.view = "registrationComplete";
-        //     return next();
-        //     // ...or you could re-direct with res.redirect("/.../.../");
-        //   });
-        // });
       });
     },
     verifyUser : function(req,res,next) {
@@ -278,6 +263,19 @@ module.exports = function(app,model) {
         return next();
       });
     },
+    fetchDomainsByUserId : function(userId,cb) {
+      let myName = "fetchDomainsByUserId()";
+      // users -> roles -> domains
+      app.models[model]
+      .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      .then(user => {
+        if(user===null) return cb();
+        cb(null,user);
+      })
+      .catch(err => {
+        cb(err);
+      });
+    },
     getRolesByUserId : function(req,res,next) {
       let myName = "getRolesByUserId()";
       // let userId = req.params.id;
@@ -290,11 +288,20 @@ module.exports = function(app,model) {
         return next();
       });
     },
+    fetchRolesByUserId : function(userId,cb) {
+      let myName = "fetchRolesByUserId()";
+      // users -> roles -> domains
+      app.models[model]
+      .findById(req.params.id,{include:[{model:app.models["roles"]}]})
+      .then(user => {
+        if(user===null) return cb();
+        cb(null,user);
+      })
+      .catch(err => {
+        cb(err);
+      });
+    },
     logout : function(req,res,next) {
-      // app.log(JSON.stringify(req.session));
-      // Bruteish method of detroying session...
-      // delete req.session.user;
-      // This might be the better way...
       req.session.destroy((err) => {
         if(err) {
           app.log("Couldn't destroy session! Punting!");
