@@ -68,7 +68,7 @@ module.exports = function(app,model) {
         return res.send(records);
       })
       .catch(err => {
-        res.send(err.message);
+        return res.send(err.message);
       });
     },
     // These functions are designed to be used by other functions
@@ -85,16 +85,16 @@ module.exports = function(app,model) {
         return false;
       })
     },
-    fetchRoleByName : function(domainName,roleName) {
+    fetchRoleByName : function(domainName,roleName,cb) {
       let myName = "fetchRoleByName()";
       app.models[model]
       .find({where:{name:domainName},include:[{model:app.models["roles"],where:{name:roleName}}]})
       .then(domain => {
-        if(domain===null) return false;
-        return domain;
+        if(domain===null) cb();
+        cb(null,domain);
       })
       .catch(err => {
-        return false;
+        cb(err);
       })
     },
     createDomain : function(req,res,next) {

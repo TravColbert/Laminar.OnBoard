@@ -119,17 +119,32 @@ module.exports = function(app,model) {
     verifyUser : function(req,res,next) {
       let myName = "verufyUser()";
       app.models[model]
-      .update({verified:true},{where:{'appid':req.params.id,verified:false}})
-      .then(affectedCount => {
-        if(affectedCount!=1) {
-          res.send("Something wrong happened with that verification step!");
-        }
-        // Make other enrollment settings: like put into default role->default domain:
-        // let domainId = app.models["domains"].fetchDomainIdByName("Default Domain");
-        let role = app.controllers["domains"].fetchRoleByName("Default Domain","Default Role");
-        // app.log("Target domain id: '" + domainId + "'",myName,6);
-        // let roleId = app.models["roles"].fetchRoleIdByName
-        res.send("Congratulations! Your email address has been verified. You're ready to begin! <a href='/login/'>Log in</a> to begin");
+      .find({where:{'appid':req.params.id,verified:false}})
+      .then(user => {
+        let cb = function(err,domain) {
+          if(err) return res.send(err.message);
+          if(domain===null) res.send("No domain found");
+          user.addRoles(domain.roles[0].id)
+          .then(function() {
+            // return res.send("Congrats! User '" + user.fullname + "' has been enrolled in: '" + domain.roles[0].name + "' (" + domain.roles[0].id + ")");
+            req.appData.user = user;
+            req.appData.view = "registrationcomplete";
+            return next();
+          })
+          .catch(err => {
+            return res.send("Something went wrong when we tried to add the default role to the user!");
+          });
+        };
+        user.update({verified:true,disabled:false})
+        .then(user => {
+          app.controllers["domains"].fetchRoleByName("Default Domain","Default Role",cb);
+        })
+        .catch(err => {
+          return res.send("Could not set verified to true or disabled to false: " + err.message);
+        });
+      })
+      .catch(err => {
+        return res.send(err.message);
       });
     },
     enrollUserInRoleById : function(userId,roleId) {

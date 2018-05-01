@@ -75,17 +75,6 @@ module.exports = function(Sequelize,app) {
           .catch(err => {
             if (err) console.log(err);
           });
-        },
-        beforeUpdate:(user) => {
-          console.log("Hashing user password: " + user.password);
-          return app.controllers.users.cryptPassword(user.password)
-          .then(success => {
-            console.log("Hash: " + success);
-            user.password = success;
-          })
-          .catch(err => {
-            if (err) console.log(err);
-          });
         }
       },
       scopes:{

@@ -9,4 +9,4 @@ module.exports = function(app) {
   router.get('/:id/domains/',app.tools.checkAuthentication,app.controllers["roles"].getDomainsByRoleId);
   router.post('/',app.tools.checkAuthentication,app.controllers["roles"].createRole);
   return router;
-}
+};

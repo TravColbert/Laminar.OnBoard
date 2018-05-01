@@ -43,7 +43,7 @@ module.exports = function(app,model) {
       })
       .catch(err => {
         return res.send(err.message);
-      })
+      });
     },
     getDomainsByRoleId : function(req,res,next) {
       let myName = "getDomainsByRole()";
@@ -57,7 +57,7 @@ module.exports = function(app,model) {
       })
       .catch(err => {
         return res.send(err.message);
-      })
+      });
     },
     createRole : function(req,res,next) {
       let myName = "createRole()";
