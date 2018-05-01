@@ -23,17 +23,16 @@ block content
           if userRoles
             .itemdetail.layout-col
               .label Roles:
-              each role in roles
-                .data input(id=role.id type="checkbox") role.name
-
+              each role in userRoles
+                .data #{role.name}
           .itemdetail.layout-col
-            label.label(for="roleId") Role:
+            label.label(for="defaultDomainId") Preferred Domain:
             .data
-              select#roleId(name="roleId")
-                each role in roles
-                  - let selected = null;
-                  - if(user.hasOwnProperty("role")) selected = (user.role.id==role.id) ? "selected" : null;
-                  option(value=role.id selected=selected) #{role.name}
+              select#roleId(name="defaultDomainId")
+                each role in user.roles
+                  each domain in role.domains
+                    - let selected = (domain.id==user.defaultDomainId) ? "selected" : null;
+                    option(value=domain.id selected=selected) #{domain.name}
           .itemdetail.layout-col
             label.label Actions:
             .data.layout-row

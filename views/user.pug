@@ -24,12 +24,14 @@ block content
         label.label(for="partnum") Domains:
           each role in user.roles
             each domain in role.domains
-              .data #[a(href="/domains/" + domain.id + "/") #{domain.name}]
+              - let starred = (domain.id==user.defaultDomainId) ? "<- (default)" : null;
+              .data #[a(href="/domains/" + domain.id + "/") #{domain.name} #{starred}]
       .itemdetail.layout-col
         label.label Roles:
           each role in user.roles
             .data #[a(href="/roles/" + role.id + "/") #{role.name}]
-
+      #user_edit_button_container.edituser.layout-row.layout-justify-between #[a(href="/users/" + user.id + "/edit/") Edit]
+      #user_edit_button_container.edituser.layout-row.layout-justify-between.authUI(data-fetch="user_edit" data-href="/users/edit")
       #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/users/add")
         //- a.btn.normal(href="/users/add")
         //-   i.material-icons add_circle_outline

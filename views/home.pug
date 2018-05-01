@@ -11,11 +11,13 @@ block content
       .layout-width-1-1.layout-row
         .layout-width-1-2.layout-col Check up on your domains:
           .layout-width-1-1
+          if(user.defaultDomainId)
+            .layout-width-1-1 Your default domain is: #{user.defaultDomainId}
           if(domains)
             each domain in domains
               .layout-width-1-1
                 .test #{domain.name} (id: #{domain.id})
         .layout-width-1-2.layout-col
-          .layout-width-1-1 Create a new domain!
+          .layout-width-1-1 Create a new domain here:
           .layout-width-1-1
             input#domain(type="text")

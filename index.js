@@ -82,6 +82,10 @@ app.models["domains"].belongsToMany(app.models["roles"],{through:app.models["dom
 app.models["roles"].belongsToMany(app.models["domains"],{through:app.models["domainsroles"]});
 app.models["users"].belongsToMany(app.models["roles"],{through:app.models["usersroles"]});
 app.models["roles"].belongsToMany(app.models["users"],{through:app.models["usersroles"]});
+app.models["users"].belongsTo(app.models["domains"],{as:'defaultDomain'});
+app.models["users"].hasOne(app.models["domains"],{as:'owner'});
+
+
 
 /**
  * Bring all models on-line!

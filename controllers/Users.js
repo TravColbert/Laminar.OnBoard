@@ -28,8 +28,10 @@ module.exports = function(app,model) {
               app.log("Passwords match for user: " + user.email,myName,4);
               req.session.user = {
                 id:user.id,
-                email:user.email
+                email:user.email,
+                defaultDomainId:user.defaultDomainId
               };
+              req.appData.user = user;
               return next();
             }
             app.log("Authenticate failed!");
@@ -38,7 +40,7 @@ module.exports = function(app,model) {
             // return res.redirect('/login/');
             // return cb(new Error("Incorrect username or password"));
           });
-        };
+        }
       });
     },
     cryptPassword : function(password) {
@@ -214,33 +216,26 @@ module.exports = function(app,model) {
         app.log("User is authorized to edit user",myName,6);
         let userObj = app.tools.pullParams(req.params,["id"]);
         app.log("Getting user with ID: " + userObj.id,myName,6);
-        app.models[model].findOne({
-          where:userObj,
-          include:[
-            {model:app.models["roles"]}
-          ]
-        })
-        .then(function(record) {
-          if(record!=null) {
-            // Get a list of roles
-            app.models["roles"].findAll()
-            .then(function(roleList) {
-              req.appData.user = record;
-              req.appData.roles = roleList;
-              req.appData.view = "usersedit";
-              return next();
-            });
-          } else {
+        app.models[model]
+        .findById(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+        .then(user => {
+          if(user===null) {
             app.log("Couldn't find a user...",myName,4);
             return res.redirect("/users/");
           }
+          req.appData.user = user;
+          req.appData.view = "usersedit";
+          return next();
+        })
+        .catch(err => {
+          return res.send(myName + ": " + err.message);
         });
       };
       app.controllers["users"].ifUserHasRole("Super Admin",req.session.user,prepareEditUserForm);
     },
     editUser : function(req,res,next) {
       let myName = "userUser()";
-      let userObj = app.tools.pullParams(req.body,["id","firstname","lastname","roleId"]);
+      let userObj = app.tools.pullParams(req.body,["id","firstname","lastname","roleId","defaultDomainId"]);
       let requestedUser = req.params.id;
       app.log(userObj.id + " " + requestedUser);
       if(userObj.id!=requestedUser) return res.send("Didn't request the requested user");

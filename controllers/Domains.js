@@ -102,6 +102,7 @@ module.exports = function(app,model) {
       let newDomain = app.tools.pullParams(req.body,["name"]);
       if(!newDomain) return res.send("Required field missing... try again");
       if(req.body.hasOwnProperty("description")) newDomain["description"] = req.body.description;
+      newDomain.owner = req.session.user.id;
       app.models[model]
       .create(newDomain)
       .then(record => {
