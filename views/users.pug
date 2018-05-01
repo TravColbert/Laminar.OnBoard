@@ -10,7 +10,7 @@ block content
           li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
             .itemdetail.layout-col
               .label User:
-              .data #{item.fullname}
+              .data #[a(href="/users/" + item.id + "/") #{item.fullname}]
             - let email = item.email || null
             if email
               .itemdetail.layout-col

@@ -24,11 +24,11 @@ block content
         label.label(for="partnum") Domains:
           each role in user.roles
             each domain in role.domains
-              .data #{domain.name}
+              .data #[a(href="/domains/" + domain.id + "/") #{domain.name}]
       .itemdetail.layout-col
         label.label Roles:
           each role in user.roles
-            .data #{role.name}
+            .data #[a(href="/roles/" + role.id + "/") #{role.name}]
 
       #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/users/add")
         //- a.btn.normal(href="/users/add")

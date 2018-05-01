@@ -16,7 +16,7 @@ block content
           .itemdetail.layout-col
             label.label(for="domainroles") Roles:
             each role in domain.roles
-              .data #{role.name}
+              .data #[a(href="/roles/" + role.id + "/") #{role.name}]
               .data #{role.description}
           .itemdetail.layout-col
             label.label Actions:
