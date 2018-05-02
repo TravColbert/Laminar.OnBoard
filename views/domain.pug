@@ -5,24 +5,23 @@ block content
     .section-hdg.section-hdg-1 Domain #{domain.name}
     .layout-row.layout-width-1-1
       .user-listing.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-        form(action="/domain/edit" method="post")
-          input(id="domainid" type="hidden" name="domainid" value=domain.id)
-          .itemdetail.layout-col
-            label.label(for="domainname") Name:
-            .data #{domain.name}
-          .itemdetail.layout-col
-            label.label(for="domaindescription") Description:
-            .data #{domain.description}
-          .itemdetail.layout-col
-            label.label(for="domainroles") Roles:
-            each role in domain.roles
-              .data #[a(href="/roles/" + role.id + "/") #{role.name}]
-              .data #{role.description}
-          .itemdetail.layout-col
-            label.label Actions:
-            .data.layout-row
-              input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")
-              a.btn.cancel(href="/domains/") Cancel
+        .itemdetail.layout-col
+          label.label(for="domainname") Name:
+          .data #{domain.name}
+        .itemdetail.layout-col
+          label.label(for="domaindescription") Description:
+          .data #{domain.description}
+        .itemdetail.layout-col
+          label.label(for="domainroles") Roles:
+          each role in domain.roles
+            .data #[a(href="/roles/" + role.id + "/") #{role.name}]
+            .data #{role.description}
+        .itemdetail.layout-col
+          label.label Actions:
+          .data.layout-row
+            //- input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")
+            a.btn.submit(href="/domains/" + domain.id + "/actions/edit/") Edit
+            a.btn.cancel(href="/domains/") Cancel
       .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
         .infotext.section-hdg.section-hdg-3 Edit Role View
         .infotext You can edit a domain with this view.

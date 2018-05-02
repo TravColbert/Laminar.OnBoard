@@ -1,4 +1,6 @@
 const fs = require('fs');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 module.exports = function(app) {
   let obj = {
@@ -163,6 +165,32 @@ module.exports = function(app) {
     });
     // return res.redirect("/login");
   };
+
+  obj.ifUserIsAuthorized = function(capability,user,cb) {
+    let myName = "ifUserIsAuthorized()";
+    app.log(JSON.stringify(user));
+    app.log("Checking if user " + user.id + " is authorized to: '" + capability + "' on domain: " + user.defaultDomainId,myName);
+
+    let cap = {};
+    cap[capability[0]] = {[Op.eq]:capability[1]};
+
+    let query = {};
+    query.roles = {capabilities:cap};
+    query.users = {id:user.id};
+    query.domains = (user.defaultDomainId) ? {id:1} : null;   // Admin user doesn't have a default domain ATM
+    app.models["roles"]
+    .findAll({where:query.roles||null,include:[{model:app.models["users"],where:query.users||null},{model:app.models["domains"],where:query.domains||null}]})
+    .then(roles => {
+      if(roles===null) return cb(null,false);
+      app.log(JSON.stringify(roles));
+      return cb(null,true);
+    })
+    .catch(err => {
+      app.log("error looking up authorizations: " + err.message,myName,2);
+      return cb(err);
+    })
+  };
+
   obj.setUserAccount = function(req,res,next) {
     var myName = "setUserAccount()";
     obj.logThis("setting user account data...",myName,5);

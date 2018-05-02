@@ -16,13 +16,18 @@ module.exports = function(Sequelize,app) {
         lm_label:"Description",
         lm_placeholder:"description of the role",
         lm_classlist:["lm_textarea","layout-width-1-2"]
+      },
+      "capabilities":{
+        type: Sequelize.JSONB,
+        allowNull: true
       }
     },
     afterSync:function(db){
       let roleSuperAdmin = {
           id:0,
           name:"Super Admin",
-          description:"Role can manage all models in all domains (super-admin users)"
+          description:"Role can manage all models in all domains (super-admin users)",
+          capabilities:{'edit':'all'}
         };
       let initialRecords = [roleSuperAdmin];
       for(let c=0;c<initialRecords.length;c++) {

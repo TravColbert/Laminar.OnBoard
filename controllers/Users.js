@@ -57,14 +57,19 @@ module.exports = function(app,model) {
         });
       });
     },
+
+
+
+
     ifUserHasRole : function(roleName,user,cb) {
       let myName = "userHasRole()";
       let result = false;
       // User must be the current session-user
       app.log("Checking if user has role: " + roleName,myName,6);
       let userObj = app.tools.pullParams(user,["id","email"]);
-      app.log("Query object: " + JSON.stringify(userObj),myName,6);
-      app.models[model].findOne({
+      // app.log("Query object: " + JSON.stringify(userObj),myName,6);
+      app.models[model]
+      .findOne({
         where:userObj,
         include: [
           {
@@ -110,13 +115,18 @@ module.exports = function(app,model) {
       .then(user => {
         let cb = function(err,domain) {
           if(err) return res.send(err.message);
-          if(domain===null) res.send("No domain found");
+          if(!domain) res.send("No domain found");
+
           user.addRoles(domain.roles[0].id)
           .then(function() {
             // return res.send("Congrats! User '" + user.fullname + "' has been enrolled in: '" + domain.roles[0].name + "' (" + domain.roles[0].id + ")");
-            req.appData.user = user;
-            req.appData.view = "verificationcomplete";
-            return next();
+
+            user.update({defaultDomainId:domain.id})
+            .then(function() {
+              req.appData.user = user;
+              req.appData.view = "verificationcomplete";
+              return next();  
+            })
           })
           .catch(err => {
             return res.send("Something went wrong when we tried to add the default role to the user!");
@@ -208,7 +218,8 @@ module.exports = function(app,model) {
       //  - 'User Admin' role?
       //  - 'Super Admin' role?
       // let requesterObj = app.tools.pullParams(req.session.user,["id","email"]);
-      let prepareEditUserForm = function(authorized) {
+      let prepareEditUserForm = function(err,authorized) {
+        if(err) return res.send(err.messages,myName,2);
         if(!authorized) {
           app.log("User is NOT authorized to edit user!",myName,6);
           return res.send("User not authorized for this view");
@@ -231,7 +242,7 @@ module.exports = function(app,model) {
           return res.send(myName + ": " + err.message);
         });
       };
-      app.controllers["users"].ifUserHasRole("Super Admin",req.session.user,prepareEditUserForm);
+      app.tools.ifUserIsAuthorized(["edit","all"],req.session.user,prepareEditUserForm);
     },
     editUser : function(req,res,next) {
       let myName = "userUser()";

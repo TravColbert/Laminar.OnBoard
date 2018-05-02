@@ -25,7 +25,8 @@ module.exports = function(Sequelize,app) {
           app.log("===> Creating default role(s) for domain '" + domain.name + "'");
           let domainAdminRole = {
             name:"Admin Role",
-            description:"Administrative role for the " + domain.name + " domain"
+            description:"Administrative role for the " + domain.name + " domain",
+            capabilities:{"edit":"all","create":"all","delete":"all","list":"all"}
           };
           let domainDefaultRole = {
             name:"Default Role",

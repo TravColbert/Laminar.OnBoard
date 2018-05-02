@@ -17,6 +17,8 @@ const options = {
 };
 
 const Sequelize = require('sequelize');
+// const Op = Sequelize.Op;
+
 var sequelize = new Sequelize(
   app.locals.dbConnection.sqlite.database,
   app.locals.dbConnection.sqlite.user,
@@ -118,7 +120,7 @@ for(let model in app.models) {
   app.models.users.findOne({where:{email:'admin@test.com'}})
   .then(user => {
     if(user===null) {
-      app.log("!!! Couldn't find the admin user! I have to quit now.",myName,4);
+      app.log("!!! Couldn't find the admin user! I have to quit now.",myName,1);
       return false;
     }
     app.log("!!! Found '" + user.email + "' user.",myName,6);
@@ -129,15 +131,15 @@ for(let model in app.models) {
         app.log("Admin user has been granter Super Admin roles",myName,6);
       })
       .catch(err => {
-        app.log(err.message);
+        app.log("Couldn't add Super Admin role to Admin user " + err.message,myName,1);
       });
     })
     .catch(err => {
-      app.log(err.message);
+      app.log("!!! Couldn't find the admin user! I have to quit now.: " + err.message,myName,1);
     });
   })
   .catch(err => {
-    app.log(err.message,myName,1);
+    app.log("Error attempting to retrieve admin user: " + err.message,myName,1);
   });
 }
 

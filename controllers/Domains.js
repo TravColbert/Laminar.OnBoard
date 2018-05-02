@@ -90,13 +90,61 @@ module.exports = function(app,model) {
       app.models[model]
       .find({where:{name:domainName},include:[{model:app.models["roles"],where:{name:roleName}}]})
       .then(domain => {
-        if(domain===null) cb();
+        if(domain===null) cb(null,false);
         cb(null,domain);
       })
       .catch(err => {
         cb(err);
       })
     },
+
+    editDomainForm : function(req,res,next) {
+      let myName = "editDomainForm()";
+      // Does user have rights to edit this user record?
+      // Does user have:
+      //  - 'User Admin' role?
+      //  - 'Super Admin' role?
+      // let requesterObj = app.tools.pullParams(req.session.user,["id","email"]);
+      let prepareEditDomainForm = function(authorized) {
+        if(!authorized) {
+          app.log("User is NOT authorized to edit domain!",myName,6);
+          return res.send("User not authorized for this view");
+        }
+        app.log("User is authorized to edit domain",myName,6);
+        let domainObj = app.tools.pullParams(req.params,["id"]);
+        app.log("Getting domain with ID: " + domainObj.id,myName,6);
+        app.models[model]
+        .findById(req.params.id)
+        .then(domain => {
+          if(domain===null) {
+            app.log("Couldn't find domain",myName,4);
+            return res.redirect("/domains/");
+          }
+          req.appData.domain = domain;
+          req.appData.view = "domainsedit";
+          // return res.json(domain);
+          return next();
+        })
+        .catch(err => {
+          return res.send(myName + ": " + err.message);
+        });
+      };
+      app.controllers["users"].ifUserHasRole("Super Admin",req.session.user,prepareEditDomainForm);
+    },
+    editDomain : function(req,res,next) {
+      let myName = "editDomain()";
+      let domainObj = app.tools.pullParams(req.body,["id","name","description"]);
+      let requestedDomainId = req.params.id;
+      app.log(domainObj.id + " " + requestedDomainId);
+      if(domainObj.id!=requestedDomainId) return res.send("Didn't request the requested domain");
+      delete domainObj.id;
+      app.models[model]
+      .update(domainObj,{where:{id:req.params.id}})
+      .then((domains) => {
+        return res.redirect("/domains/" + requestedDomainId + "/");
+      });
+    },
+
     createDomain : function(req,res,next) {
       let myName = "createDomain()";
       let newDomain = app.tools.pullParams(req.body,["name"]);

@@ -5,19 +5,19 @@ block content
     .section-hdg.section-hdg-1 Role
     .layout-row.layout-width-1-1
       .user-listing.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-        form(action="/role/edit" method="post")
-          input(id="roleid" type="hidden" name="roleid" value=role.id)
-          .itemdetail.layout-col
-            label.label(for="partnum") Name:
-            .data #{role.name}
-          .itemdetail.layout-col
-            label.label(for="partnum") Description:
-            .data #{role.description}
-          .itemdetail.layout-col
-            label.label Actions:
-            .data.layout-row
-              input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")
-              a.btn.cancel(href="/roles/") Cancel
+        .itemdetail.layout-col
+          label.label(for="partnum") Name:
+          .data #{role.name}
+        .itemdetail.layout-col
+          label.label(for="partnum") Description:
+          .data #{role.description}
+        .itemdetail.layout-col
+          label.label Actions:
+          .data.layout-row
+            //- input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")
+            a.btn.cancel(href="/roles/" + role.id + "/actions/edit/") Edit
+          .data.layout-row
+            a.btn.cancel(href="/roles/") Cancel
       .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
         .infotext.section-hdg.section-hdg-3 Edit Role View
         .infotext You can edit a role with this view.

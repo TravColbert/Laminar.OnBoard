@@ -7,6 +7,6 @@ module.exports = function(app) {
   router.get('/:id/actions/edit',app.tools.checkAuthentication,app.controllers["users"].editUserForm);
   router.get('/:id/domains/',app.tools.checkAuthentication,app.controllers["users"].getDomainsByUserId);
   router.get('/:id/roles/',app.tools.checkAuthentication,app.controllers["users"].getRolesByUserId);
-  router.post('/:id/edit/',app.tools.checkAuthentication,app.controllers["users"].editUser);
+  router.post('/:id/',app.tools.checkAuthentication,app.controllers["users"].editUser);
   return router;
 };
