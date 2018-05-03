@@ -194,6 +194,7 @@ app.use(
  *  be created and submitted for approval.
  * /roles : a role-management system.
  * /authtest : can be used to simply test authentication
+ * /actions : a basic way of requesting forms used to work on : /create/user
  *
  * All of these routes can be excluded or replaced.
  */
