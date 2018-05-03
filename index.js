@@ -17,7 +17,6 @@ const options = {
 };
 
 const Sequelize = require('sequelize');
-// const Op = Sequelize.Op;
 
 var sequelize = new Sequelize(
   app.locals.dbConnection.sqlite.database,

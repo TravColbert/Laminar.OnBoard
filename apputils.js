@@ -177,7 +177,7 @@ module.exports = function(app) {
     let query = {};
     query.roles = {capabilities:cap};
     query.users = {id:user.id};
-    query.domains = (user.defaultDomainId) ? {id:1} : null;   // Admin user doesn't have a default domain ATM
+    query.domains = (user.defaultDomainId) ? {id:user.defaultDomainId} : null;   // Admin user doesn't have a default domain ATM
     app.models["roles"]
     .findAll({where:query.roles||null,include:[{model:app.models["users"],where:query.users||null},{model:app.models["domains"],where:query.domains||null}]})
     .then(roles => {
