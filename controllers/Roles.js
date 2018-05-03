@@ -59,6 +59,30 @@ module.exports = function(app,model) {
         return res.send(err.message);
       });
     },
+    createRoleForm : function(req,res,next) {
+      let myName = "createRoleForm()";
+      app.log("Requesting create role form",myName,6);
+      let prepareForm = function(err,authorized) {
+        if(err) return res.send(err.messages,myName,2);
+        if(!authorized) {
+          app.log("User is NOT authorized to do this!",myName,6);
+          return res.send("User not authorized for this view");
+        }
+        app.log("User is authorized to continue",myName,6);
+        req.appData.view = "rolecreate";
+        return next();
+      };
+      // Roles require a domain. We settle on whatever the current domain is (req.session.domain)
+      app.models["domains"]
+      .findById(req.session.domain)
+      .then(domain => {
+        if(domain===null || domain===0) return res.send("No current domain set. Can't continue");
+        app.tools.ifUserIsAuthorized(["create","all"],req.session.user,prepareForm);
+      })
+      .catch(err => {
+        return res.send("Error checking current domain: " + err.message,myName,1);
+      })
+    },
     editRoleForm : function(req,res,next) {
       let myName = "editRoleForm()";
       // Does user have rights to edit this user record?
