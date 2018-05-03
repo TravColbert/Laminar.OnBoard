@@ -69,12 +69,13 @@ module.exports = function(app,model) {
           return res.send("User not authorized for this view");
         }
         app.log("User is authorized to continue",myName,6);
+        req.appData.domain = req.session.user.currentDomain;
         req.appData.view = "rolecreate";
         return next();
       };
       // Roles require a domain. We settle on whatever the current domain is (req.session.domain)
       app.models["domains"]
-      .findById(req.session.domain)
+      .findById(req.session.user.currentDomain.id)
       .then(domain => {
         if(domain===null || domain===0) return res.send("No current domain set. Can't continue");
         app.tools.ifUserIsAuthorized(["create","all"],req.session.user,prepareForm);

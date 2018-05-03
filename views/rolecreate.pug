@@ -2,12 +2,13 @@ extends index.pug
 
 block content
   .layout-col
-    .section-hdg.section-hdg-1 Create Role
+    .section-hdg.section-hdg-1 Create Role in #{domain.name}
     .user-listing.layout-col
       form(action="/roles/" method="post")
-        .inputusername
+        input(id="domainid" type="hidden" name="domainid" value=domain.id)
+        .inputrolename
           input#name(type="text" name="name" placeholder="name of role" autofocus)
-        .inputemail
+        .inputeroledescription
           input#description(type="text" name="description" placeholder="description of role")
         .submit.itemdetail.layout-col
           .label Actions:
