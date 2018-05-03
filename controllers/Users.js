@@ -8,33 +8,44 @@ module.exports = function(app,model) {
   let defaultRoleAtRegistration = "applicant";
   obj = {
     authenticate : function(req,res,next) {
-      app.log("Authenticating user: " + req.body.email);
+      let myName = "authenticate()";
+      app.log("Authenticating user: " + req.body.email,myName,5);
       app.models[model].findOne({where:{email:req.body.email,verified:true,disabled:false}})
       .then((user) => {
         if(user===null) {
-          app.log("User is not found or not verified or not allowed");
-          app.log("Authenticate failed!");
+          app.log("User is not found or not verified or not allowed",myName,4);
+          app.log("Authenticate failed!",myName,4);
           // req.appData.view = "login";
           // return next();
           return res.redirect('/login/');
         } else {
-          app.log("info: Checking password: %s with %s",req.body.password,user.password);
+          // app.log("info: Checking password: %s with %s",req.body.password,user.password);
+          app.log("Checking passphrase...",myName,5);
           bcrypt.compare(req.body.password,user.password,(err,match) => {
             if(err) {
-              app.log("Some kind of error in bcrypt...");
+              app.log("Some kind of error decrypting pw",myName,2);
               return false;
             }
             if(match) {
-              app.log("Passwords match for user: " + user.email,myName,4);
-              req.session.user = {
-                id:user.id,
-                email:user.email,
-                defaultDomainId:user.defaultDomainId
-              };
-              req.appData.user = user;
+              app.log("Passwords match for user: " + user.email,myName,5);
+
+
+
+              let userObj = {
+                id : user.id,
+                email : user.email,
+                firstname : user.firstname,
+                lastname : user.lastname,
+                defaultDomainId : user.defaultDomainId
+              }
+              req.session.user = userObj;
+              app.log(req.session.user,myName);
               return next();
+
+
+
             }
-            app.log("Authenticate failed!");
+            app.log("Authenticate failed!",myName,4);
             req.appData.view = "login";
             return next();
             // return res.redirect('/login/');
@@ -211,8 +222,36 @@ module.exports = function(app,model) {
         return res.send(err.message);
       });
     },
+    createUserForm : function(req,res,next) {
+      let myName = "createUserForm()";
+      app.log("Requesting create user form",myName,6);
+      let prepareForm = function(err,authorized) {
+        if(err) return res.send(err.messages,myName,2);
+        if(!authorized) {
+          app.log("User is NOT authorized to do this!",myName,6);
+          return res.send("User not authorized for this view");
+        }
+        app.log("User is authorized to continue",myName,6);
+        // Get a list of valid roles in the current domain
+        app.models["domains"]
+        .findById(req.session.user.currentDomain.id)
+        .then(domain => {
+          if(domain===null) return res.send("Couldn't determine a valid domain");
+          domain.getRoles().then(roles => {
+            if(roles===null || roles.length===0) return res.send("No roles found");
+            req.appData.roles = roles;
+            req.appData.view = "usercreate";
+            return next();
+          })
+        })
+        // req.appData.view = "usercreate";
+        // return next();
+      };
+      app.tools.ifUserIsAuthorized(["create","all"],req.session.user,prepareForm);
+    },
     editUserForm : function(req,res,next) {
       let myName = "editUserForm()";
+      app.log("Requesting edit user form",myName,6);
       // Does user have rights to edit this user record?
       // Does user have:
       //  - 'User Admin' role?
@@ -255,6 +294,41 @@ module.exports = function(app,model) {
       .update(userObj,{where:{id:req.params.id},include:[{model:app.models["roles"]}]})
       .then((records) => {
         return res.redirect("/users/" + requestedUser + "/");
+      });
+    },
+    createUser : function(req,res,next) {
+      let myName = "createUser()";
+      app.log("Creating user",myName,5);
+      // Check that all required fields are present...
+      let userRegistrationObj = app.tools.pullParams(req.body,["email","firstname","lastname","password","passwordverify"]);
+      if(!userRegistrationObj) return res.send("Required field missing... try again");
+      // Check that the passwords are verified...
+      if(userRegistrationObj.password!=userRegistrationObj.passwordverify) return res.send("Passwords do not match... try again");
+      // That the email address has not been used already...
+      app.models[model].count({where:{email:userRegistrationObj.email}})
+      .then((count) => {
+        if(count>0) return res.send("An account with this email already exists... try again");
+        app.log("Email address is free to use. Continuing with registration...",myName,5);
+        delete userRegistrationObj.passwordverify;
+        app.models[model]
+        .create(userRegistrationObj)
+        .then((user) => {
+          // req.appData.view = "usercreated";
+          return res.redirect('/users/' + user.id + "/");
+        });
+      });
+    },
+    getUserEnrollments : function(userId,cb) {
+      let myName = "getUserEnrollments()";
+      // users -> roles -> domains
+      app.models[model]
+      .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      .then(user => {
+        if(user===null) return cb();
+        cb(null,user);
+      })
+      .catch(err => {
+        cb(err);
       });
     },
     getDomainsByUserId : function(req,res,next) {
@@ -333,122 +407,6 @@ module.exports = function(app,model) {
         delete req.params.id;
         return obj.get(req,res,next);
       });
-    },
-    post : function(req,res,next) {
-      app.log("STUFF TO BE EDITED?:");
-      app.log(JSON.stringify(req.body));
-      app.log(req.appData.viewFunction);
-      app.log("Model ought to be: " + req.appData.view);
-      if(req.appData.viewFunction=="edit") {
-        app.models[req.appData.view].update(req.body,req.searchOptions).then((results) => {
-          req.params = {id:req.searchOptions.where.id}
-          let myModel = req.appData.view;
-          return next();
-        });
-      } else if(req.appData.viewFunction=="add") {
-        app.models[req.appData.view].upsert(req.body).then((results) => {
-          let myModel = req.appData.view;
-          return next();
-        });
-      } else if(req.appData.viewFunction=="delete") {
-        app.models[req.appData.view].destroy(req.searchOptions).then((results) => {
-          delete req.params.id;
-          return next();
-        })
-      }
-    },
-    add : function(req,res,next) {
-      app.log("add!!!! " + myName);
-      app.log("My Model: " + myModel,myName,6);
-      if(!req.appData.result) req.appData.result = {};
-      req.appData.viewFunction = "add";
-      req.appData.view = myModel;
-      req.appData.method = req.method;
-      req.appData.result.schema = app.modelDefinitions[myModel].schema;
-      req.appData.result.path = req.path;
-      req.searchOptions = {};
-      if(req.method.toLowerCase()=="get") {
-        // Build the elements that will build a add form
-        // Go to the 'add item' view...
-        req.appData.result.rows = [""];
-        return next();
-      } else if(req.method.toLowerCase()=="post") {
-        // There should be some data in the req body to create a new item...
-        // Do something to actually create the new item...
-        return obj.post(req,res,next);
-      }
-      return next();
-    },
-    get : function(req,res,next) {
-      app.log("get!!!! " + myName);
-      app.log("My Model: " + myModel,myName,6);
-      if(!req.appData.result) req.appData.result = {};
-      req.appData.viewFunction = "get";
-      req.appData.view = myModel;
-      req.appData.method = req.method;
-      req.appData.result.schema = app.modelDefinitions[myModel].schema;
-      req.appData.result.path = req.path;
-      req.searchOptions = {};
-      // Check if there's a single item requested...
-      if(req.params.id) req.searchOptions = {where:{id:req.params.id}};
-      return obj.fetch(req,res,next);
-    },
-    edit : function(req,res,next) {
-      app.log("edit!!!! " + myName);
-      app.log("My Model: " + myModel,myName,6);
-      if(!req.appData.result) req.appData.result = {};
-      req.appData.viewFunction = "edit";
-      req.appData.view = myModel;
-      req.appData.method = req.method;
-      req.appData.result.schema = app.modelDefinitions[myModel].schema;
-      req.appData.result.path = req.path;
-      req.searchOptions = {};
-      if(req.params.id) {
-        app.log("ID: " + req.params.id);
-        req.searchOptions = {where:{id:req.params.id}};
-        // If our method is POST then we expect data in the body to puch to the model
-        app.log("METHOD: " + req.appData.method.toLowerCase());
-        if(req.appData.method.toLowerCase()=="post") {
-          return obj.post(req,res,next);
-        } else {
-          return obj.fetch(req,res,next);
-        }
-      }
-      app.log("GOT NO ID TO SEARCH FOR. PUNTING");
-      return next();
-    },
-    delete : function(req,res,next) {
-      app.log("delete!!!! " + myName);
-      app.log("My Model: " + myModel,myName,6);
-      if(!req.appData.result) req.appData.result = {};
-      req.appData.viewFunction = "delete";
-      req.appData.view = myModel;
-      req.appData.method = req.method;
-      req.appData.result.schema = app.modelDefinitions[myModel].schema;
-      req.appData.result.path = req.path;
-      req.searchOptions = {};
-      if(!req.params.id) {
-        app.log("GOT NO ID TO SEARCH FOR. PUNTING");
-        return next();
-      }
-      if(req.appData.method.toLowerCase()=="get") {
-        app.log("ID: " + req.params.id);
-        req.searchOptions = {where:{id:req.params.id}};
-        // If our method is POST then we expect data in the body to puch to the model
-        app.log("METHOD: " + req.appData.method.toLowerCase());
-        return obj.fetch(req,res,next);
-      } else if (req.appData.method.toLowerCase()=="post") {
-        app.log("ID: " + req.params.id);
-        if(req.body.id!=req.params.id) {
-          delete req.params.id;
-          return next();
-        }
-        req.searchOptions = {where:{id:req.params.id}};
-        // If our method is POST then we expect data in the body to puch to the model
-        app.log("METHOD: " + req.appData.method.toLowerCase());
-        app.log("VIEW: " + req.appData.view);
-        return obj.post(req,res,next);
-      }
     }
   };
   app.log("Model is: " + model,obj.myName,6);
