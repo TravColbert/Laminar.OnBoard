@@ -157,7 +157,9 @@ module.exports = function(app) {
     obj.logThis("session user id is set...",myName,5);
     obj.logThis("found all session info: " + req.session.user.email,myName,5);
     obj.logThis("final confirmation that " + req.session.user.email + " user id (" + req.session.user.id + ") exists",myName,5);
-    app.models["users"].count({where:{email:req.session.user.email,id:req.session.user.id}}).then((count) => {
+    app.models["users"]
+    .count({where:{email:req.session.user.email,id:req.session.user.id}})
+    .then((count) => {
       obj.logThis("Number of matching user records: " + count,myName,5);
       if(count==1) return next();
       obj.logThis("Incorrect number of user records returned - this is a problem!",myName,3);
@@ -168,7 +170,7 @@ module.exports = function(app) {
 
   obj.ifUserIsAuthorized = function(capability,user,cb) {
     let myName = "ifUserIsAuthorized()";
-    app.log(JSON.stringify(user));
+    // app.log(JSON.stringify(user));
     app.log("Checking if user " + user.id + " is authorized to: '" + capability + "' on domain: " + user.defaultDomainId,myName);
 
     let cap = {};
@@ -181,8 +183,9 @@ module.exports = function(app) {
     app.models["roles"]
     .findAll({where:query.roles||null,include:[{model:app.models["users"],where:query.users||null},{model:app.models["domains"],where:query.domains||null}]})
     .then(roles => {
-      if(roles===null) return cb(null,false);
-      app.log(JSON.stringify(roles));
+      if(roles===null || roles.length===0) return cb(null,false);
+      app.log(roles.length + " roles found permitting '" + capability + "'",myName,6);
+      // app.log(JSON.stringify(roles));
       return cb(null,true);
     })
     .catch(err => {
@@ -203,12 +206,50 @@ module.exports = function(app) {
   };
   obj.setSessionData = function(req,res,next) {
     let myName = "setSessionData()";
-    if(!req.appData.views) {
-      req.appData.views = 0;
+    obj.logThis("Setting base session data... ",myName,6);
+    if(!req.session.views) req.session.views = 0;
+    req.session.views++;
+    obj.logThis("Views: " + req.session.views,myName,6);
+
+    if(req.session.user) {
+      obj.logThis("==== SETTING USER-SPECIFIC ENROLLMENTS IN SESSION DATA: ====")
+      // req.appData.user = req.session.user;
+      /* Prepare a call-back function that will continue the login process by
+       * collecting all the domains that the authenticated user has access to.
+       */
+      let cb = function(err,user) {  // domain list is in user
+        if(err) return res.send(err.message);
+        if(user===null) return res.send("No user found");
+        let domainList = [];
+        for(let c=0;c<user.roles.length;c++) {
+          for(let i=0;i<user.roles[c].domains.length;i++) {
+            domainList.push(user.roles[c].domains[i]);
+            if(user.roles[c].domains[i].id==req.session.user.defaultDomainId) req.session.user.currentDomain = user.roles[c].domains[i];
+          }
+        }
+        req.session.user.domains = domainList;
+        if(!req.session.user.currentDomain) req.session.user.currentDomain = domainList[0];
+        obj.logThis("Session's current domain is ==> " + req.session.user.currentDomain.name,myName,6);
+        return next();
+      }
+      return app.controllers["users"].getUserEnrollments(req.session.user.id,cb);
     }
-    req.appData.views++;
+
+    // obj.logThis("User: " + req.appData.user,myName,6);
     return next();
   };
+
+  // obj.setCurrentDomain = function(domainId,req) {
+  //   let myName = "setCurrentDomain()";
+  //   obj.logThis("Setting current domain to: " + domainId,myName,6);
+  //   if(!domainId) {
+  //     obj.logThis("No domain ID given. Fetching 'Default Domain'",myName,4);
+  //     domainId = app.controllers["domains"].fetchDomainIdByName("Default Domain");
+  //     // return false;
+  //   }
+  //   req.session.domain = domainId;
+  //   return true;
+  // };
   obj.printSessionData = function(req,res,next) {
     var myName = "printSessionData()";
     obj.logThis("session: " + JSON.stringify(req.session),myName,5);
@@ -229,9 +270,13 @@ module.exports = function(app) {
         for(let c=0;c<user.roles.length;c++) {
           for(let i=0;i<user.roles[c].domains.length;i++) {
             domainList.push(user.roles[c].domains[i]);
+            if(user.roles[c].domains[i].id==req.session.user.defaultDomainId) req.appData.currentDomain = user.roles[c].domains[i];
           }
         }
         req.appData.domains = domainList;
+        if(!req.appData.currentDomain) req.appData.currentDomain = domainList[0];
+        req.session.user.currentDomainId = req.appData.currentDomain.id;
+        obj.logThis("Session's current domain is ==> " + req.appData.currentDomain.name,myName,6);
         return next();
       }
       return app.controllers["users"].fetchDomainsByUserId(req.session.user.id,cb);
@@ -266,21 +311,21 @@ module.exports = function(app) {
     obj.logThis("got a request of type: " + req.protocol + " :" + req.method + " TO: " + req.originalUrl + " URL: " + req.url,myName,4);
     // obj.logThis();
     if(req.session) {
-      obj.logThis("session: " + JSON.stringify(req.session),myName,5);
+      // obj.logThis("session: " + JSON.stringify(req.session),myName,5);
       req.session.originalReq = (req.originalUrl!="/login") ? req.originalUrl : req.session.originalReq;
-      obj.logThis("session: " + req.session.originalReq);
+      // obj.logThis("session: " + req.session.originalReq);
     }
     return next();
   };
   obj.redirectToOriginalReq = function(req,res) {
     let myName = "redirectToOriginalReq()";
-    app.log("Original request: " + req.session.originalReq,myName,5);
+    obj.logThis("Original request: " + req.session.originalReq,myName,5);
     let redirectTo = req.session.originalReq || '/';
     if(redirectTo=="/login" || redirectTo=="/login/") {
-      app.log("original request was " + redirectTo + " but redirecting to /");
+      obj.logThis("original request was " + redirectTo + " but redirecting to /",myName,6);
       redirectTo = "/";
     }
-    app.log("queueing to original request: " + redirectTo,myName,5);
+    obj.logThis("queueing to original request: " + redirectTo,myName,5);
     return res.redirect(redirectTo);
   };
   obj.secureTest = function(req,res,next) {
@@ -290,6 +335,7 @@ module.exports = function(app) {
     return next();
   };
   obj.pullParams = function(obj,arr) {
+    let myName = "pullParams()";
     let returnObj = {};
     arr.forEach(function(v,i,a) {
       if(obj.hasOwnProperty(v)) {
@@ -298,7 +344,6 @@ module.exports = function(app) {
         return false;
       }
     });
-    // console.log(returnObj);
     return returnObj;
   };
   obj.errorHandler = function(err,req,res,next) {
