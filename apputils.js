@@ -212,7 +212,7 @@ module.exports = function(app) {
     obj.logThis("Views: " + req.session.views,myName,6);
 
     if(req.session.user) {
-      obj.logThis("==== SETTING USER-SPECIFIC ENROLLMENTS IN SESSION DATA: ====")
+      obj.logThis("==== SETTING USER-SPECIFIC ENROLLMENTS IN SESSION DATA: ====",myName,6);
       // req.appData.user = req.session.user;
       /* Prepare a call-back function that will continue the login process by
        * collecting all the domains that the authenticated user has access to.
