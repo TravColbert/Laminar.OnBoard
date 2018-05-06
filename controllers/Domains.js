@@ -91,11 +91,13 @@ module.exports = function(app,model) {
       .find({where:{name:domainName},include:[{model:app.models["roles"],where:{name:roleName}}]})
       .then(domain => {
         if(domain===null) cb(null,false);
+        // app.log("Domain info: " + JSON.stringify(domain),myName,6,">>>>");
         cb(null,domain);
       })
       .catch(err => {
+        app.log("Error: " + err.message,myName,4);
         cb(err);
-      })
+      });
     },
     createDomainForm : function(req,res,next) {
       let myName = "createDomainForm()";
