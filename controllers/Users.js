@@ -114,7 +114,7 @@ module.exports = function(app,model) {
         app.models[model]
         .create(userRegistrationObj)
         .then((record) => {
-          req.appData.view = "registrationComplete";
+          req.appData.view = "registrationcomplete";
           return next();
         });
       });
@@ -122,29 +122,28 @@ module.exports = function(app,model) {
     verifyUser : function(req,res,next) {
       let myName = "verufyUser()";
       app.models[model]
-      .find({where:{'appid':req.params.id,verified:false}})
+      .findOne({where:{'appid':req.params.id,verified:false}})
       .then(user => {
-        let cb = function(err,domain) {
-          if(err) return res.send(err.message);
-          if(!domain) res.send("No domain found");
-
-          user.addRoles(domain.roles[0].id)
-          .then(function() {
-            // return res.send("Congrats! User '" + user.fullname + "' has been enrolled in: '" + domain.roles[0].name + "' (" + domain.roles[0].id + ")");
-
-            user.update({defaultDomainId:domain.id})
-            .then(function() {
-              req.appData.user = user;
-              req.appData.view = "verificationcomplete";
-              return next();  
-            })
-          })
-          .catch(err => {
-            return res.send("Something went wrong when we tried to add the default role to the user!");
-          });
-        };
         user.update({verified:true,disabled:false})
         .then(user => {
+          let cb = function(err,domain) {
+            if(err) return res.send(err.message);
+            if(!domain) res.send("No domain found with default role");
+            // app.log("Default Role: " + JSON.stringify(domain.roles[0]),myName,6,">>>>>");
+            user.addRoles(domain.roles[0].id)
+            .then(() => {
+              app.log("User: " + JSON.stringify(user),myName,6,"!!!!!!");
+              user.update({defaultDomainId:domain.id})
+              .then(function() {
+                req.appData.user = user;
+                req.appData.view = "verificationcomplete";
+                return next();
+              })
+            })
+            .catch(err => {
+              return res.send("Something went wrong when we tried to add the default role to the user: " + err.message);
+            });
+          };
           app.controllers["domains"].fetchRoleByName("Default Domain","Default Role",cb);
         })
         .catch(err => {
@@ -152,7 +151,8 @@ module.exports = function(app,model) {
         });
       })
       .catch(err => {
-        return res.send(err.message);
+        // return res.send("Could not find a user that needs to be verified. " + err.message);
+        return res.redirect("/");
       });
     },
     enrollUserInRoleById : function(userId,roleId) {
