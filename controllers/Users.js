@@ -54,14 +54,14 @@ module.exports = function(app,model) {
       });
     },
     cryptPassword : function(password) {
-      app.log("cryptPassword: " + password);
+      let myName = "cryptPassword()";
       return new Promise(function(resolve, reject) {
         bcrypt.genSalt(10, function(err, salt) {
           if (err) return reject(err);
-          app.log("Encrypting " + password + " with " + salt + "...");
+          // app.log("Encrypting " + password + " with " + salt + "...",myName,6);
           bcrypt.hash(password, salt, (err, hash) => {
             if (err) return reject(err);
-            app.log("Got this: " + hash);
+            // app.log("Got this: " + hash,myName,6);
             return resolve(hash);
           });
         });
@@ -119,7 +119,7 @@ module.exports = function(app,model) {
       });
     },
     verifyUser : function(req,res,next) {
-      let myName = "verufyUser()";
+      let myName = "verifyUser()";
       app.models[model]
       .findOne({where:{'appid':req.params.id,verified:false}})
       .then(user => {
@@ -131,7 +131,7 @@ module.exports = function(app,model) {
             // app.log("Default Role: " + JSON.stringify(domain.roles[0]),myName,6,">>>>>");
             user.addRoles(domain.roles[0].id)
             .then(() => {
-              app.log("User: " + JSON.stringify(user),myName,6,"!!!!!!");
+              // app.log("User: " + JSON.stringify(user),myName,6,"!!!!!!");
               user.update({defaultDomainId:domain.id})
               .then(function() {
                 req.appData.user = user;

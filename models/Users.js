@@ -64,12 +64,14 @@ module.exports = function(Sequelize,app) {
       },
       hooks:{
         beforeCreate:(user) => {
+          let myName = "user_model:beforeCreate()";
           app.log("Generating app-wide ID for user: " + user.id);
           user.appid = app.tools.generateString();
-          console.log("Hashing user password: " + user.password);
+          // app.log("Hashing user password: " + user.password,myName,6);
           return app.controllers.users.cryptPassword(user.password)
           .then(success => {
-            console.log("Hash: " + success);
+            // app.log("Hash: " + success,myName,6);
+            app.log("Hash created",myName,6);
             user.password = success;
           })
           .catch(err => {
