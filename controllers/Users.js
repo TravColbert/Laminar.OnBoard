@@ -19,7 +19,6 @@ module.exports = function(app,model) {
           // return next();
           return res.redirect('/login/');
         } else {
-          // app.log("info: Checking password: %s with %s",req.body.password,user.password);
           app.log("Checking passphrase...",myName,5);
           bcrypt.compare(req.body.password,user.password,(err,match) => {
             if(err) {
