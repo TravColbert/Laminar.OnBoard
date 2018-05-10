@@ -99,21 +99,6 @@ module.exports = function(app,model) {
         cb(err);
       });
     },
-    createDomainForm : function(req,res,next) {
-      let myName = "createDomainForm()";
-      app.log("Requesting create domain form",myName,6);
-      let prepareForm = function(err,authorized) {
-        if(err) return res.send(err.messages,myName,2);
-        if(!authorized) {
-          app.log("User is NOT authorized to do this!",myName,6);
-          return res.send("User not authorized for this view");
-        }
-        app.log("User is authorized to continue",myName,6);
-        req.appData.view = "domaincreate";
-        return next();
-      };
-      app.tools.ifUserIsAuthorized(["create","all"],req.session.user,prepareForm);
-    },
     editDomainForm : function(req,res,next) {
       let myName = "editDomainForm()";
       // Does user have rights to edit this user record?

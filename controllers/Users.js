@@ -221,33 +221,6 @@ module.exports = function(app,model) {
         return res.send(err.message);
       });
     },
-    createUserForm : function(req,res,next) {
-      let myName = "createUserForm()";
-      app.log("Requesting create user form",myName,6);
-      let prepareForm = function(err,authorized) {
-        if(err) return res.send(err.messages,myName,2);
-        if(!authorized) {
-          app.log("User is NOT authorized to do this!",myName,6);
-          return res.send("User not authorized for this view");
-        }
-        app.log("User is authorized to continue",myName,6);
-        // Get a list of valid roles in the current domain
-        app.models["domains"]
-        .findById(req.session.user.currentDomain.id)
-        .then(domain => {
-          if(domain===null) return res.send("Couldn't determine a valid domain");
-          domain.getRoles().then(roles => {
-            if(roles===null || roles.length===0) return res.send("No roles found");
-            req.appData.roles = roles;
-            req.appData.view = "usercreate";
-            return next();
-          })
-        })
-        // req.appData.view = "usercreate";
-        // return next();
-      };
-      app.tools.ifUserIsAuthorized(["create","all"],req.session.user,prepareForm);
-    },
     editUserForm : function(req,res,next) {
       let myName = "editUserForm()";
       app.log("Requesting edit user form",myName,6);
