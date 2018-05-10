@@ -299,12 +299,44 @@ module.exports = function(app) {
     // req.logout();
     return res.redirect('/');
   };
+  /**
+   * This function is meant to be used in route lines
+   * It returns a function that returns the named view.
+   * @param {*} view 
+   */
   obj.showPage = function(view) {
     return function(req,res,next) {
       let myName = "showPage" + view;
       req.appData.view = view;
       return next();
     };
+  };
+  obj.showForm = function(req,res,next) {
+    let myName = "showForm()";
+    let model = req.params.model || null;
+    let action = req.params.action || 'create';
+    app.log("Requesting form: " + model + action);
+    let prepareForm = function(err,authorized) {
+      if(err) return res.send(err.messages,myName,2);
+      if(!authorized) {
+        app.log("User is NOT authorized to do this!",myName,6);
+        return res.send("User not authorized for this view");
+      }
+      app.log("User is authorized to continue",myName,6);
+      // Get a list of valid roles in the current domain
+      app.models["domains"]
+      .findById(req.session.user.currentDomain.id)
+      .then(domain => {
+        if(domain===null) return res.send("Couldn't determine a valid domain");
+        domain.getRoles().then(roles => {
+          if(roles===null || roles.length===0) return res.send("No roles found");
+          req.appData.roles = roles;
+          req.appData.view = model + action;
+          return next();
+        })
+      });
+    };
+    app.tools.ifUserIsAuthorized(["create","all"],req.session.user,prepareForm);
   };
   obj.setOriginalUrl = function(req,res,next) {
     let myName = "setOriginalUrl()";
