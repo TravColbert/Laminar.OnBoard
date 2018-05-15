@@ -66,7 +66,7 @@ module.exports = function(Sequelize,app) {
         beforeCreate:(user) => {
           let myName = "user_model:beforeCreate()";
           app.log("Generating app-wide ID for user: " + user.id);
-          user.appid = app.tools.generateString();
+          user.appid = app.tools.generateString() + user.id;
           // app.log("Hashing user password: " + user.password,myName,6);
           return app.controllers.users.cryptPassword(user.password)
           .then(success => {

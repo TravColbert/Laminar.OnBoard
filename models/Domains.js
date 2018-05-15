@@ -17,10 +17,18 @@ module.exports = function(Sequelize,app) {
         lm_label:"Description",
         lm_placeholder:"description of the domain",
         lm_classlist:["lm_textarea","layout-width-1-2"]
+      },
+      "appid":{
+        type: Sequelize.STRING
       }
     },
     options:{
       hooks:{
+        beforeCreate:(domain) => {
+          let myName = "domain_model:beforeCreate()";
+          app.log("Generating app-wide ID for domain: " + domain.id);
+          domain.appid = app.tools.generateString() + domain.id;
+        },
         afterCreate:(domain) => {
           app.log("===> Creating default role(s) for domain '" + domain.name + "'");
           let domainAdminRole = {
