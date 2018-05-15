@@ -24,12 +24,14 @@ module.exports = function(Sequelize,app) {
     },
     options:{
       hooks:{
-        beforeCreate:(domain) => {
-          let myName = "domain_model:beforeCreate()";
+        // beforeCreate:(domain) => {
+        //   let myName = "domain_model:beforeCreate()";
+        //   app.log("Generating app-wide ID for domain: " + domain.id);
+        //   domain.appid = app.tools.generateString() + domain.id;
+        // },
+        afterCreate:(domain) => {
           app.log("Generating app-wide ID for domain: " + domain.id);
           domain.appid = app.tools.generateString() + domain.id;
-        },
-        afterCreate:(domain) => {
           app.log("===> Creating default role(s) for domain '" + domain.name + "'");
           let domainAdminRole = {
             name:"Admin Role",
