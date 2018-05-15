@@ -23,11 +23,16 @@ module.exports = function(Sequelize,app) {
       }
     },
     options:{
+      getterMethods: {
+        uniqueAppId: function() {
+          return this.appid + this.id;
+        }
+      },
       hooks:{
         beforeCreate:(domain) => {
           let myName = "domain_model:beforeCreate()";
-          app.log("Generating app-wide ID for domain: " + domain.id);
-          domain.appid = app.tools.generateString() + domain.id;
+          app.log("Generating app-wide ID for domain");
+          domain.appid = app.tools.generateString();
         },
         afterCreate:(domain) => {
           app.log("===> Creating default role(s) for domain '" + domain.name + "'");
