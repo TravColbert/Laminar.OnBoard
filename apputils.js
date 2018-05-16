@@ -204,6 +204,26 @@ module.exports = function(app) {
     }
     return next();
   };
+  obj.setGlobalSessionEnvironment = function(req) {
+    let myName = "setGlobalSessionEnvironment()";
+    obj.logThis("Setting session environment",myName,6);
+    // Is there a user?
+    if(req.session.user) {
+      // Get user's enrollments
+      var sessionEnv1 = app.controllers["users"].getUserRoles(req.session.user.id);
+      // Get domains
+      var sessionEnv2 = sessionEnv1.then();
+      // ... current domain
+      var sessionEnv3 = sessionEnv2.then();
+      // Get user's items
+      var completedChain = sessionEnv3.then(null,(err) => {
+        obj.logThis(err.message,myName,6);
+        throw err;
+      });
+      return completedChain;
+    }
+
+  },
   obj.setSessionData = function(req,res,next) {
     let myName = "setSessionData()";
     obj.logThis("Setting base session data... ",myName,6);

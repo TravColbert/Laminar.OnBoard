@@ -14,26 +14,13 @@ module.exports = function(Sequelize,app) {
         type: Sequelize.TEXT,
         allowNull: true
       },
+      "public":{
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       "appid":{
         type: Sequelize.STRING
       }
-      // ,
-      // "domain":{
-      //   type: Sequelize.INTEGER,
-      //   references: {
-      //     model: app.models["domains"],
-      //     key: "id",
-      //     deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
-      //   }
-      // },
-      // "user":{
-      //   type: Sequelize.INTEGER,
-      //   references: {
-      //     model: app.models["users"],
-      //     key: "id",
-      //     deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
-      //   }
-      // }
     },
     options:{
       hooks:{

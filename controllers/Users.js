@@ -303,6 +303,17 @@ module.exports = function(app,model) {
         cb(err);
       });
     },
+    getUserRoles : function(userId) {
+      let myName = "getUserRoles()";
+      return new Promise(function() {
+        app.models[model]
+        .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+        .then((user) => {
+          if(user===null) return new Error("no users found");
+          return user;
+        })
+      });
+    },
     getDomainsByUserId : function(req,res,next) {
       let myName = "getDomainsByUserId()";
       // let userId = req.params.id;
