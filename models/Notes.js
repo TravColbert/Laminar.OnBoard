@@ -16,23 +16,24 @@ module.exports = function(Sequelize,app) {
       },
       "appid":{
         type: Sequelize.STRING
-      },
-      "domain":{
-        type: Sequelize.INTEGER,
-        references: {
-          model: app.models["domains"],
-          key: id,
-          deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
-        }
-      },
-      "user":{
-        type: Sequelize.INTEGER,
-        references: {
-          model: app.model["users"],
-          key: id,
-          deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
-        }
       }
+      // ,
+      // "domain":{
+      //   type: Sequelize.INTEGER,
+      //   references: {
+      //     model: app.models["domains"],
+      //     key: "id",
+      //     deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
+      //   }
+      // },
+      // "user":{
+      //   type: Sequelize.INTEGER,
+      //   references: {
+      //     model: app.models["users"],
+      //     key: "id",
+      //     deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
+      //   }
+      // }
     },
     options:{
       hooks:{
