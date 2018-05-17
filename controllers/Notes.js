@@ -5,29 +5,35 @@ module.exports = function(app,model) {
   obj = {
     getNotes : function(req,res,next) {
       let myName = "getNotes()";
-      app.models[model]
-      .findAll()
+      app.controllers[model]
+      .getNotesByUserAndDomain(req.session.user.id,req.session.user.currentDomain.id)
       .then((notes) => {
-        if(notes===null) return res.redirect('/');
-        req.appData.notes = notes;
+        req.appData.notes = notes || [];
         req.appData.view = "notes";
-        return next();
-      })
-      .catch(err => {
-        return res.send(err.message);
-      })
-    },
-    getNotesByCurrentUserAndDomain : function(req,res,next) {
-      let myName = "getNotesByUserId()";
-      app.models[model]
-      .find({where:{userId:req.session.user.id,domainId:req.session.user.currentDomain.id}})
-      .then((notes) => {
-        req.appData.notes = notes;
-        req.appData.view = "mynotes";
         return next();
       })
       .catch((err) => {
         return res.send(err.message);
+      });
+    },
+    getNotesByUserAndDomain : function(userId,domainId) {
+      let myName = "getNotesByUserId()";
+      return new Promise((resolve,reject) => {
+        app.log("Getting notes...");
+        app.models[model]
+        .find({where:{userId:userId,domainId:domainId}})
+        .then((notes) => {
+          if(notes!==null) {
+            app.log("I think we got some notes",myName);
+            return resolve(notes);
+          } else {
+            app.log("Empty note-list",myName);
+            return resolve(null);
+          }
+        })
+        .catch((err) => {
+          return reject(err);
+        });
       });
     },
     getNote : function(req,res,next) {
@@ -100,13 +106,14 @@ module.exports = function(app,model) {
     },
     createNote : function(req,res,next) {
       let myName = "createNote()";
-      let newNote = app.tools.pullParams(req.body,["name","description","body","public"]);
+      let newNote = app.tools.pullParams(req.body,["name","description","body","public","userId","domainId"]);
       if(!newNote) return res.send("Required field missing... try again");
       newNote.userId = req.session.user.id;
+      app.log("New note: " + JSON.stringify(newNote),myName,6,"::::>");
       app.models[model]
       .create(newNote)
       .then(note => {
-        return res.redirect('/notes/' + note.id);
+        return res.redirect('/notes/' + note.id + "/");
       })
       .catch(err => {
         return res.send(err.message);

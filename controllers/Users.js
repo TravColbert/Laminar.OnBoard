@@ -305,12 +305,15 @@ module.exports = function(app,model) {
     },
     getUserRoles : function(userId) {
       let myName = "getUserRoles()";
-      return new Promise(function() {
+      return new Promise((resolve,reject) => {
         app.models[model]
         .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
         .then((user) => {
-          if(user===null) return new Error("no users found");
-          return user;
+          if(user===null) return reject(new Error("no users found"));
+          return resolve(user);
+        })
+        .catch((err) => {
+          return reject(err);
         })
       });
     },

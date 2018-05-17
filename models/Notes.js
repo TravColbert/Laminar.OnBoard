@@ -28,7 +28,7 @@ module.exports = function(Sequelize,app) {
           let myName = "note_model:afterCreate()";
           app.log("creating unique app ID for note: " + note.id,myName,6);
           note.appId = app.tools.generateString() + note.id;
-          note.update({"appid":noteappId})
+          note.update({"appid":note.appId})
           .then((note) => {
             app.log("unique app ID generated for note: " + note.id,myName,6);
           })

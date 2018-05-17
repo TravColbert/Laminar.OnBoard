@@ -5,8 +5,8 @@ block content
     .section-hdg.section-hdg-1 Create Note
     .user-listing.layout-col
       form(action="/notes/" method="post")
-        input(id="user" type="hidden" name="user" value=user.id)
-        input(id="domain" type="hidden" name="domain" value=domain.id)
+        input(id="user" type="hidden" name="userId" value=user.id)
+        input(id="domain" type="hidden" name="domainId" value=user.currentDomain.id)
         .inputnotename
           input#name(type="text" name="name" placeholder="Name or Title" autofocus)
         .inputnotedescription

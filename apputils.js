@@ -105,6 +105,7 @@ module.exports = function(app) {
     let myName = "render()";
     // let templateFile = req.appData.view || "index";
     let templateFile = req.appData.view || app.locals.homeView;
+    app.log(req.appData);
     app.log("Rendering template: " + templateFile,myName,5);
     return res.render(templateFile,req.appData);
   },
@@ -204,25 +205,38 @@ module.exports = function(app) {
     }
     return next();
   };
-  obj.setGlobalSessionEnvironment = function(req) {
+  obj.setGlobalSessionEnvironment = function(req,res,next) {
     let myName = "setGlobalSessionEnvironment()";
     obj.logThis("Setting session environment",myName,6);
     // Is there a user?
     if(req.session.user) {
       // Get user's enrollments
-      var sessionEnv1 = app.controllers["users"].getUserRoles(req.session.user.id);
-      // Get domains
-      var sessionEnv2 = sessionEnv1.then();
-      // ... current domain
-      var sessionEnv3 = sessionEnv2.then();
-      // Get user's items
-      var completedChain = sessionEnv3.then(null,(err) => {
-        obj.logThis(err.message,myName,6);
-        throw err;
-      });
-      return completedChain;
+      app.controllers["users"].getUserRoles(req.session.user.id)
+      .then((user) => {
+        if(user===null) return res.send("Couldn't find this user (even though session data is set");
+        let domainList = [];
+        for(let c=0;c<user.roles.length;c++) {
+          for(let i=0;i<user.roles[c].domains.length;i++) {
+            domainList.push(user.roles[c].domains[i]);
+            if(user.roles[c].domains[i].id==req.session.user.defaultDomainId) req.session.user.currentDomain = user.roles[c].domains[i];
+          }
+        }
+        req.session.user.domains = domainList;
+        if(!req.session.user.currentDomain) req.session.user.currentDomain = domainList[0];
+        obj.logThis("Session's current domain is ==> " + req.session.user.currentDomain.name,myName,6);
+        req.appData.user = req.session.user;
+        return next();
+      })
+      .catch((err) => {
+        // some error
+        obj.logThis("There was an error!: " + err.message);
+        return res.send("This is the reason why we can't continue: " + err.message);
+      })
+    } else {
+      // probably user is not logged-in
+      obj.logThis("I guess there's no user right now... moving on...");
+      return next();
     }
-
   },
   obj.setSessionData = function(req,res,next) {
     let myName = "setSessionData()";
@@ -278,31 +292,47 @@ module.exports = function(app) {
   obj.homePage = function(req,res,next) {
     let myName = "homePage()";
     obj.logThis("queueing home page",myName,5);
-    if(req.session.user) {
-      req.appData.user = req.session.user;
-      /* Prepare a call-back function that will continue the login process by
-       * collecting all the domains that the authenticated user has access to.
-       */
-      let cb = function(err,user) {  // domain list is in user
-        if(err) return res.send(err.message);
-        if(user===null) return res.send("No user found");
-        let domainList = [];
-        for(let c=0;c<user.roles.length;c++) {
-          for(let i=0;i<user.roles[c].domains.length;i++) {
-            domainList.push(user.roles[c].domains[i]);
-            if(user.roles[c].domains[i].id==req.session.user.defaultDomainId) req.appData.currentDomain = user.roles[c].domains[i];
-          }
-        }
-        req.appData.domains = domainList;
-        if(!req.appData.currentDomain) req.appData.currentDomain = domainList[0];
-        req.session.user.currentDomainId = req.appData.currentDomain.id;
-        obj.logThis("Session's current domain is ==> " + req.appData.currentDomain.name,myName,6);
-        return next();
-      }
-      return app.controllers["users"].fetchDomainsByUserId(req.session.user.id,cb);
-    }
     req.appData.view = "home";
-    return next();
+    if(req.session.user) {
+      // req.appData.user = req.session.user;
+      // /* Prepare a call-back function that will continue the login process by
+      //  * collecting all the domains that the authenticated user has access to.
+      //  */
+      // let cb = function(err,user) {  // domain list is in user
+      //   if(err) return res.send(err.message);
+      //   if(user===null) return res.send("No user found");
+      //   let domainList = [];
+      //   for(let c=0;c<user.roles.length;c++) {
+      //     for(let i=0;i<user.roles[c].domains.length;i++) {
+      //       domainList.push(user.roles[c].domains[i]);
+      //       if(user.roles[c].domains[i].id==req.session.user.defaultDomainId) req.appData.currentDomain = user.roles[c].domains[i];
+      //     }
+      //   }
+      //   req.appData.domains = domainList;
+      //   if(!req.appData.currentDomain) req.appData.currentDomain = domainList[0];
+      //   req.session.user.currentDomainId = req.appData.currentDomain.id;
+      //   obj.logThis("Session's current domain is ==> " + req.appData.currentDomain.name,myName,6);
+      //   return next();
+      // }
+      // return app.controllers["users"].fetchDomainsByUserId(req.session.user.id,cb);
+      app.controllers["notes"].getNotesByUserAndDomain(req.session.user.id,req.session.user.currentDomain.id)
+      .then((notes) => {
+        if(!notes) {
+          obj.logThis("No notes collected");
+          req.appData.notes = null;
+        } else {
+          obj.logThis("Found some notes");
+          req.appData.notes = notes;
+        }
+        return next();
+      })
+      .catch((err) => {
+        app.log(err.message);
+        return res.send("Error: " + err.message);
+      });
+    } else {
+      return next();
+    }
   };
   obj.loginPage = function(req,res,next) {
     let myName = "loginPage()";

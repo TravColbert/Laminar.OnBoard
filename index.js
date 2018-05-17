@@ -169,9 +169,10 @@ app.use(
  * SET SESSION AND ACCOUNT DATA
  */
 app.use(
-  app.tools.setSessionData,
-  app.tools.setMessage,
+  app.tools.setGlobalSessionEnvironment,
   app.tools.setUserAccount,
+  // app.tools.setSessionData,
+  app.tools.setMessage,
   app.tools.printSessionData
 );
 
