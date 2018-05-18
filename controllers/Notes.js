@@ -3,26 +3,36 @@ module.exports = function(app,model) {
   let myName = model + "Controller";
   let myModel = model;
   obj = {
-    getNotes : function(req,res,next) {
+    getNotes : function(userId,domainId) {
       let myName = "getNotes()";
-      app.controllers[model]
-      .getNotesByUserAndDomain(req.session.user.id,req.session.user.currentDomain.id)
-      .then((notes) => {
-        req.appData.notes = notes || [];
-        req.appData.view = "notes";
-        return next();
-      })
-      .catch((err) => {
-        return res.send(err.message);
+      return new Promise((resolve,reject) => {
+        app.log("Getting notes...",myName,6);
+        app.tools.checkAuthorization(["list","all"],userId,domainId)
+        .then((response) => {
+          if(!response) {
+            app.log("User failed authorization check",myName,6);
+            return resolve([]);
+          }
+          app.log("User is authorized to list notes.",myName,6);
+          return app.controllers[model].getNotesByUserAndDomain(userId,domainId);
+        })
+        .then((notes) => {
+          app.log(" - - - > We have notes: " + notes,myName,6);
+          return resolve(notes || []);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
       });
     },
     getNotesByUserAndDomain : function(userId,domainId) {
-      let myName = "getNotesByUserId()";
+      let myName = "getNotesByUserAndDomain()";
       return new Promise((resolve,reject) => {
-        app.log("Getting notes...");
+        app.log("Getting notes for user " + userId + " and domain " + domainId,myName,6);
         app.models[model]
-        .find({where:{userId:userId,domainId:domainId}})
+        .findAll({where:{userId:userId,domainId:domainId}})
         .then((notes) => {
+          app.log(notes,myName,6,":::::>");
           if(notes!==null) {
             app.log("I think we got some notes",myName);
             return resolve(notes);

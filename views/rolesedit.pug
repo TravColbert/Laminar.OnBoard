@@ -8,13 +8,18 @@ block content
         form(action="/roles/" + role.id method="post")
           input(id="id" type="hidden" name="id" value=role.id)
           .itemdetail.layout-col
-            label.label(for="name") Name:
-            .data 
+            label.label(for="rolename") Name:
+            #rolename.data 
               input(id="name" type="text" name="name" value=role.name)
           .itemdetail.layout-col
-            label.label(for="description") Description:
-            .data
+            label.label(for="roledescription") Description:
+            #roledescription.data
               input(id="description" type="text" name="description" value=role.description)
+          .itemdetail.layout-col
+            label.label(for="rolecapabilties") Capabilities:
+            #rolecapabilties.data
+              - let cap = JSON.stringify(role.capabilities);
+              input(id="capabilities" type="text" name="capabilities" value=cap)
           .itemdetail.layout-col
             label.label Actions:
             .data.layout-row

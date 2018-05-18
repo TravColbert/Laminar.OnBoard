@@ -94,8 +94,9 @@ module.exports = function(app,model) {
     },
     editRole : function(req,res,next) {
       let myName = "editRole()";
-      let roleObj = app.tools.pullParams(req.body,["id","name","description"]);
+      let roleObj = app.tools.pullParams(req.body,["id","name","description","capabilities"]);
       let requestedRole = req.params.id;
+      roleObj.capabilities = JSON.parse(roleObj.capabilities);  // turn that string into to a JSON
       app.log(roleObj.id + " " + requestedRole);
       if(roleObj.id!=requestedRole) return res.send("Didn't request the requested role");
       delete roleObj.id;
@@ -110,7 +111,10 @@ module.exports = function(app,model) {
       let newRole = app.tools.pullParams(req.body,["name"]);
       if(!newRole) return res.send("Required field missing... try again");
       if(req.body.hasOwnProperty("description")) newRole["description"] = req.body.description;
-      app.models[model].create(newRole).then(record => {
+      if(req.body.hasOwnProperty("capabilities")) newRole["capabilities"] = JSON.parse(req.body.capabilities);
+      app.models[model]
+      .create(newRole)
+      .then((record) => {
         req.appData.view = "role";
         req.appData.role = record;
         return next();

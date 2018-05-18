@@ -43,7 +43,8 @@ module.exports = function(Sequelize,app) {
           };
           let domainDefaultRole = {
             name:"Default Role",
-            description:"Default role for the " + domain.name + " domain"
+            description:"Default role for the " + domain.name + " domain",
+            capabilities:{"create":"all","list":"all"}
           };
           let newRoles = [domainAdminRole,domainDefaultRole];
           for(let c=0;c<newRoles.length;c++) {

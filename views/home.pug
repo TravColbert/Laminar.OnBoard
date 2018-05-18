@@ -23,11 +23,10 @@ block content
           .layout-width-1-1
             input#domain(type="text")
       if(notes)
-        .layout-width-1-1.layout-col
-          each note in notes
-            .layout-width-1-1 
-              .notename #{note.name}
-            .layout-width-1-1
-              .notedescription #{note.description}
-            .layout-width-1-1
-              .notebody #{note.description}
+        if(notes.length>0)
+          .layout-width-1-1.layout-col Notes
+            each note in notes
+              .layout-width-1-1 
+                .notename #[a(href="/notes/" + note.id + "/") #{note.name}]
+              .layout-width-1-1
+                .notedescription #{note.description}

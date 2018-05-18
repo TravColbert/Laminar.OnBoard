@@ -229,18 +229,20 @@ module.exports = function(app,model) {
       //  - 'User Admin' role?
       //  - 'Super Admin' role?
       // let requesterObj = app.tools.pullParams(req.session.user,["id","email"]);
-      let prepareEditUserForm = function(err,authorized) {
-        if(err) return res.send(err.messages,myName,2);
-        if(!authorized) {
-          app.log("User is NOT authorized to edit user!",myName,6);
-          return res.send("User not authorized for this view");
+      let model = "users";
+      let action = "edit";
+      app.tools.checkAuthorization(["edit","all"],req.session.user.id,req.session.user.currentDomain.id)
+      .then((response) => {
+        if(!response) {
+          app.log("User failed authorization check",myName,6);
+          return res.send("You are not authorized to edit users");
         }
-        app.log("User is authorized to edit user",myName,6);
+        app.log("User is authorized to show form: " + model + action,myName,6);
         let userObj = app.tools.pullParams(req.params,["id"]);
         app.log("Getting user with ID: " + userObj.id,myName,6);
         app.models[model]
         .findById(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
-        .then(user => {
+        .then((user) => {
           if(user===null) {
             app.log("Couldn't find a user...",myName,4);
             return res.redirect("/users/");
@@ -252,8 +254,7 @@ module.exports = function(app,model) {
         .catch(err => {
           return res.send(myName + ": " + err.message);
         });
-      };
-      app.tools.ifUserIsAuthorized(["edit","all"],req.session.user,prepareEditUserForm);
+      })
     },
     editUser : function(req,res,next) {
       let myName = "userUser()";

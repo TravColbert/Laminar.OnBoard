@@ -168,7 +168,45 @@ module.exports = function(app) {
     });
     // return res.redirect("/login");
   };
-
+  obj.checkAuthorization = function(capability,userId,domainId) {
+    let myName = "checkAuthorization()";
+    app.log("Checking if user " + userId + " is authorized to " + capability + " on domain " + domainId,myName,6);
+    return new Promise((resolve,reject) => {
+      let cap = {};
+      cap[capability[0]] = {[Op.eq]:capability[1]};   
+      // The above is a way to query from within a JSON obj
+      // The capability looks like this when you call it: ["create","all"]
+      // So, this just makes it look like this: {"create":{[Op.eq]:"all"}}
+      // [Op.eq] is a Sequelize operator
+      let query = {};
+      query.roles = {capabilities:cap};
+      query.users = {id:userId};
+      query.domains = (domainId) ? {id:domainId} : null;   // Admin user doesn't have a default domain ATM
+      app.models["roles"]
+      .findAll({
+        where:query.roles||null,
+        include:[
+          {
+            model:app.models["users"],
+            where:query.users||null
+          },
+          {
+            model:app.models["domains"],
+            where:query.domains||null
+          }
+        ]
+      })
+      .then((roles) => {
+        if(roles===null || roles.length===0) return resolve(false);
+        app.log(roles.length + " roles found permitting '" + capability + "'",myName,6);
+        return resolve(true);
+      })
+      .catch(err => {
+        app.log("error looking up authorizations: " + err.message,myName,2);
+        return reject(err);
+      });
+    })
+  };
   obj.ifUserIsAuthorized = function(capability,user,cb) {
     let myName = "ifUserIsAuthorized()";
     // app.log(JSON.stringify(user));
@@ -176,7 +214,6 @@ module.exports = function(app) {
 
     let cap = {};
     cap[capability[0]] = {[Op.eq]:capability[1]};
-
     let query = {};
     query.roles = {capabilities:cap};
     query.users = {id:user.id};
@@ -213,12 +250,13 @@ module.exports = function(app) {
       // Get user's enrollments
       app.controllers["users"].getUserRoles(req.session.user.id)
       .then((user) => {
-        if(user===null) return res.send("Couldn't find this user (even though session data is set");
+        if(user===null) return res.send("Couldn't find this user (even though session data is set)");
         let domainList = [];
         for(let c=0;c<user.roles.length;c++) {
           for(let i=0;i<user.roles[c].domains.length;i++) {
             domainList.push(user.roles[c].domains[i]);
-            if(user.roles[c].domains[i].id==req.session.user.defaultDomainId) req.session.user.currentDomain = user.roles[c].domains[i];
+            if(user.roles[c].domains[i].id==req.session.user.defaultDomainId) 
+              req.session.user.currentDomain = user.roles[c].domains[i];
           }
         }
         req.session.user.domains = domainList;
@@ -315,7 +353,8 @@ module.exports = function(app) {
       //   return next();
       // }
       // return app.controllers["users"].fetchDomainsByUserId(req.session.user.id,cb);
-      app.controllers["notes"].getNotesByUserAndDomain(req.session.user.id,req.session.user.currentDomain.id)
+      // app.controllers["notes"].getNotesByUserAndDomain(req.session.user.id,req.session.user.currentDomain.id)
+      app.controllers["notes"].getNotes(req.session.user.id,req.session.user.currentDomain.id)
       .then((notes) => {
         if(!notes) {
           obj.logThis("No notes collected");
@@ -366,27 +405,30 @@ module.exports = function(app) {
     let model = req.params.model || null;
     let action = req.params.action || 'create';
     app.log("Requesting form: " + model + action);
-    let prepareForm = function(err,authorized) {
-      if(err) return res.send(err.messages,myName,2);
-      if(!authorized) {
-        app.log("User is NOT authorized to do this!",myName,6);
-        return res.send("User not authorized for this view");
+    app.tools.checkAuthorization([action,"all"],req.session.user.id,req.session.user.currentDomain.id)
+    .then((response) => {
+      if(!response) {
+        app.log("User failed authorization check",myName,6);
+        return resolve([]);
       }
-      app.log("User is authorized to continue",myName,6);
-      // Get a list of valid roles in the current domain
+      app.log("User is authorized to show form: " + model + action,myName,6);
       app.models["domains"]
       .findById(req.session.user.currentDomain.id)
       .then(domain => {
         if(domain===null) return res.send("Couldn't determine a valid domain");
         domain.getRoles().then(roles => {
           if(roles===null || roles.length===0) return res.send("No roles found");
+          // req.appData.user = req.session.user;
+          req.appData.domain = domain;
           req.appData.roles = roles;
           req.appData.view = model + action;
           return next();
         })
       });
-    };
-    app.tools.ifUserIsAuthorized(["create","all"],req.session.user,prepareForm);
+    })
+    .catch((err) => {
+      return res.send("Not authorized");
+    });
   };
   obj.setOriginalUrl = function(req,res,next) {
     let myName = "setOriginalUrl()";

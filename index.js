@@ -172,8 +172,8 @@ app.use(
   app.tools.setGlobalSessionEnvironment,
   app.tools.setUserAccount,
   // app.tools.setSessionData,
-  app.tools.setMessage,
-  app.tools.printSessionData
+  app.tools.setMessage //,
+  //app.tools.printSessionData
 );
 
 /**

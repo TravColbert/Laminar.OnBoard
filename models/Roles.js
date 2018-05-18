@@ -27,7 +27,7 @@ module.exports = function(Sequelize,app) {
           id:0,
           name:"Super Admin",
           description:"Role can manage all models in all domains (super-admin users)",
-          capabilities:{'edit':'all','create':'all'}
+          capabilities:{'edit':'all','create':'all','list':'all','delete':'all'}
         };
       let initialRecords = [roleSuperAdmin];
       for(let c=0;c<initialRecords.length;c++) {

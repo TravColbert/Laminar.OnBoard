@@ -6,11 +6,17 @@ block content
     .layout-row.layout-width-1-1
       .user-listing.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
         .itemdetail.layout-col
-          label.label(for="partnum") Name:
-          .data #{role.name}
+          label.label(for="rolename") Name:
+          #rolename.data #{role.name}
         .itemdetail.layout-col
-          label.label(for="partnum") Description:
-          .data #{role.description}
+          label.label(for="roledescription") Description:
+          #roledescription.data #{role.description}
+        if(role.capabilities)
+          .itemdetail.layout-col
+            label.label Capabilities:
+            //- strange: in PUG keys and vals are swapped (below)
+            each scope,capability in role.capabilities
+              .data #{capability} : #{scope}
         .itemdetail.layout-col
           label.label Actions:
           .data.layout-row
