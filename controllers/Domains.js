@@ -155,17 +155,17 @@ module.exports = function(app,model) {
       newDomain.ownerId = req.session.user.id;
       app.models[model]
       .create(newDomain)
-      .then(record => {
-        record.getRoles()
-        .then(roles => {
-          req.appData.domain = record;
-          req.appData.roles = roles;
-          req.appData.view = "domain";
-          return next();
-        })
-        .catch(err => {
-          res.send(err.message);
-        });
+      .then((domain) => {
+        console.log(domain);
+        return app.models["domains"].find({where:{id:domain.id},include:[app.models["roles"]]});
+        // return domain.getRoles({where:{name:"Admin Role"}})
+        // .then((roles) => {
+        //   console.log("ROLES:");
+        //   console.log(roles);
+        // });
+      })
+      .then((domain) => {
+        console.log(domain);
       })
       .catch(err => {
         res.send(err.message);

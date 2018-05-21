@@ -119,6 +119,25 @@ module.exports = function(app,model) {
         req.appData.role = record;
         return next();
       });
+    },
+    createDefaultRoles : function(domain) {
+      let myName = "createDefaultRoles()";
+      let domainAdminRole = {
+        name:"Admin Role",
+        description:"Administrative role for the " + domain.name + " domain",
+        capabilities:{"edit":"all","create":"all","delete":"all","list":"all"}
+      };
+      let domainDefaultRole = {
+        name:"Default Role",
+        description:"Default role for the " + domain.name + " domain",
+        capabilities:{"create":"all","list":"all"}
+      };
+
+      let defaultRoles = []
+      return new Promise((resolve,reject) => {
+        app.models[model]
+        .addDomain()
+      })
     }
   };
   return obj;
