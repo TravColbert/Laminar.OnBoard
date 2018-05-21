@@ -4,7 +4,7 @@ block content
   .section-hdg.section-hdg-1 Domains (#{domains.length})
   .layout-row.layout-width-1-1
     .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-      a(href="/domains/create/") Create
+      a(href="/actions/create/domain/") Create
       ul.itemlist
         each domain in domains
           - let targetLoc = "/domains/" + domain.id + "/";
