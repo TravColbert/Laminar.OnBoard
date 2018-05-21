@@ -33,48 +33,49 @@ module.exports = function(Sequelize,app) {
           let myName = "domain_model:beforeCreate()";
           app.log("Generating app-wide ID for domain");
           domain.appid = app.tools.generateString();
-        },
-        afterCreate:(domain) => {
-          app.log("===> Creating default role(s) for domain '" + domain.name + "'");
-          let domainAdminRole = {
-            name:"Admin Role",
-            description:"Administrative role for the " + domain.name + " domain",
-            capabilities:{"edit":"all","create":"all","delete":"all","list":"all"}
-          };
-          let domainDefaultRole = {
-            name:"Default Role",
-            description:"Default role for the " + domain.name + " domain",
-            capabilities:{"create":"all","list":"all"}
-          };
-          let newRoles = [domainAdminRole,domainDefaultRole];
-          for(let c=0;c<newRoles.length;c++) {
-            app.models["roles"]
-            .create(newRoles[c])
-            .then((role) => {
-              app.log("Adding role '" + role.name + "' to domain '" + domain.name + "'",null,6,"--->");
-              return domain.addRoles(role,{through:{comment:"'" + role.name + "' auto-added by domain after-create routine"}});
-            })
-            .then(() => {
-              app.log("Role(s) added",null,6,"--->");
-            })
-            .catch(err => {
-              app.log(err.message);
-            });
-          }
-          // Remember to add 'Super Admin' role to all created domains!
-          app.models["roles"]
-          .findOne({where:{name:'Super Admin'}})
-          .then(role => {
-            app.log("Adding role '" + role.name + "' to domain '" + domain.name + "'",null,6,"--->");
-            return domain.addRoles(role,{through:{comment:"'" + role.name + "' auto-added by domain after-create routine"}});
-          })
-          .then(() => {
-            app.log("Super Admin role added to domain '" + domain.name + "'",null,6,"--->");
-          })
-          .catch(err => {
-            app.log(err.message);
-          });
         }
+        // ,
+        // afterCreate:(domain) => {
+        //   app.log("===> Creating default role(s) for domain '" + domain.name + "'");
+        //   let domainAdminRole = {
+        //     name:"Admin Role",
+        //     description:"Administrative role for the " + domain.name + " domain",
+        //     capabilities:{"edit":"all","create":"all","delete":"all","list":"all"}
+        //   };
+        //   let domainDefaultRole = {
+        //     name:"Default Role",
+        //     description:"Default role for the " + domain.name + " domain",
+        //     capabilities:{"create":"all","list":"all"}
+        //   };
+        //   let newRoles = [domainAdminRole,domainDefaultRole];
+        //   for(let c=0;c<newRoles.length;c++) {
+        //     app.models["roles"]
+        //     .create(newRoles[c])
+        //     .then((role) => {
+        //       app.log("Adding role '" + role.name + "' to domain '" + domain.name + "'",null,6,"--->");
+        //       return domain.addRoles(role,{through:{comment:"'" + role.name + "' auto-added by domain after-create routine"}});
+        //     })
+        //     .then(() => {
+        //       app.log("Role(s) added",null,6,"--->");
+        //     })
+        //     .catch(err => {
+        //       app.log(err.message);
+        //     });
+        //   }
+          // Remember to add 'Super Admin' role to all created domains!
+          // app.models["roles"]
+          // .findOne({where:{name:'Super Admin'}})
+          // .then(role => {
+          //   app.log("Adding role '" + role.name + "' to domain '" + domain.name + "'",null,6,"--->");
+          //   return domain.addRoles(role,{through:{comment:"'" + role.name + "' auto-added by domain after-create routine"}});
+          // })
+          // .then(() => {
+          //   app.log("Super Admin role added to domain '" + domain.name + "'",null,6,"--->");
+          // })
+          // .catch(err => {
+          //   app.log(err.message);
+          // });
+        // }
       }
     },
     afterSync:function(db){
