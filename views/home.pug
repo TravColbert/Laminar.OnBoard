@@ -17,6 +17,7 @@ block content
             each domain in user.domains
               .layout-width-1-1
                 - let selectedDomain = (user.currentDomain.id==domain.id) ? "*" : "";
+                - let switchToDomain = (user.currentDomain.id!=domain.id) ? "/actions/switchdomain/" +  : "";
                 .test #{domain.name} (id: #{domain.id}) #{selectedDomain}
         .layout-width-1-2.layout-col
           .layout-width-1-1 Create a new domain here:

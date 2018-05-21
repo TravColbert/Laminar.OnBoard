@@ -31,19 +31,34 @@ module.exports = function(app,model) {
         res.send(err.message);
       });
     },
-    getRolesByDomainId : function(req,res,next) {
+    getRolesByDomainId : function(domainId) {
       let myName = "getRolesByDomainId()";
-      app.models[model]
-      .findById(req.params.id,{include:[app.models["roles"]]})
-      .then((domain) => {
-        if(domain===null) return res.redirect('/');
-        req.appData.domain = domain;
-        req.appData.view = "domainroles";
-        return next();
+      return new Promise((resolve,reject) => {
+        app.log("Getting all roles with domainId " + domainId,myName,6);
+        app.models[model]
+        .findById(domainId,{include:[app.models["roles"]]})
+        .then((domain) => {
+          app.log(domain,myName,6,">>>");
+          resolve(domain.roles);
+        })
+        .catch(err => {
+          return res.send("(" + myName + ") Could not fetch roles for domain ID " + domainId + ": " + err.message);
+        });
       })
-      .catch(err => {
-        return res.send(err.message);
-      });
+    },
+    getRolesByDomain : function(domain) {
+      let myName = "getRolesByDomain()";
+      return new Promise((resolve,reject) => {
+        app.log("Getting roles associated with '" + domain.name + "' domain",myName,6,"---");
+        // domain.getRoles({include:[app.models["roles"]]})
+        domain.getRoles()
+        .then((roles) => {
+          resolve((roles));
+        })
+        .catch((err) => {
+          reject(err);
+        })
+      })
     },
     getUsersByDomainId : function(req,res,next) {
       let myName = "getUsersByDomainId()";
@@ -145,7 +160,6 @@ module.exports = function(app,model) {
         return res.redirect("/domains/" + requestedDomainId + "/");
       });
     },
-
     createDomain : function(req,res,next) {
       let myName = "createDomain()";
       let newDomain = app.tools.pullParams(req.body,["name"]);
@@ -156,19 +170,28 @@ module.exports = function(app,model) {
       app.models[model]
       .create(newDomain)
       .then((domain) => {
-        console.log(domain);
-        return app.models["domains"].find({where:{id:domain.id},include:[app.models["roles"]]});
-        // return domain.getRoles({where:{name:"Admin Role"}})
-        // .then((roles) => {
-        //   console.log("ROLES:");
-        //   console.log(roles);
-        // });
+        return app.controllers["roles"].createDefaultRoles(domain);
       })
-      .then((domain) => {
-        console.log(domain);
+      .then((roles) => {
+        let role = roles.filter((v) => {
+          return v.name=="Admin Role";
+        })
+        app.log("This is the admin role: " + JSON.stringify(role),myName,6,"!!!!");
+        return app.controllers["users"]
+        .getUserById(req.session.user.id)
+        .then(user => {
+          return app.controllers["roles"].addUserToRole(user,role);
+        })
+        .catch(err => {
+          res.send("(" + myName + ") " + err.message);
+        })
+      })
+      .then(() => {
+        app.log("I think the user is in the domain's admin role");
+        return res.redirect("/domains/");
       })
       .catch(err => {
-        res.send(err.message);
+        res.send("(" + myName + ") " + err.message);
       });
     }
   };

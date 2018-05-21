@@ -31,6 +31,33 @@ module.exports = function(app,model) {
         return res.send(err.message);
       });
     },
+    getRoleByName : function(name) {
+      let myName = "getRoleByName()";
+      return new Promise((resolve,reject) => {
+        app.models[model]
+        .findOne({where:{name:name}})
+        .then((role) => {
+          resolve(role);
+        })
+        .catch((err) => {
+          reject(new Error("(" + myName + ") Failed to find role with name: " + name));
+        });
+      });
+    },
+    // getRolesByDomainId : function(domainId) {
+    //   let myName = "getRolesByDomainId()";
+    //   return new Promise((resolve,reject) => {
+    //     app.log("Getting all roles with domainId '" + domainId,myName,6);
+    //     app.models[model]
+    //     .findAll({where:{domainId:domainId}})
+    //     .then((roles) => {
+    //       resolve(roles);
+    //     })
+    //     .catch((err) => {
+    //       reject(new Error("(" + myName + ") Could not fetch roles from domain ID '" + domainId));
+    //     })
+    //   })
+    // },
     getUsersByRoleId : function(req,res,next) {
       let myName = "getUsersByRoleId";
       app.models[model]
@@ -120,6 +147,21 @@ module.exports = function(app,model) {
         return next();
       });
     },
+    connectRoleToDomain : function(role,domain) {
+      let myName = "connectRoleToDomain()";
+      return new Promise((resolve,reject) => {
+        app.log("Connecting role: '" + role.name + "' to '" + domain.name,myName,6," --- ");
+        domain.addRoles(role)
+        .then(() => {
+          app.log("Role connected",myName,6);
+          resolve(true);
+        })
+        .catch((err) => {
+          app.log(err.message,myName,6);
+          reject(err);
+        });
+      });
+    },
     createDefaultRoles : function(domain) {
       let myName = "createDefaultRoles()";
       let domainAdminRole = {
@@ -132,12 +174,55 @@ module.exports = function(app,model) {
         description:"Default role for the " + domain.name + " domain",
         capabilities:{"create":"all","list":"all"}
       };
-
-      let defaultRoles = []
+      let newRoles = [domainAdminRole,domainDefaultRole];
+      let createdRoles = [];
       return new Promise((resolve,reject) => {
         app.models[model]
-        .addDomain()
-      })
+        .create(domainAdminRole)
+        .then((role) => {
+          app.log(role.name + " role created",myName,6,"---");
+          createdRoles.push(role);
+          return app.controllers[model].connectRoleToDomain(role,domain);
+        })
+        .then((success) => {
+          if(!success) reject(new Error("(" + myName + ") Couldn't attach admin role to domain"));
+          return app.models[model].create(domainDefaultRole);
+        })
+        .then((role) => {
+          app.log(role.name + " role created",myName,6,"---");
+          createdRoles.push(role);
+          return app.controllers[model].connectRoleToDomain(role,domain);
+        })
+        .then((success) => {
+          if(!success) reject(new Error("(" + myName + ") Couldn't attach admin role to domain"));
+          return app.controllers[model].getRoleByName("Super Admin");
+        })
+        .then((role) => {
+          if(role===null) reject(new Error("(" + myName + ") Could not find super admin role"));
+          return app.controllers[model].connectRoleToDomain(role,domain);
+        })
+        .then((success) => {
+          app.log("Here are the roles we've created: " + JSON.stringify(createdRoles),myName,6,"--- ");
+          resolve(createdRoles);
+        })
+        .catch((err) => {
+          reject(new Error("(" + myName + ") Failed to create default roles: " + err.message));
+        });
+      });
+    },
+    addUserToRole : function(user,role) {
+      let myName = "addUserToRole()";
+      return new Promise((resolve,reject) => {
+        // role.addUser(user)
+        user.addRole(role)
+        .then((result) => {
+          app.log(result,myName,6,"--->>");
+          resolve(result);
+        })
+        .catch(err => {
+          reject(new Error("(" + myName + ") " + err.message));
+        });
+      });
     }
   };
   return obj;

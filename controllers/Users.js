@@ -221,6 +221,19 @@ module.exports = function(app,model) {
         return res.send(err.message);
       });
     },
+    getUserById : function(userId) {
+      let myName = "getUserById()";
+      return new Promise((resolve,reject) => {
+        app.models[model]
+        .findById(userId)
+        .then(user => {
+          resolve(user);
+        })
+        .catch(err => {
+          reject(new Error("(" + myName + ") " + err.message));
+        });
+      });
+    },
     editUserForm : function(req,res,next) {
       let myName = "editUserForm()";
       app.log("Requesting edit user form",myName,6);
@@ -366,6 +379,22 @@ module.exports = function(app,model) {
       })
       .catch(err => {
         cb(err);
+      });
+    },
+    switchCurrentDomain : function(newDomainId) {
+      let myName = "switchCurrentDomain()";
+      app.models[model]
+      .findById(req.session.user.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      .then(user => {
+        let targetDomain = user.domains.filter((v) => {
+          return v.id == newDomainId;
+        })
+        if(!targetDomain) return false;
+        req.session.user.currentDomain = targetDomain;
+        return targetDomain;
+      })
+      .catch(err => {
+        return err;
       });
     },
     logout : function(req,res,next) {
