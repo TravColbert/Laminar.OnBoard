@@ -251,28 +251,22 @@ module.exports = function(app) {
       app.controllers["users"].getUserRoles(req.session.user.id)
       .then((user) => {
         if(user===null) return res.send("Couldn't find this user (even though session data is set)");
-        let domainList = [];
-        for(let c=0;c<user.roles.length;c++) {
-          for(let i=0;i<user.roles[c].domains.length;i++) {
-            if(domainList.indexOf(user.roles[c].domains[i])<0) {
-              obj.logThis("Adding domain: " + user.roles[c].domains[i].id + " to user's domain list",myName,6," - - - ");
-              domainList.push(user.roles[c].domains[i]);
-            }
-            // has there been a request to change domains? Look for req.session.switchDomain
-            if(req.session.user.hasOwnProperty("switchDomain")) {
-              obj.logThis("Found a switch-domain request for: " + req.session.user.switchDomain,myName,6," - - - ");
-              if(req.session.user.switchDomain==user.roles[c].domains[i].id) {
-                obj.logThis("Found the right domain to switch to",myName,6," - - - ");
-                req.session.user.currentDomain = user.roles[c].domains[i];
-              }
-            } else {
-              obj.logThis("No switch-domain request found. Looking for a defaultDomain: " + req.session.user.defaultDomainId,myName,6," - - - ")
-              if(user.roles[c].domains[i].id==req.session.user.defaultDomainId) {
-                obj.logThis("Found the default domain",myName,6," - - - ");
-                req.session.user.currentDomain = user.roles[c].domains[i];
-              }
-            }
-          }
+        let domainList = app.controllers["users"].compileDomainList(user);
+        if(req.session.user.hasOwnProperty("switchDomain")) {
+          obj.logThis("Found a switch-domain request for: " + req.session.user.switchDomain,myName,6," - - - ");
+          targetDomainId = req.session.user.switchDomain;
+        } else {
+          obj.logThis("No switch-domain request found. Looking for a defaultDomain: " + req.session.user.defaultDomainId,myName,6," - - - ")
+          targetDomainId = req.session.user.defaultDomainId;
+        }
+        obj.logThis("Target domain is: " + targetDomainId);
+        let switchTo = domainList.filter(v => {
+          return (v.id==targetDomainId);
+        });
+        obj.logThis("Switchto: " + switchTo[0].id);
+        if(switchTo[0].id) {
+          obj.logThis("Setting");
+          req.session.user.currentDomain=switchTo[0];
         }
         req.session.user.domains = domainList;
         // Otherwise if no current domain has been set just set it to the first on the user's domain list

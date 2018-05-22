@@ -384,9 +384,9 @@ module.exports = function(app,model) {
     requestNewDomain : function(user,newDomainId) {
       let myName = "requestNewDomain()";
       app.log("Request to switch user " + user.id + " to domain: " + newDomainId,myName,6);
-      let domainList = app.controllers["users"].compileDomainList(user);
-      app.log(domainList.length + " domains found",myName,6,"+ + + ");
-      let targetDomain = domainList.filter((v) => {
+      // let domainList = app.controllers["users"].compileDomainList(user);
+      app.log(user.domains.length + " domains found",myName,6,"+ + + ");
+      let targetDomain = user.domains.filter((v) => {
         return v.id == newDomainId;
       })
       if(!targetDomain) return false;
@@ -397,10 +397,12 @@ module.exports = function(app,model) {
       let myName = "compileDomainList()";
       app.log("Compiling domain list",myName,6,"---");
       let domainList = [];
-      for(let i=0;i<user.domains.length;i++) {
-        if(domainList.indexOf(user.domains[i])<0) {
-          app.log("Adding domain: " + user.domains[i].id + " to user's domain list",myName,6," - - - ");
-          domainList.push(user.domains[i]);
+      for(let c=0;c<user.roles.length;c++) {
+        for(let i=0;i<user.roles[c].domains.length;i++) {
+          if(domainList.indexOf(user.roles[c].domains[i])<0) {
+            app.log("Adding domain: " + user.roles[c].domains[i].id + " to user's domain list",myName,6," - - - ");
+            domainList.push(user.roles[c].domains[i]);
+          }
         }
       }
       return domainList;
