@@ -381,21 +381,29 @@ module.exports = function(app,model) {
         cb(err);
       });
     },
-    switchCurrentDomain : function(newDomainId) {
-      let myName = "switchCurrentDomain()";
-      app.models[model]
-      .findById(req.session.user.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
-      .then(user => {
-        let targetDomain = user.domains.filter((v) => {
-          return v.id == newDomainId;
-        })
-        if(!targetDomain) return false;
-        req.session.user.currentDomain = targetDomain;
-        return targetDomain;
+    requestNewDomain : function(user,newDomainId) {
+      let myName = "requestNewDomain()";
+      app.log("Request to switch user " + user.id + " to domain: " + newDomainId,myName,6);
+      let domainList = app.controllers["users"].compileDomainList(user);
+      app.log(domainList.length + " domains found",myName,6,"+ + + ");
+      let targetDomain = domainList.filter((v) => {
+        return v.id == newDomainId;
       })
-      .catch(err => {
-        return err;
-      });
+      if(!targetDomain) return false;
+      app.log("Target domain: " + targetDomain[0].id,myName,6);
+      return targetDomain[0].id;
+    },
+    compileDomainList : function(user) {
+      let myName = "compileDomainList()";
+      app.log("Compiling domain list",myName,6,"---");
+      let domainList = [];
+      for(let i=0;i<user.domains.length;i++) {
+        if(domainList.indexOf(user.domains[i])<0) {
+          app.log("Adding domain: " + user.domains[i].id + " to user's domain list",myName,6," - - - ");
+          domainList.push(user.domains[i]);
+        }
+      }
+      return domainList;
     },
     logout : function(req,res,next) {
       req.session.destroy((err) => {
