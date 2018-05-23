@@ -78,17 +78,18 @@ module.exports = function(Sequelize,app) {
             if (err) console.log(err);
           });
         }
-      },
-      scopes:{
-        administratorUsers:{
-          include:[
-            {
-              model: app.models["roles"],
-              where:{name:"administrator"}
-            }
-          ]
-        }
       }
+      // ,
+      // scopes:{
+      //   administratorUsers:{
+      //     include:[
+      //       {
+      //         model: app.models["roles"],
+      //         where:{name:"administrator"}
+      //       }
+      //     ]
+      //   }
+      // }
     },
     afterSync:function(db){
       db.count({where:{email:'admin@test.com'}}).then(function(count) {
