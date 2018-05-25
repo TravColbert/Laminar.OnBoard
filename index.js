@@ -65,72 +65,107 @@ app.routes = {};
  */
 // Find some models defined in the models folder...
 let modelFiles = fs.readdirSync(app.locals.modelsDir);
-for(let c=0;c<modelFiles.length;c++) {
-  // Pick only certain file-types
-  let fileNameParts = modelFiles[c].split(".");
-  if(fileNameParts[fileNameParts.length-1]!="js") continue;
-  let modelName = fileNameParts[0].toLowerCase();  // e.g. 'users'
-  app.modelDefinitions[modelName] = require("./" + app.locals.modelsDir + "/" + modelFiles[c])(Sequelize,app);
-  // Define the model's table:
-  app.models[modelName] = sequelize.define(app.modelDefinitions[modelName].tablename,app.modelDefinitions[modelName].schema,app.modelDefinitions[modelName].options);
-}
+// for(let c=0;c<modelFiles.length;c++) {
+//   // Pick only certain file-types
+//   let fileNameParts = modelFiles[c].split(".");
+//   if(fileNameParts[fileNameParts.length-1]!="js") continue;
+//   let modelName = fileNameParts[0].toLowerCase();  // e.g. 'users'
+//   app.modelDefinitions[modelName] = require("./" + app.locals.modelsDir + "/" + modelFiles[c])(Sequelize,app);
+//   // Define the model's table:
+//   app.models[modelName] = sequelize.define(app.modelDefinitions[modelName].tablename,app.modelDefinitions[modelName].schema,app.modelDefinitions[modelName].options);
+// }
 
 // Build a new promise chanin...
 let modelPromiseChain = Promise.resolve();
-modelFiles.forEach(modeFile => {
-  modelPromiseChain = modelPromiseChain.then(result => {
+
+modelFiles.forEach(modelFile => {
+  modelPromiseChain = modelPromiseChain.then(() => {
     return new Promise((resolve,reject) => {
       let fileNameParts = modelFile.split(".");
-      if(fileNameParts.pop()!="js") continue;
-      let modelName = fileNameParts.shift().toLowerCase();
-      app.modelDefinitions[modelName]
+      if(fileNameParts.pop()=="js") {
+        let modelName = fileNameParts.shift().toLowerCase();
+        app.modelDefinitions[modelName] = require("./" + app.locals.modelsDir + "/" + modelFile)(Sequelize,app);
+        app.models[modelName] = sequelize.define(app.modelDefinitions[modelName].tablename,app.modelDefinitions[modelName].schema,app.modelDefinitions[modelName].options);
+      }
+      resolve(app.models);
     });
   });
 });
+
+modelPromiseChain = modelPromiseChain.then((models) => {
+  app.log(models.length,myName,6,"::>");
+  return new Promise((resolve,reject) => {
+    models["domains"].belongsToMany(models["roles"],{through:models["domainsroles"]});
+    models["roles"].belongsToMany(models["domains"],{through:models["domainsroles"]});
+    models["users"].belongsToMany(models["roles"],{through:models["usersroles"]});
+    models["roles"].belongsToMany(models["users"],{through:models["usersroles"]});
+    models["users"].belongsTo(models["domains"],{as:'defaultDomain'});  // makes users.defaultDomainId field
+    models["users"].hasOne(models["domains"],{as:'owner'});             // makes domains.ownerId field
+    models["notes"].belongsTo(models["domains"],{as:'domain'});         // makes notes.domainId
+    models["notes"].belongsTo(models["users"],{as:"user"});             // makes notes.userId
+    resolve(models);
+  })
+})
+
 /**
  * MODEL ASSOCIATIONS
  * These statements determine the relationships between models.
  */
-app.models["domains"].belongsToMany(app.models["roles"],{through:app.models["domainsroles"]});
-app.models["roles"].belongsToMany(app.models["domains"],{through:app.models["domainsroles"]});
-app.models["users"].belongsToMany(app.models["roles"],{through:app.models["usersroles"]});
-app.models["roles"].belongsToMany(app.models["users"],{through:app.models["usersroles"]});
-app.models["users"].belongsTo(app.models["domains"],{as:'defaultDomain'});  // makes users.defaultDomainId field
-app.models["users"].hasOne(app.models["domains"],{as:'owner'});             // makes domains.ownerId field
-app.models["notes"].belongsTo(app.models["domains"],{as:'domain'});         // makes notes.domainId
-app.models["notes"].belongsTo(app.models["users"],{as:"user"});             // makes notes.userId
+// app.models["domains"].belongsToMany(app.models["roles"],{through:app.models["domainsroles"]});
+// app.models["roles"].belongsToMany(app.models["domains"],{through:app.models["domainsroles"]});
+// app.models["users"].belongsToMany(app.models["roles"],{through:app.models["usersroles"]});
+// app.models["roles"].belongsToMany(app.models["users"],{through:app.models["usersroles"]});
+// app.models["users"].belongsTo(app.models["domains"],{as:'defaultDomain'});  // makes users.defaultDomainId field
+// app.models["users"].hasOne(app.models["domains"],{as:'owner'});             // makes domains.ownerId field
+// app.models["notes"].belongsTo(app.models["domains"],{as:'domain'});         // makes notes.domainId
+// app.models["notes"].belongsTo(app.models["users"],{as:"user"});             // makes notes.userId
 
-raiseModels = function(modelsArray) {
-  let myName = "raiseModels";
-  return new Promise((resolve,reject) => {
-    // if all models got sync'ed
-    resolve(true);
-    // if there was a problem
-    reject(new Error("(" + myName + ") There was a problem"));
-  })
-}
+// raiseModels = function(modelsArray) {
+//   let myName = "raiseModels";
+//   return new Promise((resolve,reject) => {
+//     // if all models got sync'ed
+//     resolve(true);
+//     // if there was a problem
+//     reject(new Error("(" + myName + ") There was a problem"));
+//   })
+// }
 
-raiseModels()
-.then(() => executeAfterSyncMethods())
-.then(() => populateDefaultData())
-.then(() => {
-  app.log("All db prep is done");
-})
+// raiseModels()
+// .then(() => executeAfterSyncMethods())
+// .then(() => populateDefaultData())
+// .then(() => {
+//   app.log("All db prep is done");
+// })
 /**
  * Bring all models on-line!
  */
+// for(let model in app.models) {
+//   app.log("Prepping model: " + model,myName,6);
+//   // Sync tables
+//   app.models[model]
+//   .sync()
+//   .then(function(){
+//     app.log("Checking for post-preparations for model: " + model,myName,6);
+//     // Run any post-operations after sync()'ing table
+//     if(app.modelDefinitions[model].hasOwnProperty("afterSync")) {
+//       app.log("Running post-preparations on model: " + model,myName,6);
+//       app.modelDefinitions[model].afterSync(app.models[model]);
+//     }
+//   });
+// }
+
 for(let model in app.models) {
-  app.log("Prepping model: " + model,myName,6);
-  // Sync tables
-  app.models[model]
-  .sync()
-  .then(function(){
-    app.log("Checking for post-preparations for model: " + model,myName,6);
-    // Run any post-operations after sync()'ing table
-    if(app.modelDefinitions[model].hasOwnProperty("afterSync")) {
-      app.log("Running post-preparations on model: " + model,myName,6);
-      app.modelDefinitions[model].afterSync(app.models[model]);
-    }
+  modelPromiseChain = modelPromiseChain.then((model) => {
+    model.sync()
+    .then(() => {
+      app.log("Checking for post-preparations for model: " + model,myName,6);
+      // Run any post-operations after sync()'ing table
+      if(app.modelDefinitions[model].hasOwnProperty("afterSync")) {
+        app.log("Running post-preparations on model: " + model,myName,6);
+        app.modelDefinitions[model].afterSync(app.models[model]);
+      }
+      resolve();
+    })
   });
 }
 
@@ -142,6 +177,35 @@ for(let model in app.models) {
   /**
    * Assign administrator role to the admin user
    */
+  // app.log("Setting up admin user...",myName,6);
+
+  // app.models.users.findOne({where:{email:'admin@test.com'}})
+  // .then(user => {
+  //   if(user===null) {
+  //     app.log("!!! Couldn't find the admin user! I have to quit now.",myName,1);
+  //     return false;
+  //   }
+  //   app.log("!!! Found '" + user.email + "' user.",myName,6);
+  //   app.models.roles.findOne({where:{name:"Super Admin"}})
+  //   .then(role => {
+  //     user.addRole(role)
+  //     .then(function() {
+  //       app.log("Admin user has been granter Super Admin roles",myName,6);
+  //     })
+  //     .catch(err => {
+  //       app.log("Couldn't add Super Admin role to Admin user " + err.message,myName,1);
+  //     });
+  //   })
+  //   .catch(err => {
+  //     app.log("!!! Couldn't find the admin user! I have to quit now.: " + err.message,myName,1);
+  //   });
+  // })
+  // .catch(err => {
+  //   app.log("Error attempting to retrieve admin user: " + err.message,myName,1);
+  // });
+}
+
+modelPromiseChain = modelPromiseChain.then(() => {
   app.log("Setting up admin user...",myName,6);
 
   app.models.users.findOne({where:{email:'admin@test.com'}})
@@ -168,8 +232,7 @@ for(let model in app.models) {
   .catch(err => {
     app.log("Error attempting to retrieve admin user: " + err.message,myName,1);
   });
-}
-
+})
 /**
  * CONTROLLER DEFINITIONS
  */
@@ -179,6 +242,7 @@ for(let c=0;c<controllerFiles.length;c++) {
   let fileNameParts = controllerFiles[c].split(".");
   if(fileNameParts[fileNameParts.length-1]!="js") continue;
   let controllerName = fileNameParts[0].toLowerCase();
+  app.log("Hydrating " + controllerName + " controller",myName,6,"--->");
   app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + controllerFiles[c])(app,controllerName);
 };
 
