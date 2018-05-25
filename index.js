@@ -75,6 +75,18 @@ for(let c=0;c<modelFiles.length;c++) {
   app.models[modelName] = sequelize.define(app.modelDefinitions[modelName].tablename,app.modelDefinitions[modelName].schema,app.modelDefinitions[modelName].options);
 }
 
+// Build a new promise chanin...
+let modelPromiseChain = Promise.resolve();
+modelFiles.forEach(modeFile => {
+  modelPromiseChain = modelPromiseChain.then(result => {
+    return new Promise((resolve,reject) => {
+      let fileNameParts = modelFile.split(".");
+      if(fileNameParts.pop()!="js") continue;
+      let modelName = fileNameParts.shift().toLowerCase();
+      app.modelDefinitions[modelName]
+    });
+  });
+});
 /**
  * MODEL ASSOCIATIONS
  * These statements determine the relationships between models.
@@ -88,7 +100,22 @@ app.models["users"].hasOne(app.models["domains"],{as:'owner'});             // m
 app.models["notes"].belongsTo(app.models["domains"],{as:'domain'});         // makes notes.domainId
 app.models["notes"].belongsTo(app.models["users"],{as:"user"});             // makes notes.userId
 
+raiseModels = function(modelsArray) {
+  let myName = "raiseModels";
+  return new Promise((resolve,reject) => {
+    // if all models got sync'ed
+    resolve(true);
+    // if there was a problem
+    reject(new Error("(" + myName + ") There was a problem"));
+  })
+}
 
+raiseModels()
+.then(() => executeAfterSyncMethods())
+.then(() => populateDefaultData())
+.then(() => {
+  app.log("All db prep is done");
+})
 /**
  * Bring all models on-line!
  */

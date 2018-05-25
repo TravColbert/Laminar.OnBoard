@@ -259,12 +259,14 @@ module.exports = function(app) {
           obj.logThis("No switch-domain request found. Looking for a defaultDomain: " + req.session.user.defaultDomainId,myName,6," - - - ")
           targetDomainId = req.session.user.defaultDomainId;
         }
-        obj.logThis("Target domain is: " + targetDomainId);
+        obj.logThis(domainList,myName,6);
+        obj.logThis("Target domain is: " + targetDomainId,myName,6);
         let switchTo = domainList.filter(v => {
           return (v.id==targetDomainId);
         });
-        obj.logThis("Switchto: " + switchTo[0].id);
-        if(switchTo[0].id) {
+        obj.logThis(switchTo,myName,6);
+        // obj.logThis("Switchto: " + switchTo[0].id);
+        if(switchTo && switchTo[0].id) {
           obj.logThis("Setting");
           req.session.user.currentDomain=switchTo[0];
         }
