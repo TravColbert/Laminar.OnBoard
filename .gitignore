@@ -5,3 +5,4 @@ tls/*.pem
 tls/*.crt
 tls/*.key
 db/*.db
+test/
