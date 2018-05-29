@@ -172,29 +172,54 @@ let setupModels = function() {
   // return new Promise((resolve,reject) => {
   app.log("Setting up admin user...",myName,6);
 
-  return app.models.users.create({
-    firstname:'Administrative',
-    lastname:'User',
-    email:'admin@test.com',
-    verified:true,
-    disabled:false,
-    password:'test123!'
-  }).then(admin => {
-    if(admin===null) reject(new Error("(" + myName + "): Could not create admin user?"));
-    return app.models.roles.findOne({where:{name:"Super Admin"}})
-    .then(role => {
-      if(role===null) reject(new Error("(" + myName + "): Could not find Super-Admin role"));
-      app.log("Found role: " + role.name,myName,6,":>");
-      role.addUser(admin);
-      return admin;
-    });
-  }).then((admin) => {
-    app.log("Admin added to Super-Admin role");
-    return admin;
-  }).catch(err => {
-    app.log("(" + myName + "): " + err.message);
-    return new Error("(" + myName + "): " + err.message);
+  let adminUser, adminRole;
+  let setupPromises = Promise.resolve();
+  setupPromises = setupPromises.then(() => {
+    let adminUserDef = {
+      firstname:'Administrative',
+      lastname:'User',
+      email:'admin@test.com',
+      verified:true,
+      disabled:false,
+      password:'test123!'
+    };
+    adminUser = app.controllers.users.createUser(adminUserDef);
+  }).then(() => {
+    let adminRoleDef = {
+      id:0,
+      name:"Super Admin",
+      description:"Role can manage all models in all domains (super-admin users)",
+      capabilities:{'edit':'all','create':'all','list':'all','delete':'all'}
+    };
+    adminRole = app.controllers.roles.createRole(adminRoleDef);
   });
+}
+
+
+  // return app.models.users.create({
+  //   firstname:'Administrative',
+  //   lastname:'User',
+  //   email:'admin@test.com',
+  //   verified:true,
+  //   disabled:false,
+  //   password:'test123!'
+  // }).then(admin => {
+  //   if(admin===null) reject(new Error("(" + myName + "): Could not create admin user?"));
+  //   return app.models.roles.findOne({where:{name:"Super Admin"}})
+  //   .then(role => {
+  //     if(role===null) reject(new Error("(" + myName + "): Could not find Super-Admin role"));
+  //     app.log("Found role: " + role.name,myName,6,":>");
+  //     role.addUser(admin);
+  //     return admin;
+  //   });
+  // }).then((admin) => {
+  //   app.log("Admin added to Super-Admin role");
+  //   return admin;
+  // }).catch(err => {
+  //   app.log("(" + myName + "): " + err.message);
+  //   return new Error("(" + myName + "): " + err.message);
+  // });
+
   //   app.models.roles.findOne({where:{name:"Super Admin"}})
   //   .then(role => {
   //     user.addRole(role)

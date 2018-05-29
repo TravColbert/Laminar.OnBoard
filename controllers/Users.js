@@ -282,28 +282,39 @@ module.exports = function(app,model) {
         return res.redirect("/users/" + requestedUser + "/");
       });
     },
-    createUser : function(req,res,next) {
-      let myName = "createUser()";
-      app.log("Creating user",myName,5);
-      // Check that all required fields are present...
-      let userRegistrationObj = app.tools.pullParams(req.body,["email","firstname","lastname","password","passwordverify"]);
-      if(!userRegistrationObj) return res.send("Required field missing... try again");
-      // Check that the passwords are verified...
-      if(userRegistrationObj.password!=userRegistrationObj.passwordverify) return res.send("Passwords do not match... try again");
-      // That the email address has not been used already...
-      app.models[model].count({where:{email:userRegistrationObj.email}})
-      .then((count) => {
-        if(count>0) return res.send("An account with this email already exists... try again");
-        app.log("Email address is free to use. Continuing with registration...",myName,5);
-        delete userRegistrationObj.passwordverify;
-        app.models[model]
-        .create(userRegistrationObj)
-        .then((user) => {
-          // req.appData.view = "usercreated";
-          return res.redirect('/users/' + user.id + "/");
-        });
-      });
+    createUser : function(userObj) {
+      let myName = "createUser";
+      app.log("Creating user",myName,6,"+");
+      return app.models[model]
+      .create(userObj)
+      .then((user) => {
+        if(user===null) reject(new Error("(" + myName + ") Could not create user"));
+        resolve(user);
+      })
+      .catch(new Error("(" + myName + ") Could not create user"));
     },
+    // createUser : function(req,res,next) {
+    //   let myName = "createUser()";
+    //   app.log("Creating user",myName,5);
+    //   // Check that all required fields are present...
+    //   let userRegistrationObj = app.tools.pullParams(req.body,["email","firstname","lastname","password","passwordverify"]);
+    //   if(!userRegistrationObj) return res.send("Required field missing... try again");
+    //   // Check that the passwords are verified...
+    //   if(userRegistrationObj.password!=userRegistrationObj.passwordverify) return res.send("Passwords do not match... try again");
+    //   // That the email address has not been used already...
+    //   app.models[model].count({where:{email:userRegistrationObj.email}})
+    //   .then((count) => {
+    //     if(count>0) return res.send("An account with this email already exists... try again");
+    //     app.log("Email address is free to use. Continuing with registration...",myName,5);
+    //     delete userRegistrationObj.passwordverify;
+    //     app.models[model]
+    //     .create(userRegistrationObj)
+    //     .then((user) => {
+    //       // req.appData.view = "usercreated";
+    //       return res.redirect('/users/' + user.id + "/");
+    //     });
+    //   });
+    // },
     getUserEnrollments : function(userId,cb) {
       let myName = "getUserEnrollments()";
       // users -> roles -> domains

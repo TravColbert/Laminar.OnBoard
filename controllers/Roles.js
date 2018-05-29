@@ -133,20 +133,33 @@ module.exports = function(app,model) {
         return res.redirect("/roles/" + requestedRole + "/");
       });
     },
-    createRole : function(req,res,next) {
-      let myName = "createRole()";
-      let newRole = app.tools.pullParams(req.body,["name"]);
-      if(!newRole) return res.send("Required field missing... try again");
-      if(req.body.hasOwnProperty("description")) newRole["description"] = req.body.description;
-      if(req.body.hasOwnProperty("capabilities")) newRole["capabilities"] = JSON.parse(req.body.capabilities);
-      app.models[model]
-      .create(newRole)
-      .then((record) => {
-        req.appData.view = "role";
-        req.appData.role = record;
-        return next();
+    createRole : function(roleObj) {
+      let myName = "createRole";
+      app.log("Creating role",myName,6,"+");
+      return app.models[model]
+      .create(roleObj)
+      .then(role => {
+        if(role===null) reject(new ErrorError("(" + myName + ") Could not create role"));
+        resolve(role);
+      })
+      .catch(err => {
+        reject(new Error("(" + myName + ") " + err.message));
       });
     },
+    // createRole : function(req,res,next) {
+    //   let myName = "createRole()";
+    //   let newRole = app.tools.pullParams(req.body,["name"]);
+    //   if(!newRole) return res.send("Required field missing... try again");
+    //   if(req.body.hasOwnProperty("description")) newRole["description"] = req.body.description;
+    //   if(req.body.hasOwnProperty("capabilities")) newRole["capabilities"] = JSON.parse(req.body.capabilities);
+    //   app.models[model]
+    //   .create(newRole)
+    //   .then((record) => {
+    //     req.appData.view = "role";
+    //     req.appData.role = record;
+    //     return next();
+    //   });
+    // },
     connectRoleToDomain : function(role,domain) {
       let myName = "connectRoleToDomain()";
       return new Promise((resolve,reject) => {
