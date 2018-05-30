@@ -61,6 +61,7 @@ app.controllers = {};
 app.routes = {};
 
 let modelData = [];
+let controllerData = [];
 
 let readModelDir = function(dir) {
   let myName = "readModelDir";
@@ -183,7 +184,7 @@ let setupModels = function() {
       disabled:false,
       password:'test123!'
     };
-    adminUser = app.controllers.users.createUser(adminUserDef);
+    return adminUser = app.controllers.users.createUser(adminUserDef);
   }).then(() => {
     let adminRoleDef = {
       id:0,
@@ -191,8 +192,53 @@ let setupModels = function() {
       description:"Role can manage all models in all domains (super-admin users)",
       capabilities:{'edit':'all','create':'all','list':'all','delete':'all'}
     };
-    adminRole = app.controllers.roles.createRole(adminRoleDef);
+    return adminRole = app.controllers.roles.createRole(adminRoleDef);
+  }).then(() => {
+    console.log(adminUser);
+    return adminRole.addUser(adminUser);
+    // return adminUser.addRole(adminRole);
+  }).then(() => {
+    app.log("Admin user connected to admin role",myName,6,"-");
+  }).catch(err => {
+    app.log(err.message,myName,3,"!");
   });
+}
+
+let readControllerDir = function(dir) {
+  let myName = "readControllerDir";
+  return new Promise((resolve,reject) => {
+    fs.readdir(dir,(err,files) => {
+      if(err) reject(new Error("(" + myName + ") : " + err.message));
+      app.log("Found files: " + files,myName,6,"::>");
+      resolve(files)
+    })
+  });
+};
+let readController = function(file) {
+  let myName = "readController";
+  return new Promise((resolve,reject) => {
+    app.log("Requiring " + file,myName,6,"::>");
+
+    let fileNameParts = file.split(".");
+    if(fileNameParts[fileNameParts.length-1]!="js") reject(new Error("(" + myName + ") Not a .js file"));
+    let controllerName = fileNameParts[0].toLowerCase();  
+    app.log("Hydrating " + controllerName + " controller",myName,6,"--->");
+    // let modelDefintion = require("./" + file)(Sequelize,app);
+    app.controllers[controllerName] = require("./" + file)(app,controllerName);
+    resolve(true);
+  });
+}
+
+let readControllerFiles = function(files) {
+  let myName = "readControllerFiles";
+  let controllerReadPromises = Promise.resolve();
+  files.forEach(file => {
+    controllerReadPromises = controllerReadPromises.then(data => {
+      if(data!==null) controllerData.push(data);
+      return readController(app.locals.controllersDir + "/" + file);
+    });
+  });
+  return controllerReadPromises;
 }
 
 
@@ -237,7 +283,7 @@ let setupModels = function() {
   // .catch(err => {
   //   app.log("Error attempting to retrieve admin user: " + err.message,myName,1);
   // });
-};
+// };
 
 /**
  * MODEL DEFINITION
@@ -431,11 +477,19 @@ readModelDir(app.locals.modelsDir)
 .then(modelFiles => {
   return readModelFiles(modelFiles);
 }).then(() => {
+  return readControllerDir(app.locals.controllersDir);
+}).then((controllerFiles) => {
+  return readControllerFiles(controllerFiles);
+}).then(() => {
   return associateModels();
 }).then((models) => {
   return raiseModels(models);
 }).then(() => {
   return setupModels();
+}).then(() => {
+  return readRouteDir(app.locals.routesDir);
+}).then((routeFiles) => {
+  return readRouteFiles();
 }).then(() => {
   console.log("Done!");
 }).catch(err => {
@@ -458,15 +512,15 @@ readModelDir(app.locals.modelsDir)
 /**
  * CONTROLLER DEFINITIONS
  */
-let controllerFiles = fs.readdirSync(app.locals.controllersDir);
-for(let c=0;c<controllerFiles.length;c++) {
-  // Pick only certain file-types
-  let fileNameParts = controllerFiles[c].split(".");
-  if(fileNameParts[fileNameParts.length-1]!="js") continue;
-  let controllerName = fileNameParts[0].toLowerCase();
-  app.log("Hydrating " + controllerName + " controller",myName,6,"--->");
-  app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + controllerFiles[c])(app,controllerName);
-};
+// let controllerFiles = fs.readdirSync(app.locals.controllersDir);
+// for(let c=0;c<controllerFiles.length;c++) {
+//   // Pick only certain file-types
+//   let fileNameParts = controllerFiles[c].split(".");
+//   if(fileNameParts[fileNameParts.length-1]!="js") continue;
+//   let controllerName = fileNameParts[0].toLowerCase();
+//   app.log("Hydrating " + controllerName + " controller",myName,6,"--->");
+//   app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + controllerFiles[c])(app,controllerName);
+// };
 
 /**
  * SET BASE APP CONFIGURATON

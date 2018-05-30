@@ -288,10 +288,12 @@ module.exports = function(app,model) {
       return app.models[model]
       .create(userObj)
       .then((user) => {
-        if(user===null) reject(new Error("(" + myName + ") Could not create user"));
-        resolve(user);
+        if(user===null) return new Error("(" + myName + ") Could not create user");
+        return user;
       })
-      .catch(new Error("(" + myName + ") Could not create user"));
+      .catch(err => {
+        return new Error("(" + myName + ") Could not create user: " + err.message);
+      });
     },
     // createUser : function(req,res,next) {
     //   let myName = "createUser()";

@@ -139,11 +139,11 @@ module.exports = function(app,model) {
       return app.models[model]
       .create(roleObj)
       .then(role => {
-        if(role===null) reject(new ErrorError("(" + myName + ") Could not create role"));
-        resolve(role);
+        if(role===null) return new ErrorError("(" + myName + ") Could not create role");
+        return role;
       })
       .catch(err => {
-        reject(new Error("(" + myName + ") " + err.message));
+        return new Error("(" + myName + ") Could not create role: " + err.message);
       });
     },
     // createRole : function(req,res,next) {
