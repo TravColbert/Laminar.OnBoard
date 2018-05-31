@@ -64,16 +64,6 @@ let modelData = [];
 let controllerData = [];
 let routeData = [];
 
-let readModelDir = function(dir) {
-  let myName = "readModelDir";
-  return new Promise((resolve,reject) => {
-    fs.readdir(dir,(err,files) => {
-      if(err) reject(new Error("(" + myName + ") : " + err.message));
-      app.log("Found files: " + files,myName,6,"::>");
-      resolve(files)
-    })
-  });
-};
 
 let readModel = function(modelFile) {
   let myName = "readModel";
@@ -361,11 +351,7 @@ readModelDir(app.locals.modelsDir)
    * START BUILDING THE INTERFACE
    */
   app.use(
-    navigation.getMenu,
-    function(req,res,next) {
-      app.log("URL: " + req.originalUrl,myName,6);
-      return next();
-    }
+    navigation.getMenu
   );
 }).then(() => {
   return readRouteDir(app.locals.routesDir);
@@ -382,18 +368,12 @@ readModelDir(app.locals.modelsDir)
   app.get('/',app.tools.homePage);
   return true;
 }).then(() => {
-  console.log(Object.keys(app.routes));
-  app._router.stack.forEach(function(r){
-    if (r.route && r.route.path){
-      console.log(r.route.path)
-    }
-  })
   console.log("Done!");
 }).then(() => {
   app.use(
     app.tools.timeEnd,
     app.tools.render
-  );  
+  );
 }).catch(err => {
   app.log(err.message);
 })
