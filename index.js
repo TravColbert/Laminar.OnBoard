@@ -62,6 +62,7 @@ app.routes = {};
 
 let modelData = [];
 let controllerData = [];
+let routeData = [];
 
 let readModelDir = function(dir) {
   let myName = "readModelDir";
@@ -176,32 +177,48 @@ let setupModels = function() {
   let adminUser, adminRole;
   let setupPromises = Promise.resolve();
   setupPromises = setupPromises.then(() => {
-    let adminUserDef = {
-      firstname:'Administrative',
-      lastname:'User',
-      email:'admin@test.com',
-      verified:true,
-      disabled:false,
-      password:'test123!'
+    return app.controllers.users.getUserByObj({email:"admin@test.com"});
+  }).then((user) => {
+    if(user===null) {
+      app.log("No admin user found - creating",myName,6,"+");
+      let adminUserDef = {
+        firstname:'Administrative',
+        lastname:'User',
+        email:'admin@test.com',
+        verified:true,
+        disabled:false,
+        password:'test123!'
+      };
+      return adminUser = app.controllers.users.createUser(adminUserDef);  
+    } else {
+      app.log("Admin user found",myName,6,"#");
+      return adminUser = user;
     };
-    return adminUser = app.controllers.users.createUser(adminUserDef);
   }).then(() => {
-    let adminRoleDef = {
-      id:0,
-      name:"Super Admin",
-      description:"Role can manage all models in all domains (super-admin users)",
-      capabilities:{'edit':'all','create':'all','list':'all','delete':'all'}
-    };
-    return adminRole = app.controllers.roles.createRole(adminRoleDef);
-  }).then(() => {
-    console.log(adminUser);
-    return adminRole.addUser(adminUser);
-    // return adminUser.addRole(adminRole);
+    return app.controllers.roles.getRoleByName("Super Admin");
+  }).then(adminRole => {
+    if(adminRole===null) {
+      app.log("No super-admin role found... creating",myName,6,"+");
+      let adminRoleDef = {
+        name:"Super Admin",
+        description:"Role can manage all models in all domains (super-admin users)",
+        capabilities:{'edit':'all','create':'all','list':'all','delete':'all'}
+      };
+
+      return adminRole = app.controllers.roles.createRole(adminRoleDef);  
+    } else {
+      app.log("Super-admin role found. Good.",myName,6);
+      return adminRole;
+    }
+  }).then((role) => {
+    app.log("Role: " + role,myName,6);
+    return adminUser.addRoles(role);
   }).then(() => {
     app.log("Admin user connected to admin role",myName,6,"-");
   }).catch(err => {
     app.log(err.message,myName,3,"!");
   });
+  return setupPromises;
 }
 
 let readControllerDir = function(dir) {
@@ -210,21 +227,21 @@ let readControllerDir = function(dir) {
     fs.readdir(dir,(err,files) => {
       if(err) reject(new Error("(" + myName + ") : " + err.message));
       app.log("Found files: " + files,myName,6,"::>");
-      resolve(files)
+      resolve(files);
     })
   });
 };
 let readController = function(file) {
   let myName = "readController";
   return new Promise((resolve,reject) => {
-    app.log("Requiring " + file,myName,6,"::>");
-
+    // app.log("Requiring " + app.locals.controllersDir + "/" + file,myName,6,"::>");
     let fileNameParts = file.split(".");
     if(fileNameParts[fileNameParts.length-1]!="js") reject(new Error("(" + myName + ") Not a .js file"));
-    let controllerName = fileNameParts[0].toLowerCase();  
-    app.log("Hydrating " + controllerName + " controller",myName,6,"--->");
+    let controllerName = fileNameParts[0].toLowerCase();
+    // app.log("Hydrating " + app.locals.controllersDir + "/" + controllerName + " controller",myName,6,"--->");
     // let modelDefintion = require("./" + file)(Sequelize,app);
-    app.controllers[controllerName] = require("./" + file)(app,controllerName);
+    app.log("Assigning controller: " + controllerName,myName,6,"+");
+    app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + file)(app,controllerName);
     resolve(true);
   });
 }
@@ -235,12 +252,47 @@ let readControllerFiles = function(files) {
   files.forEach(file => {
     controllerReadPromises = controllerReadPromises.then(data => {
       if(data!==null) controllerData.push(data);
-      return readController(app.locals.controllersDir + "/" + file);
+      return readController(file);
     });
   });
   return controllerReadPromises;
 }
 
+let readRouteDir = function(dir) {
+  let myName = "readRouteDir";
+  return new Promise((resolve,reject) => {
+    fs.readdir(dir,(err,files) => {
+      if(err) reject(new Error("(" + myName + ") : " + err.message));
+      app.log("Found files: " + files,myName,6,"::>");
+      resolve(files);
+    })
+  });
+};
+
+let readRoute = function(file) {
+  let myName = "readRoute";
+  return new Promise((resolve,reject) => {
+    // app.log("Requiring " + file,myName,6,"::>");
+    let fileNameParts = file.split(".");
+    if(fileNameParts[fileNameParts.length-1]!="js") reject(new Error("(" + myName + ") Not a .js file"));
+    let routeName = fileNameParts[0].toLowerCase();
+    app.log("Hydrating " + routeName + " route",myName,6,"--->");
+    app.routes[routeName] = require("./" + file)(app,routeName);
+    resolve(true);
+  });
+}
+
+let readRouteFiles = function(files) {
+  let myName = "readRouteFiles";
+  let routeReadPromises = Promise.resolve();
+  files.forEach(file => {
+    routeReadPromises = routeReadPromises.then(data => {
+      if(data!==null) routeData.push(data);
+      return readRoute(app.locals.routesDir + "/" + file);
+    });
+  });
+  return routeReadPromises;
+}
 
   // return app.models.users.create({
   //   firstname:'Administrative',
@@ -473,6 +525,7 @@ modelPromiseChain = modelPromiseChain.then(() => {
 })
 */
 
+/*
 readModelDir(app.locals.modelsDir)
 .then(modelFiles => {
   return readModelFiles(modelFiles);
@@ -481,6 +534,7 @@ readModelDir(app.locals.modelsDir)
 }).then((controllerFiles) => {
   return readControllerFiles(controllerFiles);
 }).then(() => {
+  app.log("Controllers: " + Object.keys(app.controllers),myName,6,"#");
   return associateModels();
 }).then((models) => {
   return raiseModels(models);
@@ -489,13 +543,16 @@ readModelDir(app.locals.modelsDir)
 }).then(() => {
   return readRouteDir(app.locals.routesDir);
 }).then((routeFiles) => {
-  return readRouteFiles();
+  return readRouteFiles(routeFiles);
+}).then(() => {
+  app.get('/profile/',app.tools.checkAuthentication,app.controllers["users"].getProfile);
+  return true;
 }).then(() => {
   console.log("Done!");
 }).catch(err => {
   app.log(err.message);
 })
-
+*/
 
 // new Promise((resolve,reject) => {
 //   return defineModels();
@@ -567,15 +624,46 @@ app.use(
  *
  * All of these routes can be excluded or replaced.
  */
-let routeFiles = fs.readdirSync(app.locals.routesDir);
-for(let c=0;c<routeFiles.length;c++) {
-  // Pick only certain file-types
-  let fileNameParts = routeFiles[c].split(".");
-  if(fileNameParts[fileNameParts.length-1]!="js") continue;
-  let routeName = fileNameParts[0].toLowerCase();
-  app.routes[routeName] = require('./' + app.locals.routesDir + '/' + routeFiles[c])(app);
-  app.use('/' + routeName + "/",app.routes[routeName]);
-};
+
+// let routeFiles = fs.readdirSync(app.locals.routesDir);
+// for(let c=0;c<routeFiles.length;c++) {
+//   // Pick only certain file-types
+//   let fileNameParts = routeFiles[c].split(".");
+//   if(fileNameParts[fileNameParts.length-1]!="js") continue;
+//   let routeName = fileNameParts[0].toLowerCase();
+//   app.routes[routeName] = require('./' + app.locals.routesDir + '/' + routeFiles[c])(app);
+//   app.use('/' + routeName + "/",app.routes[routeName]);
+// };
+
+
+readModelDir(app.locals.modelsDir)
+.then(modelFiles => {
+  return readModelFiles(modelFiles);
+}).then(() => {
+  return readControllerDir(app.locals.controllersDir);
+}).then((controllerFiles) => {
+  return readControllerFiles(controllerFiles);
+}).then(() => {
+  return associateModels();
+}).then((models) => {
+  return raiseModels(models);
+}).then(() => {
+  app.log("Controllers: " + Object.keys(app.controllers),myName,6,"#");
+  return setupModels();
+}).then(() => {
+  return readRouteDir(app.locals.routesDir);
+}).then((routeFiles) => {
+  return readRouteFiles(routeFiles);
+}).then(() => {
+  app.get('/profile/',app.tools.checkAuthentication,app.controllers["users"].getProfile);
+  app.get('/',app.tools.homePage);
+  return true;
+}).then(() => {
+  console.log("Done!");
+}).catch(err => {
+  app.log(err.message);
+})
+
 
 /**
  * YOUR APPLICATION ROUTES HERE
@@ -583,7 +671,7 @@ for(let c=0;c<routeFiles.length;c++) {
  * This is where you would put your application's custom routes.
  */
 
-app.get('/profile/',app.tools.checkAuthentication,app.controllers["users"].getProfile);
+// app.get('/profile/',app.tools.checkAuthentication,app.controllers["users"].getProfile);
 
 /**
  * CLOSING ROUTES
@@ -594,7 +682,7 @@ app.get('/profile/',app.tools.checkAuthentication,app.controllers["users"].getPr
 /**
  * HOME PAGE ROUTE
  */
-app.get('/',app.tools.homePage);
+// app.get('/',app.tools.homePage);
 /**
  * CLOSE THE APP AND SHIP IT!
  */

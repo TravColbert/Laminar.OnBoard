@@ -234,6 +234,11 @@ module.exports = function(app,model) {
         });
       });
     },
+    getUserByObj : function(obj) {
+      let myName = "getUserByObj";
+      return app.models[model]
+      .find({where:obj});
+    },
     editUserForm : function(req,res,next) {
       let myName = "editUserForm()";
       app.log("Requesting edit user form",myName,6);

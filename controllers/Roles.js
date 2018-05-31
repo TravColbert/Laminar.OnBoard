@@ -31,19 +31,30 @@ module.exports = function(app,model) {
         return res.send(err.message);
       });
     },
-    getRoleByName : function(name) {
-      let myName = "getRoleByName()";
-      return new Promise((resolve,reject) => {
-        app.models[model]
-        .findOne({where:{name:name}})
-        .then((role) => {
-          resolve(role);
-        })
-        .catch((err) => {
-          reject(new Error("(" + myName + ") Failed to find role with name: " + name));
-        });
-      });
+    getRoleByName : function(roleName) {
+      let myName = "getRoleByName";
+      app.log("Looking for role with name: " + roleName,myName,6);
+      return app.models[model].findOne({where:{name:roleName}});
+      // .then(role => {
+      //   resolve(role);
+      // })
+      // .catch(err => {
+      //   reject(new Error("(" + myName + ") " + err.message));
+      // });
     },
+    // getRoleByName : function(name) {
+    //   let myName = "getRoleByName()";
+    //   return new Promise((resolve,reject) => {
+    //     app.models[model]
+    //     .findOne({where:{name:name}})
+    //     .then((role) => {
+    //       resolve(role);
+    //     })
+    //     .catch((err) => {
+    //       reject(new Error("(" + myName + ") Failed to find role with name: " + name));
+    //     });
+    //   });
+    // },
     // getRolesByDomainId : function(domainId) {
     //   let myName = "getRolesByDomainId()";
     //   return new Promise((resolve,reject) => {
