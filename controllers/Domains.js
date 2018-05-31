@@ -160,40 +160,63 @@ module.exports = function(app,model) {
         return res.redirect("/domains/" + requestedDomainId + "/");
       });
     },
-    createDomain : function(req,res,next) {
-      let myName = "createDomain()";
-      let newDomain = app.tools.pullParams(req.body,["name"]);
-      if(!newDomain) return res.send("Required field missing... try again");
-      if(req.body.hasOwnProperty("description")) newDomain["description"] = req.body.description;
-      // if(req.body.hasOwnProperty("userId")) newDomain["ownerId"] = req.body.userId;
-      newDomain.ownerId = req.session.user.id;
-      app.models[model]
-      .create(newDomain)
-      .then((domain) => {
+    createDomain : function(domainObj) {
+      let myName = "createDomain";
+      return app.models[model]
+      .create(domainObj).then(domain => {
         return app.controllers["roles"].createDefaultRoles(domain);
-      })
-      .then((roles) => {
+      }).then(roles => {
         let role = roles.filter((v) => {
           return v.name=="Admin Role";
-        })
+        });
         app.log("This is the admin role: " + JSON.stringify(role),myName,6,"!!!!");
         return app.controllers["users"]
         .getUserById(req.session.user.id)
         .then(user => {
           return app.controllers["roles"].addUserToRole(user,role);
-        })
-        .catch(err => {
-          res.send("(" + myName + ") " + err.message);
-        })
-      })
-      .then(() => {
+        });
+      }).then(() => {
         app.log("I think the user is in the domain's admin role");
         return res.redirect("/domains/");
-      })
-      .catch(err => {
-        res.send("(" + myName + ") " + err.message);
+      }).catch(err => {
+        return new Error("(" + myName + ") " + err.message);
+        // res.send("(" + myName + ") " + err.message);
       });
-    }
+    },
+    // createDomain : function(req,res,next) {
+    //   let myName = "createDomain()";
+    //   let newDomain = app.tools.pullParams(req.body,["name"]);
+    //   if(!newDomain) return res.send("Required field missing... try again");
+    //   if(req.body.hasOwnProperty("description")) newDomain["description"] = req.body.description;
+    //   // if(req.body.hasOwnProperty("userId")) newDomain["ownerId"] = req.body.userId;
+    //   newDomain.ownerId = req.session.user.id;
+    //   app.models[model]
+    //   .create(newDomain)
+    //   .then((domain) => {
+    //     return app.controllers["roles"].createDefaultRoles(domain);
+    //   })
+    //   .then((roles) => {
+    //     let role = roles.filter((v) => {
+    //       return v.name=="Admin Role";
+    //     })
+    //     app.log("This is the admin role: " + JSON.stringify(role),myName,6,"!!!!");
+    //     return app.controllers["users"]
+    //     .getUserById(req.session.user.id)
+    //     .then(user => {
+    //       return app.controllers["roles"].addUserToRole(user,role);
+    //     })
+    //     .catch(err => {
+    //       res.send("(" + myName + ") " + err.message);
+    //     })
+    //   })
+    //   .then(() => {
+    //     app.log("I think the user is in the domain's admin role");
+    //     return res.redirect("/domains/");
+    //   })
+    //   .catch(err => {
+    //     res.send("(" + myName + ") " + err.message);
+    //   });
+    // }
   };
   return obj;
 };
