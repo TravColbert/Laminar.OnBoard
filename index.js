@@ -69,7 +69,7 @@ let readModel = function(modelFile) {
   let myName = "readModel";
   return new Promise((resolve,reject) => {
     app.log("Requiring " + modelFile,myName,6,"::>");
-    let modelDefintion = require("./" + modelFile)(Sequelize,app);
+    let modelDefintion = require("./" + app.locals.modelsDir + "/" + modelFile)(Sequelize,app);
     app.models[modelDefintion.tablename] = sequelize.define(modelDefintion.tablename,modelDefintion.schema,modelDefintion.options);
     resolve(true);
   });
@@ -180,16 +180,6 @@ let setupModels = function() {
   return setupPromises;
 }
 
-let readControllerDir = function(dir) {
-  let myName = "readControllerDir";
-  return new Promise((resolve,reject) => {
-    fs.readdir(dir,(err,files) => {
-      if(err) reject(new Error("(" + myName + ") : " + err.message));
-      app.log("Found files: " + files,myName,6,"::>");
-      resolve(files);
-    })
-  });
-};
 let readController = function(file) {
   let myName = "readController";
   return new Promise((resolve,reject) => {
@@ -204,30 +194,18 @@ let readController = function(file) {
     resolve(true);
   });
 }
-let readControllerFiles = function(files) {
+let readControllerFiles = function(files,cb) {
   let myName = "readControllerFiles";
   let controllerReadPromises = Promise.resolve();
   files.forEach(file => {
     controllerReadPromises = controllerReadPromises.then(data => {
-      if(data!==null) controllerData.push(data);
-      return readController(file);
+      return cb(file);
     });
   });
   return controllerReadPromises;
 }
 
-let readRouteDir = function(dir) {
-  let myName = "readRouteDir";
-  return new Promise((resolve,reject) => {
-    fs.readdir(dir,(err,files) => {
-      if(err) reject(new Error("(" + myName + ") : " + err.message));
-      app.log("Found files: " + files,myName,6,"::>");
-      resolve(files);
-    })
-  });
-};
-
-let readRoute = function(file,app) {
+let readRoute = function(file) {
   let myName = "readRoute";
   return new Promise((resolve,reject) => {
     let fileNameParts = file.split(".");
@@ -243,13 +221,12 @@ let readRoute = function(file,app) {
   });
 }
 
-let readRouteFiles = function(files) {
+let readRouteFiles = function(files,cb) {
   let myName = "readRouteFiles";
   let routeReadPromises = Promise.resolve();
   files.forEach(file => {
     routeReadPromises = routeReadPromises.then(data => {
-      if(data!==null) routeData.push(data);
-      return readRoute(file,app);
+      return cb(file);
     });
   });
   return routeReadPromises;
@@ -312,13 +289,14 @@ let readRouteFiles = function(files) {
 // };
 
 
-readModelDir(app.locals.modelsDir)
+app.tools.readDir(app.locals.modelsDir)
 .then(modelFiles => {
-  return readModelFiles(modelFiles);
+  // return readModelFiles(modelFiles);
+  return app.tools.processFiles(modelFiles,readModel);
 }).then(() => {
-  return readControllerDir(app.locals.controllersDir);
+  return app.tools.readDir(app.locals.controllersDir);
 }).then((controllerFiles) => {
-  return readControllerFiles(controllerFiles);
+  return app.tools.processFiles(controllerFiles,readController);
 }).then(() => {
   return associateModels();
 }).then((models) => {
@@ -354,9 +332,9 @@ readModelDir(app.locals.modelsDir)
     navigation.getMenu
   );
 }).then(() => {
-  return readRouteDir(app.locals.routesDir);
+  return app.tools.readDir(app.locals.routesDir);
 }).then((routeFiles) => {
-  return readRouteFiles(routeFiles);
+  return app.tools.processFiles(routeFiles,readRoute);
 }).then(() => {
   app.log("Total routes: " + Object.keys(app.routes).length,myName,6);
   let routeNames = Object.keys(app.routes);

@@ -34,6 +34,7 @@ module.exports = function(app) {
       return sauce.substring(null,length);
     }
   };
+
   obj.showPath = function(req,res,next) {
     obj.logThis("CALCULATED PATH:" + req.path,myName,6);
     return next();
@@ -41,6 +42,29 @@ module.exports = function(app) {
   obj.logThis = function(string,caller,debugLevel) {
     return this.log(string,caller,debugLevel,">");
   };
+
+  obj.readDir = function(dir) {
+    let myName = "readDir";
+    return new Promise((resolve,reject) => {
+      fs.readdir(dir,(err,files) => {
+        if(err) reject(new Error("(" + myName + ") : " + err.message));
+        obj.logThis("Found files: " + files,myName,6);
+        resolve(files)
+      })
+    });
+  };
+  
+  obj.processFiles = function(files,cb) {
+    let myName = "processFiles";
+    let routeReadPromises = Promise.resolve();
+    files.forEach(file => {
+      routeReadPromises = routeReadPromises.then(data => {
+        return cb(file);
+      });
+    });
+    return routeReadPromises;
+  }
+  
   obj.timeStart = function(req,res,next) {
     let myName = "timeStart()";
     req.appData.startTime = Date.now();
