@@ -420,9 +420,15 @@ module.exports = function(app,model) {
       let domainList = [];
       for(let c=0;c<user.roles.length;c++) {
         for(let i=0;i<user.roles[c].domains.length;i++) {
-          if(domainList.indexOf(user.roles[c].domains[i])<0) {
+          let domainFound = domainList.filter(v => {
+            app.log(v.id + " : " + user.roles[c].domains[i].id,myName,6);
+            return v.id == user.roles[c].domains[i].id;
+          });
+          if(domainFound.length<1) {
             app.log("Adding domain: " + user.roles[c].domains[i].id + " to user's domain list",myName,6," - - - ");
             domainList.push(user.roles[c].domains[i]);
+          } else {
+            app.log("Skipping domain: " + user.roles[c].domains[i].id + " already in user's domain list",myName,6," # # # ");
           }
         }
       }

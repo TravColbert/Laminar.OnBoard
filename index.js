@@ -129,57 +129,23 @@ let setupModels = function() {
     app.log("Making default domains",myName,6,"+");
     let defaultDomain = {
       name:"Default Domain",
-      description:"The default domain"
+      description:"The default domain",
+      ownerId:adminUser.id
     };
     let trashDomain = {
       name:"Trash Domain",
-      description:"The trashcan of domains"
+      description:"The trashcan of domains",
+      ownerId:adminUser.id
     };
-    return app.controllers.domains.createDomain(defaultDomain)
+    return app.controllers.domains.createDomain(defaultDomain,adminUser.id)
     .then(() => {
-      return app.controllers.domains.createDomain(trashDomain)
+      return app.controllers.domains.createDomain(trashDomain,adminUser.id);
     });
   }).catch(err => {
     app.log(err.message,myName,3,"!");
   });
   return setupPromises;
 }
-
-/**
- * MODEL DEFINITION
- */
-
-/**
- * MODEL ASSOCIATIONS
- * These statements determine the relationships between models.
- */
-
-/**
- * FINAL MODEL PREP
- * Any last-minute stuff that should be done to the model(s)
- */
-
-/**
- * CONTROLLER DEFINITIONS
- */
-
-/**
- * ROUTE DEFINITIONS
- *
- * These are derived from route files placed in the routesDir directory
- * Any route definitions found there will be defined here and mounted
- * The mount point will be the name of the route file.
- * There are some 'standard' routes:
- * /login : standard routes to allow loging-in
- * /logout : standard routes for logging-out
- * /register : a simple user-registration system that allows new users to
- *  be created and submitted for approval.
- * /roles : a role-management system.
- * /authtest : can be used to simply test authentication
- * /actions : a basic way of requesting forms used to work on : /create/user
- *
- * All of these routes can be excluded or replaced.
- */
 
 app.tools.readDir(app.locals.modelsDir)
 .then(modelFiles => {
@@ -223,6 +189,23 @@ app.tools.readDir(app.locals.modelsDir)
     navigation.getMenu
   );
 }).then(() => {
+  /**
+   * ROUTE DEFINITIONS
+   *
+   * These are derived from route files placed in the routesDir directory
+   * Any route definitions found there will be defined here and mounted
+   * The mount point will be the name of the route file.
+   * There are some 'standard' routes:
+   * /login : standard routes to allow loging-in
+   * /logout : standard routes for logging-out
+   * /register : a simple user-registration system that allows new users to
+   *  be created and submitted for approval.
+   * /roles : a role-management system.
+   * /authtest : can be used to simply test authentication
+   * /actions : a basic way of requesting forms used to work on : /create/user
+   *
+   * All of these routes can be excluded or replaced.
+   */
   return app.tools.readDir(app.locals.routesDir);
 }).then((routeFiles) => {
   return app.tools.processFiles(routeFiles,app.tools.readRoute);
@@ -247,34 +230,6 @@ app.tools.readDir(app.locals.modelsDir)
   app.log(err.message);
 })
 
-
-/**
- * YOUR APPLICATION ROUTES HERE
- *
- * This is where you would put your application's custom routes.
- */
-
-// app.get('/profile/',app.tools.checkAuthentication,app.controllers["users"].getProfile);
-
-/**
- * CLOSING ROUTES
- */
- // A route to fetch authorized UI elements
- // app.get('/authorizedelements/:element',appCheckAuthentication,appGetElement);
-
-/**
- * HOME PAGE ROUTE
- */
-// app.get('/',app.tools.homePage);
-/**
- * CLOSE THE APP AND SHIP IT!
- */
-/*
-app.use(
-  app.tools.timeEnd,
-  app.tools.render
-);
-*/
 /**
  * HANDLE ERRORS
  */

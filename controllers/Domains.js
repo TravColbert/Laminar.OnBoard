@@ -177,16 +177,12 @@ module.exports = function(app,model) {
         return app.controllers["users"].getUserById(creatorUserId);
       }).then(user => {
         app.log("Found creator-user: " + user.fullname,myName,6,"::>");
-        app.log("target role: " + adminRole.name,myName,6,"::>");
-        // return user.addRoles(adminRole)
         return adminRole.addUser(user,{through:{comment:"Creator-owner added to admin role for domain"}});
-        // return app.controllers["roles"].addUserToRole(user,adminRole);
       }).then(() => {
         app.log("I think the user is in the domain's admin role",myName,6);
         return true;
       }).catch(err => {
         return new Error("(" + myName + ") " + err.message);
-        // res.send("(" + myName + ") " + err.message);
       });
     },
     create : function(req,res,next) {
