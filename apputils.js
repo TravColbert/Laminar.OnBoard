@@ -2,7 +2,7 @@ const fs = require('fs');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
-module.exports = function(app) {
+module.exports = function(app,sequelize) {
   let obj = {
     name : "App",
     log : function(string,caller,debugLevel,prefix) {
@@ -34,7 +34,6 @@ module.exports = function(app) {
       return sauce.substring(null,length);
     }
   };
-
   obj.showPath = function(req,res,next) {
     obj.logThis("CALCULATED PATH:" + req.path,myName,6);
     return next();
@@ -42,7 +41,6 @@ module.exports = function(app) {
   obj.logThis = function(string,caller,debugLevel) {
     return this.log(string,caller,debugLevel,">");
   };
-
   obj.readDir = function(dir) {
     let myName = "readDir";
     return new Promise((resolve,reject) => {
@@ -53,7 +51,49 @@ module.exports = function(app) {
       })
     });
   };
-  
+  obj.readModel = function(file) {
+    let myName = "readModel";
+    return new Promise((resolve,reject) => {
+      app.log("Requiring " + file,myName,6,"::>");
+      let modelDefintion = require("./" + app.locals.modelsDir + "/" + file)(Sequelize,app);
+      app.models[modelDefintion.tablename] = sequelize.define(modelDefintion.tablename,modelDefintion.schema,modelDefintion.options);
+      resolve(true);
+    });
+  };
+  obj.startModels = function(models) {
+    let myName = "startModels";
+    obj.logThis("Starting models...",myName,6);
+    let syncPromises = Promise.resolve();
+    Object.keys(models).forEach(modelName => {
+      syncPromises = syncPromises.then(() => {
+        app.log("sync'ing model: " + modelName,myName,6,"::>");
+        return(models[modelName].sync());
+      });
+    });
+    return syncPromises;
+  };
+  obj.readController = function(file) {
+    let myName = "readController";
+    return new Promise((resolve,reject) => {
+      let fileNameParts = file.split(".");
+      if(fileNameParts[fileNameParts.length-1]!="js") reject(new Error("(" + myName + ") Not a .js file"));
+      let controllerName = fileNameParts[0].toLowerCase();
+      app.log("Assigning controller: " + controllerName,myName,6,"+");
+      app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + file)(app,controllerName);
+      resolve(true);
+    });
+  };
+  obj.readRoute = function(file) {
+    let myName = "readRoute";
+    return new Promise((resolve,reject) => {
+      let fileNameParts = file.split(".");
+      if(fileNameParts[fileNameParts.length-1]!="js") reject(new Error("(" + myName + ") Not a .js file"));
+      let routeName = fileNameParts[0].toLowerCase();
+      obj.logThis("Hydrating /" + routeName + "/ route",myName,6,"--->");
+      app.routes[routeName] = require('./' + app.locals.routesDir + '/' + file)(app);
+      resolve(true);
+    });
+  }
   obj.processFiles = function(files,cb) {
     let myName = "processFiles";
     let routeReadPromises = Promise.resolve();
@@ -63,8 +103,7 @@ module.exports = function(app) {
       });
     });
     return routeReadPromises;
-  }
-  
+  };
   obj.timeStart = function(req,res,next) {
     let myName = "timeStart()";
     req.appData.startTime = Date.now();
@@ -129,8 +168,8 @@ module.exports = function(app) {
     let myName = "render()";
     // let templateFile = req.appData.view || "index";
     let templateFile = req.appData.view || app.locals.homeView;
-    app.log(req.appData);
-    app.log("Rendering template: " + templateFile,myName,5);
+    obj.logThis(req.appData);
+    obj.logThis("Rendering template: " + templateFile,myName,5);
     return res.render(templateFile,req.appData);
   },
   obj.makeMessage = function(obj) {
@@ -194,10 +233,10 @@ module.exports = function(app) {
   };
   obj.checkAuthorization = function(capability,userId,domainId) {
     let myName = "checkAuthorization()";
-    app.log("Checking if user " + userId + " is authorized to " + capability + " on domain " + domainId,myName,6);
+    obj.logThis("Checking if user " + userId + " is authorized to " + capability + " on domain " + domainId,myName,6);
     return new Promise((resolve,reject) => {
       let cap = {};
-      cap[capability[0]] = {[Op.eq]:capability[1]};   
+      cap[capability[0]] = {[Op.eq]:capability[1]};
       // The above is a way to query from within a JSON obj
       // The capability looks like this when you call it: ["create","all"]
       // So, this just makes it look like this: {"create":{[Op.eq]:"all"}}
@@ -222,19 +261,19 @@ module.exports = function(app) {
       })
       .then((roles) => {
         if(roles===null || roles.length===0) return resolve(false);
-        app.log(roles.length + " roles found permitting '" + capability + "'",myName,6);
+        obj.logThis(roles.length + " roles found permitting '" + capability + "'",myName,6);
         return resolve(true);
       })
       .catch(err => {
-        app.log("error looking up authorizations: " + err.message,myName,2);
+        obj.logThis("error looking up authorizations: " + err.message,myName,2);
         return reject(err);
       });
     })
   };
   obj.ifUserIsAuthorized = function(capability,user,cb) {
     let myName = "ifUserIsAuthorized()";
-    // app.log(JSON.stringify(user));
-    app.log("Checking if user " + user.id + " is authorized to: '" + capability + "' on domain: " + user.defaultDomainId,myName);
+    // obj.logThis(JSON.stringify(user));
+    obj.logThis("Checking if user " + user.id + " is authorized to: '" + capability + "' on domain: " + user.defaultDomainId,myName);
 
     let cap = {};
     cap[capability[0]] = {[Op.eq]:capability[1]};
@@ -246,12 +285,12 @@ module.exports = function(app) {
     .findAll({where:query.roles||null,include:[{model:app.models["users"],where:query.users||null},{model:app.models["domains"],where:query.domains||null}]})
     .then(roles => {
       if(roles===null || roles.length===0) return cb(null,false);
-      app.log(roles.length + " roles found permitting '" + capability + "'",myName,6);
-      // app.log(JSON.stringify(roles));
+      obj.logThis(roles.length + " roles found permitting '" + capability + "'",myName,6);
+      // obj.logThis(JSON.stringify(roles));
       return cb(null,true);
     })
     .catch(err => {
-      app.log("error looking up authorizations: " + err.message,myName,2);
+      obj.logThis("error looking up authorizations: " + err.message,myName,2);
       return cb(err);
     })
   };
@@ -266,9 +305,9 @@ module.exports = function(app) {
     }
     return next();
   };
-  obj.setGlobalSessionEnvironment = function(req,res,next) {
-    let myName = "setGlobalSessionEnvironment()";
-    obj.logThis("Setting session environment",myName,6);
+  obj.setCurrentDomain = function(req,res,next) {
+    let myName = "setCurrentDomain()";
+    obj.logThis("Setting current domain",myName,6);
     // Is there a user?
     if(req.session.user) {
       // Get user's enrollments
@@ -276,30 +315,30 @@ module.exports = function(app) {
       .then((user) => {
         if(user===null) return res.send("Couldn't find this user (even though session data is set)");
         let domainList = app.controllers["users"].compileDomainList(user);
+        //app.controllers["users"].setCurrentDomain(domainId);
         if(req.session.user.hasOwnProperty("switchDomain")) {
           obj.logThis("Found a switch-domain request for: " + req.session.user.switchDomain,myName,6," - - - ");
           targetDomainId = req.session.user.switchDomain;
-        } else {
+        } else if(req.session.user.defaultDomainId!==null) {
           obj.logThis("No switch-domain request found. Looking for a defaultDomain: " + req.session.user.defaultDomainId,myName,6," - - - ")
           targetDomainId = req.session.user.defaultDomainId;
+        } else {
+          obj.logThis("No default domain set. Chosing the first on the list: " + domainList[0].id,myName,6);
+          targetDomainId = domainList[0].id;
         }
-        obj.logThis(domainList,myName,6);
+        //obj.logThis("Domain List: " + domainList,myName,6);
         obj.logThis("Target domain is: " + targetDomainId,myName,6);
         let switchTo = domainList.filter(v => {
+          //obj.logThis("Domain ID: " + v.id,myName,6);
           return (v.id==targetDomainId);
         });
-        obj.logThis(switchTo,myName,6);
+        obj.logThis("Switching to this: " + switchTo,myName,6,":::>");
         // obj.logThis("Switchto: " + switchTo[0].id);
         if(switchTo && switchTo[0].id) {
           obj.logThis("Setting");
           req.session.user.currentDomain=switchTo[0];
         }
         req.session.user.domains = domainList;
-        // Otherwise if no current domain has been set just set it to the first on the user's domain list
-        if(!req.session.user.currentDomain) {
-          obj.logThis("Could not find a requested domain or a default domain. Using first domain in user's domain list",myName,6," - - - ");
-          req.session.user.currentDomain = domainList[0];
-        }
         obj.logThis("Session's current domain is ==> " + req.session.user.currentDomain.name,myName,6);
         req.appData.user = req.session.user;
         return next();
@@ -311,7 +350,7 @@ module.exports = function(app) {
       })
     } else {
       // probably user is not logged-in
-      obj.logThis("I guess there's no user right now... moving on...");
+      obj.logThis("I guess there's no user right now... moving on...",myName,6);
       return next();
     }
   },
@@ -394,7 +433,7 @@ module.exports = function(app) {
         return next();
       })
       .catch((err) => {
-        app.log(err.message);
+        obj.logThis(err.message);
         return res.send("Error: " + err.message);
       });
     } else {
@@ -419,7 +458,7 @@ module.exports = function(app) {
   /**
    * This function is meant to be used in route lines
    * It returns a function that returns the named view.
-   * @param {*} view 
+   * @param {*} view
    */
   obj.showPage = function(view) {
     return function(req,res,next) {
@@ -432,14 +471,14 @@ module.exports = function(app) {
     let myName = "showForm()";
     let model = req.params.model || null;
     let action = req.params.action || 'create';
-    app.log("Requesting form: " + model + action);
+    obj.logThis("Requesting form: " + model + action);
     app.tools.checkAuthorization([action,"all"],req.session.user.id,req.session.user.currentDomain.id)
     .then((response) => {
       if(!response) {
-        app.log("User failed authorization check",myName,6);
+        obj.logThis("User failed authorization check",myName,6);
         return resolve([]);
       }
-      app.log("User is authorized to show form: " + model + action,myName,6);
+      obj.logThis("User is authorized to show form: " + model + action,myName,6);
       app.models["domains"]
       .findById(req.session.user.currentDomain.id)
       .then(domain => {
@@ -482,7 +521,7 @@ module.exports = function(app) {
   };
   obj.secureTest = function(req,res,next) {
     var myName = "secureTest";
-    app.log("Request to render secure test page",myName);
+    obj.logThis("Request to render secure test page",myName);
     req.appData.view = "secure";
     return next();
   };

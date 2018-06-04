@@ -38,7 +38,7 @@ let sessionConfig = {
   saveUninitialized:false
 };
 
-app.tools = require('./apputils')(app);
+app.tools = require('./apputils')(app,sequelize);
 const navigation = require('./navigation')(app);
 // const mailutils = require('./mailutils')(app);
 
@@ -64,29 +64,6 @@ let modelData = [];
 let controllerData = [];
 let routeData = [];
 
-
-let readModel = function(modelFile) {
-  let myName = "readModel";
-  return new Promise((resolve,reject) => {
-    app.log("Requiring " + modelFile,myName,6,"::>");
-    let modelDefintion = require("./" + app.locals.modelsDir + "/" + modelFile)(Sequelize,app);
-    app.models[modelDefintion.tablename] = sequelize.define(modelDefintion.tablename,modelDefintion.schema,modelDefintion.options);
-    resolve(true);
-  });
-}
-
-let readModelFiles = function(modelFiles) {
-  let myName = "readModelFiles";
-  let readPromises = Promise.resolve();
-  modelFiles.forEach(file => {
-    readPromises = readPromises.then(data => {
-      if(data!==null) modelData.push(data);
-      return readModel(app.locals.modelsDir + "/" + file);
-    });
-  });
-  return readPromises;
-}
-
 let associateModels = function() {
   let myName = "associateModels";
   return new Promise((resolve,reject) => {
@@ -101,18 +78,6 @@ let associateModels = function() {
     app.models["notes"].belongsTo(app.models["users"],{as:"user"});             // makes notes.userId
     resolve(app.models);
   });
-}
-
-let raiseModels = function(models) {
-  let myName = "raiseModels";
-  let syncPromises = Promise.resolve();
-  Object.keys(models).forEach(modelName => {
-    syncPromises = syncPromises.then(() => {
-      app.log("sync'ing model: " + modelName,myName,6,"::>");
-      return(models[modelName].sync());
-    });
-  });
-  return syncPromises;
 }
 
 let setupModels = function() {
@@ -134,7 +99,7 @@ let setupModels = function() {
         disabled:false,
         password:'test123!'
       };
-      return app.controllers.users.createUser(adminUserDef);  
+      return app.controllers.users.createUser(adminUserDef);
     } else {
       app.log("Admin user found",myName,6,"#");
       return user;
@@ -150,7 +115,7 @@ let setupModels = function() {
         description:"Role can manage all models in all domains (super-admin users)",
         capabilities:{'edit':'all','create':'all','list':'all','delete':'all'}
       };
-      return app.controllers.roles.createRole(adminRoleDef);  
+      return app.controllers.roles.createRole(adminRoleDef);
     } else {
       app.log("Super-admin role found. Good.",myName,6);
       return role;
@@ -180,58 +145,6 @@ let setupModels = function() {
   return setupPromises;
 }
 
-let readController = function(file) {
-  let myName = "readController";
-  return new Promise((resolve,reject) => {
-    // app.log("Requiring " + app.locals.controllersDir + "/" + file,myName,6,"::>");
-    let fileNameParts = file.split(".");
-    if(fileNameParts[fileNameParts.length-1]!="js") reject(new Error("(" + myName + ") Not a .js file"));
-    let controllerName = fileNameParts[0].toLowerCase();
-    // app.log("Hydrating " + app.locals.controllersDir + "/" + controllerName + " controller",myName,6,"--->");
-    // let modelDefintion = require("./" + file)(Sequelize,app);
-    app.log("Assigning controller: " + controllerName,myName,6,"+");
-    app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + file)(app,controllerName);
-    resolve(true);
-  });
-}
-let readControllerFiles = function(files,cb) {
-  let myName = "readControllerFiles";
-  let controllerReadPromises = Promise.resolve();
-  files.forEach(file => {
-    controllerReadPromises = controllerReadPromises.then(data => {
-      return cb(file);
-    });
-  });
-  return controllerReadPromises;
-}
-
-let readRoute = function(file) {
-  let myName = "readRoute";
-  return new Promise((resolve,reject) => {
-    let fileNameParts = file.split(".");
-    if(fileNameParts[fileNameParts.length-1]!="js") reject(new Error("(" + myName + ") Not a .js file"));
-    let routeName = fileNameParts[0].toLowerCase();
-    app.log("Hydrating /" + routeName + "/ route",myName,6,"--->");
-    app.log("1. Route count: " + Object.keys(app.routes).length,myName,6,"#");
-    app.routes[routeName] = require('./' + app.locals.routesDir + '/' + file)(app);
-    // app.log(app.routes[routeName],myName,6,"#");
-    app.log("2. Route count: " + Object.keys(app.routes).length,myName,6,"#");
-    // app.use('/' + routeName + '/',app.routes[routeName]);
-    resolve(true);
-  });
-}
-
-let readRouteFiles = function(files,cb) {
-  let myName = "readRouteFiles";
-  let routeReadPromises = Promise.resolve();
-  files.forEach(file => {
-    routeReadPromises = routeReadPromises.then(data => {
-      return cb(file);
-    });
-  });
-  return routeReadPromises;
-}
-
 /**
  * MODEL DEFINITION
  */
@@ -249,16 +162,6 @@ let readRouteFiles = function(files,cb) {
 /**
  * CONTROLLER DEFINITIONS
  */
-// let controllerFiles = fs.readdirSync(app.locals.controllersDir);
-// for(let c=0;c<controllerFiles.length;c++) {
-//   // Pick only certain file-types
-//   let fileNameParts = controllerFiles[c].split(".");
-//   if(fileNameParts[fileNameParts.length-1]!="js") continue;
-//   let controllerName = fileNameParts[0].toLowerCase();
-//   app.log("Hydrating " + controllerName + " controller",myName,6,"--->");
-//   app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + controllerFiles[c])(app,controllerName);
-// };
-
 
 /**
  * ROUTE DEFINITIONS
@@ -278,29 +181,17 @@ let readRouteFiles = function(files,cb) {
  * All of these routes can be excluded or replaced.
  */
 
-// let routeFiles = fs.readdirSync(app.locals.routesDir);
-// for(let c=0;c<routeFiles.length;c++) {
-//   // Pick only certain file-types
-//   let fileNameParts = routeFiles[c].split(".");
-//   if(fileNameParts[fileNameParts.length-1]!="js") continue;
-//   let routeName = fileNameParts[0].toLowerCase();
-//   app.routes[routeName] = require('./' + app.locals.routesDir + '/' + routeFiles[c])(app);
-//   app.use('/' + routeName + "/",app.routes[routeName]);
-// };
-
-
 app.tools.readDir(app.locals.modelsDir)
 .then(modelFiles => {
-  // return readModelFiles(modelFiles);
-  return app.tools.processFiles(modelFiles,readModel);
+  return app.tools.processFiles(modelFiles,app.tools.readModel);
 }).then(() => {
   return app.tools.readDir(app.locals.controllersDir);
 }).then((controllerFiles) => {
-  return app.tools.processFiles(controllerFiles,readController);
+  return app.tools.processFiles(controllerFiles,app.tools.readController);
 }).then(() => {
   return associateModels();
 }).then((models) => {
-  return raiseModels(models);
+  return app.tools.startModels(models);
 }).then(() => {
   return setupModels();
 }).then(() => {
@@ -318,7 +209,7 @@ app.tools.readDir(app.locals.modelsDir)
    * SET SESSION AND ACCOUNT DATA
    */
   app.use(
-    app.tools.setGlobalSessionEnvironment,
+    app.tools.setCurrentDomain,
     app.tools.setUserAccount,
     // app.tools.setSessionData,
     app.tools.setMessage //,
@@ -334,7 +225,7 @@ app.tools.readDir(app.locals.modelsDir)
 }).then(() => {
   return app.tools.readDir(app.locals.routesDir);
 }).then((routeFiles) => {
-  return app.tools.processFiles(routeFiles,readRoute);
+  return app.tools.processFiles(routeFiles,app.tools.readRoute);
 }).then(() => {
   app.log("Total routes: " + Object.keys(app.routes).length,myName,6);
   let routeNames = Object.keys(app.routes);

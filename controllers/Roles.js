@@ -237,8 +237,8 @@ module.exports = function(app,model) {
     addUserToRole : function(user,role) {
       let myName = "addUserToRole()";
       return new Promise((resolve,reject) => {
-        // role.addUser(user)
-        user.addRole(role)
+        app.log("Adding user: " + user.fullname + " to role: " + role.name,myName,6);
+        user.addRoles(role)
         .then((result) => {
           app.log(result,myName,6,"--->>");
           resolve(result);

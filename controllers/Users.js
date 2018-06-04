@@ -223,13 +223,16 @@ module.exports = function(app,model) {
     },
     getUserById : function(userId) {
       let myName = "getUserById()";
+      app.log("Hello!!!: " + userId,myName,6);
       return new Promise((resolve,reject) => {
-        app.models[model]
-        .findById(userId)
+        app.log("Getting user by ID: " + userId,myName,6);
+        app.models[model].findById(userId)
         .then(user => {
+          app.log("Found user: " + user.fullname,myName,6);
           resolve(user);
         })
         .catch(err => {
+          app.log(err.message,myName,4,"!!>");
           reject(new Error("(" + myName + ") " + err.message));
         });
       });
