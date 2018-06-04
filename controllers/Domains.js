@@ -169,16 +169,18 @@ module.exports = function(app,model) {
         return app.controllers["roles"].createDefaultRoles(domain);
       }).then(roles => {
         app.log("Roles created: " + roles,myName,6,"::>");
-        let adminRole = roles.filter((v) => {
+        adminRole = roles.filter((v) => {
           return v.name=="Admin Role";
         })[0];
         app.log("This is the admin role: " + JSON.stringify(adminRole),myName,6,"!!!!");
         app.log("Time to connect creator-user: " + creatorUserId + " to admin role",myName,6);
         return app.controllers["users"].getUserById(creatorUserId);
       }).then(user => {
-        app.log("Found creator-user: " + user,myName,6,"::>");
+        app.log("Found creator-user: " + user.fullname,myName,6,"::>");
+        app.log("target role: " + adminRole.name,myName,6,"::>");
         // return user.addRoles(adminRole)
-        return app.controllers["roles"].addUserToRole(user,adminRole);
+        return adminRole.addUser(user,{through:{comment:"Creator-owner added to admin role for domain"}});
+        // return app.controllers["roles"].addUserToRole(user,adminRole);
       }).then(() => {
         app.log("I think the user is in the domain's admin role",myName,6);
         return true;
@@ -188,7 +190,7 @@ module.exports = function(app,model) {
       });
     },
     create : function(req,res,next) {
-      let myName = "create(domain)";
+      let myName = "create (domain)";
       let newDomain = app.tools.pullParams(req.body,["name"]);
       if(!newDomain) return res.send("Required field missing... try again");
       if(req.body.hasOwnProperty("description")) newDomain["description"] = req.body.description;
@@ -196,10 +198,12 @@ module.exports = function(app,model) {
       app.controllers[model]
       .createDomain(newDomain,req.session.user.id)
       .then(domain => {
+        app.log(JSON.stringify(domain),myName,6,"##>");
         app.log("Domain create: " + domain.name,myName,6);
         return next();
       })
       .catch(err => {
+        app.log("Error: " + err.message,myName,3);
         return res.send(err.message);
       })
     }

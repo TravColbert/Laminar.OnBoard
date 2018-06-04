@@ -244,6 +244,7 @@ module.exports = function(app,model) {
           resolve(result);
         })
         .catch(err => {
+          app.log("Error!: " + err.message,myName,4);
           reject(new Error("(" + myName + ") " + err.message));
         });
       });
