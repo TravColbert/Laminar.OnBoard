@@ -225,12 +225,11 @@ app.tools.readDir(app.locals.modelsDir)
   app.get('/',app.tools.homePage);
   return true;
 }).then(() => {
-  console.log("Done!");
-}).then(() => {
   app.use(
     app.tools.timeEnd,
     app.tools.render
   );
+  console.log("Done!");
 }).catch(err => {
   app.log(err.message);
 })
