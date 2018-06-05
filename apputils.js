@@ -419,7 +419,7 @@ module.exports = function(app,sequelize) {
   obj.homePage = function(req,res,next) {
     let myName = "homePage()";
     obj.logThis("queueing home page",myName,5);
-    req.appData.view = "home";
+    req.appData.view = app.locals.homeView;
     if(req.session.user) {
       app.controllers["notes"].getNotes(req.session.user.id,req.session.user.currentDomain.id)
       .then((notes) => {
