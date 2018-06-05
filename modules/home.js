@@ -2,7 +2,7 @@ module.exports = function(app) {
   let obj = {
     home : function(req,res,next) {
       let myName = "home";
-      app.log("In home module!",myName,6);
+      app.log("In home module",myName,6,"--->");
       if(req.session.user) {
         app.controllers["notes"].getNotes(req.session.user.id,req.session.user.currentDomain.id)
         .then((notes) => {
