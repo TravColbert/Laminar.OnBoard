@@ -1,0 +1,41 @@
+{
+  "appName":"OnBoard (dev)",
+  "sessionSecret":"supersecretsessionsecret!",
+  "viewsDir":"./views",
+  "navDir":"./navigation",
+  "staticDir":"public",
+  "addr":"127.0.0.1",
+  "port":443,
+  "keyFile":"tls/server.key",
+  "certFile":"tls/server.crt",
+  "smtpServer":"my.mail.server.net",
+  "smtpPort":"366",
+  "smtpSecurity":false,
+  "smtpFromName":"OnBoard",
+  "smtpFromAddr":"us@onboard.net",
+  "homeView":"home",
+  "homeModule":"./modules/home.js",
+  "loginPage":"/login",
+  "logLevel":6,
+  "modelsDir":"models",
+  "controllersDir":"controllers",
+  "routesDir":"routes",
+  "dbConnection":{
+    "sqlite":{
+      "host":"localhost",
+      "user":"onboard",
+      "password":"test123!",
+      "dialect":"sqlite",
+      "storage":"db/onboard.db",
+      "logging":false
+    },
+    "mysql":{
+      "host":"127.0.0.1",
+      "user":"onboard",
+      "password":"test123!",
+      "database":"onboard",
+      "charset":"utf8",
+      "logging":true
+    }
+  }
+}
