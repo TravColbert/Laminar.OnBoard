@@ -294,7 +294,6 @@ module.exports = function(app,sequelize) {
       return cb(err);
     })
   };
-
   obj.setUserAccount = function(req,res,next) {
     var myName = "setUserAccount()";
     obj.logThis("setting user account data...",myName,5);
@@ -399,18 +398,6 @@ module.exports = function(app,sequelize) {
     // obj.logThis("User: " + req.appData.user,myName,6);
     return next();
   };
-
-  // obj.setCurrentDomain = function(domainId,req) {
-  //   let myName = "setCurrentDomain()";
-  //   obj.logThis("Setting current domain to: " + domainId,myName,6);
-  //   if(!domainId) {
-  //     obj.logThis("No domain ID given. Fetching 'Default Domain'",myName,4);
-  //     domainId = app.controllers["domains"].fetchDomainIdByName("Default Domain");
-  //     // return false;
-  //   }
-  //   req.session.domain = domainId;
-  //   return true;
-  // };
   obj.printSessionData = function(req,res,next) {
     var myName = "printSessionData()";
     obj.logThis("session: " + JSON.stringify(req.session),myName,5);
@@ -420,25 +407,30 @@ module.exports = function(app,sequelize) {
     let myName = "homePage()";
     obj.logThis("queueing home page",myName,5);
     req.appData.view = app.locals.homeView;
-    if(req.session.user) {
-      app.controllers["notes"].getNotes(req.session.user.id,req.session.user.currentDomain.id)
-      .then((notes) => {
-        if(!notes) {
-          obj.logThis("No notes collected");
-          req.appData.notes = null;
-        } else {
-          obj.logThis("Found some notes");
-          req.appData.notes = notes;
-        }
-        return next();
-      })
-      .catch((err) => {
-        obj.logThis(err.message);
-        return res.send("Error: " + err.message);
-      });
-    } else {
-      return next();
+    if(app.homeModule) {
+      app.log("Invoking included home module",myName,6,"+ + + >");
+      return app.homeModule.home(req,res,next);
     }
+    return next();
+    // if(req.session.user) {
+    //   app.controllers["notes"].getNotes(req.session.user.id,req.session.user.currentDomain.id)
+    //   .then((notes) => {
+    //     if(!notes) {
+    //       obj.logThis("No notes collected");
+    //       req.appData.notes = null;
+    //     } else {
+    //       obj.logThis("Found some notes");
+    //       req.appData.notes = notes;
+    //     }
+    //     return next();
+    //   })
+    //   .catch((err) => {
+    //     obj.logThis(err.message);
+    //     return res.send("Error: " + err.message);
+    //   });
+    // } else {
+    //   return next();
+    // }
   };
   obj.loginPage = function(req,res,next) {
     let myName = "loginPage()";
