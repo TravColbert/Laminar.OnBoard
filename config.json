@@ -1,9 +1,6 @@
 {
   "appName":"OnBoard (dev)",
   "sessionSecret":"supersecretsessionsecret!",
-  "viewsDir":"./views",
-  "navDir":"./navigation",
-  "staticDir":"public",
   "addr":"127.0.0.1",
   "port":443,
   "keyFile":"tls/server.key",
@@ -14,11 +11,16 @@
   "smtpFromName":"OnBoard",
   "smtpFromAddr":"us@onboard.net",
   "homeView":"home",
+  "homeModule":false,
   "loginPage":"/login",
   "logLevel":6,
+  "viewsDir":"./views",
+  "navDir":"navigation",
+  "staticDir":"public",
   "modelsDir":"models",
   "controllersDir":"controllers",
   "routesDir":"routes",
+  "modulesDir":"modules",
   "dbConnection":{
     "sqlite":{
       "host":"localhost",
