@@ -22,7 +22,7 @@ module.exports = function(app) {
   //     {link:"/login/",text:"Log In",icon:"verified_user",secured:false},
   //     {link:"/logout/",text:"Log Out",icon:"highlight_off",secured:true},
   //   ]
-  app.menu = require(app.locals.navDir + "/menu.json")["main"];
+  app.menu = require("./" + app.locals.navDir + "/menu.json")["main"];
   let obj = {};
   obj.getMenu = function(req,res,next) {
     let myName = "getMenu()";
@@ -41,8 +41,8 @@ module.exports = function(app) {
   obj.isAuthorized = function(req,requiredRole) {
     let myName = "isAuthorized()";
     app.log(myName + ": Checking authorization for: " + req.session.user.email);
-    app.log(myName + ": He's trying to access: " + req.method + ":" + req.route.path);
-    app.log(myName + ": He's needs role: '" + requiredRole + "'...");
+    app.log(myName + ": S/He's trying to access: " + req.method + ":" + req.route.path);
+    app.log(myName + ": S/He needs role: '" + requiredRole + "'...");
     if(req.user.hasOwnProperty(requiredRole)) {
       app.log(myName + ": Role '" + requiredRole + "' is: " + req.user[requiredRole]);
       return req.user[requiredRole];

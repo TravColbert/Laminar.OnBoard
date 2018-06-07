@@ -41,8 +41,10 @@ let sessionConfig = {
 app.tools = require('./apputils')(app,sequelize);
 app.homeModule = false; 
 if(app.locals.hasOwnProperty("homeModule")) {
-  app.log("Including home module: " + app.locals.homeModule,myName,6);
-  app.homeModule = require(app.locals.homeModule)(app);
+  if(app.locals.homeModule!==false && app.locals.homeModule!==null) {
+    app.log("Including home module: " + app.locals.homeModule,myName,6);
+    app.homeModule = require("./" + app.locals.modulesDir + "/" + app.locals.homeModule + ".js")(app);  
+  }
 }
 const navigation = require('./navigation')(app);
 // const mailutils = require('./mailutils')(app);
