@@ -41,22 +41,34 @@ module.exports = function(app,sequelize) {
   obj.logThis = function(string,caller,debugLevel) {
     return this.log(string,caller,debugLevel,">");
   };
+  obj.isFileType = function(fileName,type) {
+    let myName = "isFileType";
+    let extension = fileName.split('.').pop();
+    return (extension==type);
+  };
   obj.readDir = function(dir) {
     let myName = "readDir";
     return new Promise((resolve,reject) => {
+      app.log("Reading dir: " + dir,myName,6,"##>");
       fs.readdir(dir,(err,files) => {
         if(err) reject(new Error("(" + myName + ") : " + err.message));
+        if(files==undefined || files===null || files.length<1) {
+          obj.logThis("Didn't find any files. Sending an empty list",myName,5);
+          resolve([]);
+        }
         obj.logThis("Found files: " + files,myName,6);
-        resolve(files)
+        resolve(files);
       })
     });
   };
   obj.readModel = function(file) {
     let myName = "readModel";
     return new Promise((resolve,reject) => {
-      app.log("Requiring " + file,myName,6,"::>");
-      let modelDefintion = require("./" + app.locals.modelsDir + "/" + file)(Sequelize,app);
-      app.models[modelDefintion.tablename] = sequelize.define(modelDefintion.tablename,modelDefintion.schema,modelDefintion.options);
+      if(app.tools.isFileType(file,"js")) {
+        app.log("Requiring " + file,myName,6,"::>");
+        let modelDefintion = require("./" + app.locals.modelsDir + "/" + file)(Sequelize,app);
+        app.models[modelDefintion.tablename] = sequelize.define(modelDefintion.tablename,modelDefintion.schema,modelDefintion.options);
+      }
       resolve(true);
     });
   };
@@ -65,6 +77,7 @@ module.exports = function(app,sequelize) {
     obj.logThis("Starting models...",myName,6);
     let syncPromises = Promise.resolve();
     Object.keys(models).forEach(modelName => {
+      obj.logThis("Starting model: " + modelName,myName,6);
       syncPromises = syncPromises.then(() => {
         app.log("sync'ing model: " + modelName,myName,6,"::>");
         return(models[modelName].sync());
@@ -91,6 +104,15 @@ module.exports = function(app,sequelize) {
       let routeName = fileNameParts[0].toLowerCase();
       obj.logThis("Hydrating /" + routeName + "/ route",myName,6,"--->");
       app.routes[routeName] = require('./' + app.locals.routesDir + '/' + file)(app);
+      resolve(true);
+    });
+  };
+  obj.readAssociation = function(file) {
+    let myName = "readAssociation";
+    return new Promise((resolve,reject) => {
+      if(!app.tools.isFileType(file,"js")) reject(new Error("(" + myName + ") Not a .js file"));
+      app.log("Requiring " + file,myName,6,":::>");
+      let association = require("./" + app.locals.modelsDir + "/associations/" + file)(app);
       resolve(true);
     });
   }
