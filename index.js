@@ -73,7 +73,8 @@ let routeData = [];
 
 let associateModels = function() {
   let myName = "associateModels";
-  return new Promise((resolve,reject) => {
+  let associationPromises = Promise.resolve();
+  associationPromises = associationPromises.then(() => {
     app.log("Building model associations",myName,6,"::>");
     app.models["domains"].belongsToMany(app.models["roles"],{through:app.models["domainsroles"]});
     app.models["roles"].belongsToMany(app.models["domains"],{through:app.models["domainsroles"]});
@@ -81,10 +82,15 @@ let associateModels = function() {
     app.models["roles"].belongsToMany(app.models["users"],{through:app.models["usersroles"]});
     app.models["users"].belongsTo(app.models["domains"],{as:'defaultDomain'});  // makes users.defaultDomainId field
     app.models["users"].hasOne(app.models["domains"],{as:'owner'});             // makes domains.ownerId field
-    app.models["notes"].belongsTo(app.models["domains"],{as:'domain'});         // makes notes.domainId
-    app.models["notes"].belongsTo(app.models["users"],{as:"user"});             // makes notes.userId
-    resolve(app.models);
+    return (app.models);
+  }).then(() => {
+    return app.tools.readDir(app.locals.modelsDir + "/associations");
+  }).then(associations => {
+    return app.tools.processFiles(associations,app.tools.readAssociation);
+  }).catch(err => {
+    app.log("Error: " + err.message,myName,4);
   });
+  return associationPromises;
 }
 
 let setupModels = function() {
@@ -163,8 +169,8 @@ app.tools.readDir(app.locals.modelsDir)
   return app.tools.processFiles(controllerFiles,app.tools.readController);
 }).then(() => {
   return associateModels();
-}).then((models) => {
-  return app.tools.startModels(models);
+}).then(() => {
+  return app.tools.startModels(app.models);
 }).then(() => {
   return setupModels();
 }).then(() => {
