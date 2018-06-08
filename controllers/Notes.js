@@ -3,62 +3,83 @@ module.exports = function(app,model) {
   let myName = model + "Controller";
   let myModel = model;
   obj = {
-    getNotes : function(userId,domainId) {
-      let myName = "getNotes()";
+    get : function(obj) {
+      let myName = "get(note)";
       return new Promise((resolve,reject) => {
-        app.log("Getting notes...",myName,6);
-        app.tools.checkAuthorization(["list","all"],userId,domainId)
-        .then((response) => {
-          if(!response) {
-            app.log("User failed authorization check",myName,6);
-            return resolve([]);
-          }
-          app.log("User is authorized to list notes.",myName,6);
-          return app.controllers[model].getNotesByUserAndDomain(userId,domainId);
-        })
-        .then((notes) => {
-          app.log(" - - - > We have notes: " + notes,myName,6);
-          return resolve(notes || []);
-        })
-        .catch((err) => {
-          return reject(err);
+        app.log("Getting notes: " + JSON.stringify(obj),myName,6);
+        app.models[model].findAll({where:obj})
+        .then(notes => {
+          if(notes===null) resolve([]);
+          app.log(JSON.stringify(notes),myName,6);
+          resolve(notes);
+        }).catch(err => {
+          app.log(err.message,myName,5);
+          reject(err);
         });
       });
     },
-    getNotesByUserAndDomain : function(userId,domainId) {
-      let myName = "getNotesByUserAndDomain()";
-      return new Promise((resolve,reject) => {
-        app.log("Getting notes for user " + userId + " and domain " + domainId,myName,6);
-        app.models[model]
-        .findAll({where:{userId:userId,domainId:domainId}})
-        .then((notes) => {
-          app.log(notes,myName,6,":::::>");
-          if(notes!==null) {
-            app.log("I think we got some notes",myName);
-            return resolve(notes);
-          } else {
-            app.log("Empty note-list",myName);
-            return resolve(null);
-          }
-        })
-        .catch((err) => {
-          return reject(err);
-        });
-      });
+    // getByUserAndDomain : function(userId,domainId) {
+    //   let myName = "getByUserAndDomain(note)";
+    //   return app.controllers[model].get({userId:userId,domainId:domainId});
+    // },
+    // getByUser : function(userId) {
+    //   let myName = "getByUser(note)";
+    //   return app.controllers[model].get({userId:userId});
+    // },
+    // getByDomain : function(domainId) {
+    //   let myName = "getByDomain(note)";
+    //   return app.controllers[model].get({domainId:domainId});
+    // },
+    // getById : function(noteId) {
+    //   let myName = "getByNoteId(note)";
+    //   return app.controllers[model].get({id:noteId});
+    // },
+    getNotes : function(req,res,next) {
+      let myName = "getNotes";
+      let searchObj = {
+        userId : req.session.user.id,
+        domainId : req.session.user.currentDomain.id
+      }
+      app.tools.checkAuthorization(["list","all"],searchObj.userId,searchObj.domainId)
+      .then(response => {
+        if(!response) {
+          app.log("User failed authorization check",myName,6);
+          return next();
+        }
+        app.log("User is authorized to list notes.",myName,6);
+        return app.controllers[model].get(searchObj);
+      })
+      .then(notes => {
+        req.appData.notes = notes;
+        req.appData.view = "notes";
+        return next();
+      })
+      .catch(err => {
+        return res.send("Err: " + err.message);
+      })
     },
     getNote : function(req,res,next) {
       let myName = "getNote()";
-      app.models[model]
-      .findById(req.params.id)
-      .then(note => {
-        if(note===null) return res.redirect('/');
-        req.appData.note = note;
+      let searchObj = {
+        id : req.params.id
+      }
+      app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
+      .then(response => {
+        if(!response) {
+          app.log("User failed authorization check",myName,6);
+          return next();
+        }
+        app.log("User is authorized to list notes.",myName,6);
+        return app.controllers[model].get(searchObj);
+      })
+      .then(notes => {
+        req.appData.note = notes[0];
         req.appData.view = "note";
         return next();
       })
       .catch(err => {
-        res.send(err.message);
-      });
+        return res.send("Err: " + err.message);
+      })      
     },
     editNoteForm : function(req,res,next) {
       let myName = "editNoteForm()";
