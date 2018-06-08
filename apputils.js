@@ -72,19 +72,6 @@ module.exports = function(app,sequelize) {
       resolve(true);
     });
   };
-  obj.startModels = function(models) {
-    let myName = "startModels";
-    obj.logThis("Starting models...",myName,6);
-    let syncPromises = Promise.resolve();
-    Object.keys(models).forEach(modelName => {
-      obj.logThis("Starting model: " + modelName,myName,6);
-      syncPromises = syncPromises.then(() => {
-        app.log("sync'ing model: " + modelName,myName,6,"::>");
-        return(models[modelName].sync());
-      });
-    });
-    return syncPromises;
-  };
   obj.readController = function(file) {
     let myName = "readController";
     return new Promise((resolve,reject) => {
@@ -125,6 +112,19 @@ module.exports = function(app,sequelize) {
       });
     });
     return routeReadPromises;
+  };
+  obj.startModels = function(models) {
+    let myName = "startModels";
+    obj.logThis("Starting models...",myName,6);
+    let syncPromises = Promise.resolve();
+    Object.keys(models).forEach(modelName => {
+      obj.logThis("Starting model: " + modelName,myName,6);
+      syncPromises = syncPromises.then(() => {
+        app.log("sync'ing model: " + modelName,myName,6,"::>");
+        return(models[modelName].sync());
+      });
+    });
+    return syncPromises;
   };
   obj.timeStart = function(req,res,next) {
     let myName = "timeStart()";
