@@ -167,7 +167,7 @@ app.tools.readDir(app.locals.modelsDir)
   return app.tools.processFiles(modelFiles,app.tools.readModel);
 }).then(() => {
   return app.tools.readDir(app.locals.controllersDir);
-}).then((controllerFiles) => {
+}).then(controllerFiles => {
   return app.tools.processFiles(controllerFiles,app.tools.readController);
 }).then(() => {
   return associateModels();
@@ -226,7 +226,7 @@ app.tools.readDir(app.locals.modelsDir)
    * All of these routes can be excluded or replaced.
    */
   return app.tools.readDir(app.locals.routesDir);
-}).then((routeFiles) => {
+}).then(routeFiles => {
   return app.tools.processFiles(routeFiles,app.tools.readRoute);
 }).then(() => {
   app.log("Total routes: " + Object.keys(app.routes).length,myName,6);
