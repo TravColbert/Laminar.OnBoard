@@ -102,7 +102,16 @@ module.exports = function(app,sequelize) {
       let association = require("./" + app.locals.modelsDir + "/associations/" + file)(app);
       resolve(true);
     });
-  }
+  };
+  obj.readModelStartup = function(file) {
+    let myName = "readModelStartup";
+    return new Promise((resolve,reject) => {
+      if(!app.tools.isFileType(file,"js")) reject(new Error("(" + myName + ") Not a .js file"));
+      app.log("Requiring " + file,myName,6);
+      let modelStartup = require("./" + app.locals.modelsDir + "/modelstartups/" + file)(app);
+      resolve(true);
+    });
+  };
   obj.processFiles = function(files,cb) {
     let myName = "processFiles";
     let routeReadPromises = Promise.resolve();

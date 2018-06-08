@@ -174,6 +174,10 @@ app.tools.readDir(app.locals.modelsDir)
 }).then(() => {
   return app.tools.startModels(app.models);
 }).then(() => {
+  return app.tools.readDir(app.locals.modelsDir + "/modelstartups");
+}).then(modelStartupFiles => {
+  return app.tools.processFiles(modelStartupFiles,app.tools.readModelStartup);
+}).then(() => {
   return setupModels();
 }).then(() => {
   /**

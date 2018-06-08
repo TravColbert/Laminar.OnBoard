@@ -1,0 +1,5 @@
+module.exports = function(app) {
+  (function() {
+    // Setup a model here
+  })(app);
+}
