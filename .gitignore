@@ -5,5 +5,5 @@ tls/*.pfx
 tls/*.pem
 tls/*.crt
 tls/*.key
-db/*.db
+db/
 test/
