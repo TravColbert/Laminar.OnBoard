@@ -44,6 +44,7 @@ module.exports = function(app,sequelize) {
   obj.isFileType = function(fileName,type) {
     let myName = "isFileType";
     let extension = fileName.split('.').pop();
+    app.log("File " + fileName + " is type " + extension,myName,6);
     return (extension==type);
   };
   obj.readDir = function(dir) {
@@ -97,18 +98,20 @@ module.exports = function(app,sequelize) {
   obj.readAssociation = function(file) {
     let myName = "readAssociation";
     return new Promise((resolve,reject) => {
-      if(!app.tools.isFileType(file,"js")) reject(new Error("(" + myName + ") Not a .js file"));
-      app.log("Requiring " + file,myName,6,":::>");
-      let association = require("./" + app.locals.modelsDir + "/associations/" + file)(app);
+      if(app.tools.isFileType(file,"js")) {
+        app.log("Requiring " + file,myName,6,":::>");
+        let association = require("./" + app.locals.modelsDir + "/associations/" + file)(app);  
+      }
       resolve(true);
     });
   };
   obj.readModelStartup = function(file) {
     let myName = "readModelStartup";
     return new Promise((resolve,reject) => {
-      if(!app.tools.isFileType(file,"js")) reject(new Error("(" + myName + ") Not a .js file"));
-      app.log("Requiring " + file,myName,6);
-      let modelStartup = require("./" + app.locals.modelsDir + "/modelstartups/" + file)(app);
+      if(app.tools.isFileType(file,"js")) {
+        app.log("Requiring " + file,myName,6);
+        let modelStartup = require("./" + app.locals.modelsDir + "/modelstartups/" + file)(app);        
+      }
       resolve(true);
     });
   };
@@ -437,6 +440,7 @@ module.exports = function(app,sequelize) {
   obj.homePage = function(req,res,next) {
     let myName = "homePage()";
     obj.logThis("queueing home page",myName,5);
+    req.appData.sessionId = req.session.id;
     req.appData.view = app.locals.homeView;
     if(app.homeModule) {
       app.log("Invoking included home module",myName,6,"+ + + >");
