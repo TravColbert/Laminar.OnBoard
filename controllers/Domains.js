@@ -3,6 +3,19 @@ module.exports = function(app,model) {
   let myName = model + "Controller";
   let myModel = model;
   obj = {
+    get : function(obj) {
+      let myName = "get(domains)";
+      return new Promise((resolve,reject) => {
+        app.log("Getting domains: " + JSON.stringify(obj),myName,6);
+        app.models[model].findAll(obj)
+        .then(domains => {
+          app.log("Domains: " + JSON.stringify(domains),myName,6);
+          resolve(domains);
+        }).catch(err => {
+          reject(err);
+        })
+      })
+    },
     getDomains : function(req,res,next) {
       let myName = "getRoles()";
       app.models[model]
