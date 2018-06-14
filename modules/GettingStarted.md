@@ -3,6 +3,16 @@
 This is a quick-guide for how to use Lamainar.OnBoard to spin-up a secure 
 https, user-aware, sqlite-backed web service in a jiffy.
 
+## Install Modules Through NPM init
+
+```bash
+cd your_project
+npm init
+```
+## Create TLS Keys
+
+Put the keys in tls/
+
 ## Create and move into your new project directory
 
 ```bash
