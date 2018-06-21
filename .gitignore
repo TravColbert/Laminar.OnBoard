@@ -1,6 +1,6 @@
 config.json
 node_modules/
-public/js/*.zip
+#public/js/*.zip
 tls/*.pfx
 tls/*.pem
 tls/*.crt
