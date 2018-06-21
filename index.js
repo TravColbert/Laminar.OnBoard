@@ -67,10 +67,6 @@ app.modelDefinitions = {};
 app.controllers = {};
 app.routes = {};
 
-let modelData = [];
-let controllerData = [];
-let routeData = [];
-
 let associateModels = function() {
   let myName = "associateModels";
   let associationPromises = Promise.resolve();
