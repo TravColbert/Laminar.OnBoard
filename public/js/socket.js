@@ -18,6 +18,11 @@ let sendReply = function(type,message) {
   socket.emit(type,message);
 };
 
+let notify = function(message) {
+  console.log("Trying desktop notification");
+  let notification = new Notification(message);
+}
+
 socket.on('howareyou',(data) => {
   if(data.hasOwnProperty('socketId')) {
     postMessage(data.socketId);
@@ -36,4 +41,21 @@ socket.on('iamfine.thankyou',(data) => {
 
 socket.on('message',(data) => {
   postMessage(data);
-})
+});
+
+socket.on('notify',(data) => {
+  if(!("Notification" in window)) {
+    console.log("Desktop notification not supported. Falling-back to browser notification");
+    postMessage(data);
+  } else if(Notification.permission==="granted") {
+    console.log("Launching notification: " + data);
+    notify(data);
+  } else if(Notification.permission!=="denied") {
+    Notification.requestPermission((permission) => {
+      if(permission==="granted") {
+        console.log("Launching notification: " + data);
+        notify(data);
+      }
+    });
+  }
+});
