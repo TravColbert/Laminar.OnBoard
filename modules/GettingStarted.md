@@ -73,7 +73,7 @@ the user's environment with whatever objects might be required by your
 This would look for my_custom_home.js file in the modules directory off the 
 root of your project.
 
-Notes that the **.js** extension gets added automatically to the end of your name here.
+Note that the **.js** extension gets added automatically to the end of your name here.
 
 ### Define Models
 
