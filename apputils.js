@@ -242,16 +242,43 @@ module.exports = function(app,sequelize) {
     if(req.session.messages.splice(index,1).length!=1) return res.json({'msgId':false});
     return res.json({'msgId':msgId});
   };
+  obj.socketSend = function(sessionId,type,message) {
+    let myName = "socketSend";
+    app.log("Looking for socket of session ID: " + sessionId,myName,6);
+    app.log(app.socketSessions,myName,6,"| | | | >");
+    let targetSockets = app.socketSessions.filter((v) => {
+      return v.sessionId = sessionId;
+    });
+    targetSockets.forEach((targetSocket) => {
+      app.log("Found a socket. Sending message: " + message + " of type: " + type,myName,6);
+      app.log(targetSocket.socket.id,myName,6,": : : >");
+      targetSocket.socket.emit(type,message);
+    });
+  };
+  obj.isAuthenticated = function(req) {
+    let myName = "isAuthenticated";
+    obj.logThis("Checking if session is authenticated",myName,6);
+    if(!req.session.cookie) return false;
+    obj.logThis("session cookie exists...",myName,5);
+    if(!req.session.user) return false;
+    obj.logThis("session user object exists...",myName,5);
+    if(!req.session.user.email) return false;
+    obj.logThis("session user email exists...",myName,5);
+    if(!req.session.user.id) return false;
+    obj.logThis("session user appears to be intact. Moving on...",myName,6);
+    return true;
+  };
   obj.checkAuthentication = function(req,res,next) {
     let myName = "checkAuthentication()";
-    obj.logThis("checking authentication...",myName,5);
-    if(!req.session.cookie) return res.redirect("/login");
-    obj.logThis("session cookie exists...",myName,5);
-    if(!req.session.user) return res.redirect("/login");
-    obj.logThis("session user object exists...",myName,5);
-    if(!req.session.user.email) return res.redirect("/login");
-    obj.logThis("session user email exists...",myName,5);
-    if(!req.session.user.id) return res.redirect("/login");
+    // obj.logThis("checking authentication...",myName,5);
+    // if(!req.session.cookie) return res.redirect("/login");
+    // obj.logThis("session cookie exists...",myName,5);
+    // if(!req.session.user) return res.redirect("/login");
+    // obj.logThis("session user object exists...",myName,5);
+    // if(!req.session.user.email) return res.redirect("/login");
+    // obj.logThis("session user email exists...",myName,5);
+    // if(!req.session.user.id) return res.redirect("/login");
+    if(!obj.isAuthenticated(req)) return res.redirect("/login");
     obj.logThis("session user id is set...",myName,5);
     obj.logThis("found all session info: " + req.session.user.email,myName,5);
     obj.logThis("final confirmation that " + req.session.user.email + " user id (" + req.session.user.id + ") exists",myName,5);

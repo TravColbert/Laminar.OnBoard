@@ -5,7 +5,6 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
-const io = require('socket.io')(app);
 
 let myName = "setup";
 
@@ -67,6 +66,7 @@ app.models = {};
 app.modelDefinitions = {};
 app.controllers = {};
 app.routes = {};
+app.socketSessions = [];
 
 let associateModels = function() {
   let myName = "associateModels";
@@ -240,6 +240,30 @@ app.tools.readDir(app.locals.modelsDir)
     app.tools.timeEnd,
     app.tools.render
   );
+  /**
+   * Handle IO
+   */
+  io.on('connection',(socket) => {
+    app.log("A user connected with id: " + socket.id,myName,6);
+    let socketSession = {
+      socketId:socket.id
+    };
+
+    socket.emit('howareyou',socketSession);
+
+    socket.on('iamfine.howareyou',(data) => {
+      app.log(JSON.stringify(data),myName,6," >>> ");
+      if(data.hasOwnProperty("socketId") && data.hasOwnProperty("sessionId")) {
+        data.socket = socket;
+        app.socketSessions.push(data);
+        app.log("Pushed a new socket to the list of socket sessions",myName,6);
+        socket.emit('iamfine.thankyou',"We're ready to communicate!");
+      } else {
+        app.log("socket session object is incomplete. Can't add to socket session list",myName,5);
+      }
+    });
+  });
+
   console.log("Done!");
 }).catch(err => {
   app.log(err.message);
@@ -255,7 +279,9 @@ app.tools.readDir(app.locals.modelsDir)
 /**
  * START THE SERVER
  */
-https.createServer(options,app).listen(app.locals.port,function() {
+let server = https.createServer(options,app);
+let io = require('socket.io').listen(server);
+server.listen(app.locals.port,function() {
   app.log(app.locals.appName + " server listening on port " + app.locals.port,myName,4);
   app.log("logLevel: " + app.locals.logLevel,myName,4);
 });
