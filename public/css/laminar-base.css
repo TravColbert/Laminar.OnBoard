@@ -77,10 +77,10 @@ body.header-static header {
   min-height: 48px;
   z-index: 75;
 }
-body.header-static sidebar,
+/* body.header-static sidebar,
 body.header-static #main {
   padding-top: 48px;
-}
+} */
 body.bigbanner-static {
   display: flex;
   box-sizing: border-box;
@@ -107,10 +107,10 @@ body.footer-static footer {
   min-height: 48px;
   z-index: 75;
 }
-body.footer-static sidebar,
+/* body.footer-static sidebar,
 body.footer-static #main {
   padding-bottom: 48px;
-}
+} */
 body.sidebar-static sidebar {
   position: fixed;
   top: 0;
@@ -154,7 +154,10 @@ nav.ul {
 }
 .banner-full {
   background-color: #3d3b30;
-  background-size: auto, cover
+  background-size: auto, cover;
+  width: 100%;
+  position: relative;
+  /* top: -48px; */
 }
 /*
 ol.nav,
