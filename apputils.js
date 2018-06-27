@@ -522,11 +522,13 @@ module.exports = function(app,sequelize) {
     };
   };
   obj.showForm = function(req,res,next) {
-    let myName = "showForm()";
-    let model = req.params.model || null;
+    let myName = "showForm";
+    if(!model) return res.redirect("/");
+    let model = req.params.model;
     let action = req.params.action || 'create';
     obj.logThis("Requesting form: " + model + action);
     app.tools.checkAuthorization([action,"all"],req.session.user.id,req.session.user.currentDomain.id)
+    // Eventually the above will test for an model type: app.tools.checkAuthorization([action,__a_model__]....
     .then((response) => {
       if(!response) {
         obj.logThis("User failed authorization check",myName,6);
@@ -580,7 +582,7 @@ module.exports = function(app,sequelize) {
     return next();
   };
   obj.pullParams = function(obj,arr) {
-    let myName = "pullParams()";
+    let myName = "pullParams";
     let returnObj = {};
     arr.forEach(function(v,i,a) {
       if(obj.hasOwnProperty(v)) {
@@ -590,6 +592,17 @@ module.exports = function(app,sequelize) {
       }
     });
     return returnObj;
+  };
+  obj.addProperties = function(inObj,propertyArray,outObj) {
+    let myName = "addProperties";
+    outObj = outObj || {};
+    if(inObj===null || inObj===undefined) return {};
+    if(propertyArray===null || propertyArray===undefined) return inObj;
+    if(!Array.isArray(propertyArray)) propertyArray = [propertyArray];
+    propertyArray.forEach((prop) => {
+      if(inObj.hasOwnProperty(prop)) outObj[prop] = inObj.prop;
+    });
+    return outObj;
   };
   obj.errorHandler = function(err,req,res,next) {
     let myName = "errorHandler()";

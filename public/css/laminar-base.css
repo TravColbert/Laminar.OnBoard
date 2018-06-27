@@ -77,6 +77,10 @@ body.header-static header {
   min-height: 48px;
   z-index: 75;
 }
+body.header-static section:first-of-type {
+  padding-top: 48px;
+}
+
 /* body.header-static sidebar,
 body.header-static #main {
   padding-top: 48px;
@@ -107,6 +111,10 @@ body.footer-static footer {
   min-height: 48px;
   z-index: 75;
 }
+body.footer-static section:last-of-type {
+  padding-bottom: 48px;
+}
+
 /* body.footer-static sidebar,
 body.footer-static #main {
   padding-bottom: 48px;
