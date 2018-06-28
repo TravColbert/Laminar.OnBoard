@@ -132,8 +132,30 @@ module.exports = function(app,sequelize) {
     Object.keys(models).forEach(modelName => {
       obj.logThis("Starting model: " + modelName,myName,6);
       syncPromises = syncPromises.then(() => {
-        app.log("sync'ing model: " + modelName,myName,6,"::>");
-        return(models[modelName].sync());
+
+        app.log("Sync'ing model: " + modelName,myName,6);
+        return models[modelName].sync()
+        .then((model) => {
+          let modelName = model.getTableName();
+          app.log("Model " + modelName + " sync'ed",myName,6);
+          return(modelName);
+        })
+        .catch(err => {
+          return(err);
+        });
+
+        // return(() => {
+        //   app.log("Sync'ing model: " + modelName,myName,6);
+        //   models[modelName].sync()
+        //   .then((model) => {
+        //     app.log("Model: " + model.getTableName(),myName,6);
+        //     return(model.getTableName());
+        //   })
+        //   .catch(err => {
+        //     return(err);
+        //   })
+        // });
+
       });
     });
     return syncPromises;
@@ -199,11 +221,18 @@ module.exports = function(app,sequelize) {
     });
   };
   obj.render = function(req,res) {
-    let myName = "render()";
+    let myName = "render";
     // let templateFile = req.appData.view || "index";
     let templateFile = req.appData.view || app.locals.homeView;
-    obj.logThis(req.appData);
-    obj.logThis("Rendering template: " + templateFile,myName,5);
+    // obj.logThis(req.appData,myName,6);
+    obj.logThis("Query Params: " + JSON.stringify(req.query),myName,6," >>> ");
+    if(req.query) {
+      if(req.query.format=="json") {
+        obj.logThis("Rendering in JSON",myName,6);
+        return res.json(req.appData);
+      }
+    }
+    obj.logThis("Rendering template: " + templateFile,myName,6);
     return res.render(templateFile,req.appData);
   },
   obj.makeMessage = function(obj) {
