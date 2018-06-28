@@ -92,21 +92,22 @@ let associateModels = function() {
   return associationPromises;
 }
 
-let setupModels = function() {
-  let myName = "setupModels";
+let setupBasePermissions = function() {
+  let myName = "setupBasePermissions";
   app.log("Setting up admin user...",myName,6);
 
   let adminUser, adminRole;
   let setupPromises = Promise.resolve();
   setupPromises = setupPromises.then(() => {
-    return app.controllers.users.getUserByObj({email:"admin@test.com"});
+    app.log("Looking for user: " + 'admin@' + app.locals.smtpDomain,myName);
+    return app.controllers.users.getUserByObj({email:'admin@' + app.locals.smtpDomain});
   }).then(user => {
     if(user===null) {
-      app.log("No admin user found - creating",myName,6,"+");
+      app.log("No admin user found - creating",myName,6);
       let adminUserDef = {
         firstname:'Administrative',
         lastname:'User',
-        email:'admin@test.com',
+        email:'admin@' + app.locals.smtpDomain,
         verified:true,
         disabled:false,
         password:'test123!'
@@ -117,6 +118,7 @@ let setupModels = function() {
       return user;
     };
   }).then(user => {
+    app.log("Admin user: " + user.fullname,myName,6);
     adminUser = user;
     return app.controllers.roles.getRoleByName("Super Admin");
   }).then(role => {
@@ -171,11 +173,11 @@ app.tools.readDir(app.locals.modelsDir)
 }).then(() => {
   return app.tools.startModels(app.models);
 }).then(() => {
+  return setupBasePermissions();
+}).then(() => {
   return app.tools.readDir(app.locals.modelsDir + "/modelstartups");
 }).then(modelStartupFiles => {
   return app.tools.processFiles(modelStartupFiles,app.tools.readModelStartup);
-}).then(() => {
-  return setupModels();
 }).then(() => {
   /**
    * SET BASE APP CONFIGURATON
