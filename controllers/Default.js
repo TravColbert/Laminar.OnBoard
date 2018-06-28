@@ -27,7 +27,7 @@ module.exports = function(app,model) {
         app.models[model].findAll(obj)
         .then(items => {
           if(items===null) resolve([]);
-          app.log(JSON.stringify(items),myName,6);
+          app.log("Result: " + JSON.stringify(items),myName,6);
           resolve(items);
         }).catch(err => {
           app.log(err.message,myName,5);
