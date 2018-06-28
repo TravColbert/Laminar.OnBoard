@@ -1,5 +1,31 @@
 module.exports = function(app) {
   (function() {
-    // Setup a model here
+    /**
+     * Setup a model here.
+     * Maybe you need to pre-populate a table or something.
+     */
+    /*
+    let demoPart = {
+      partnum : "12345.678",
+      make : "Acme",
+      description : "pre-loaded giant spring",
+      notes : "to be used on unsuspecting road-runners",
+      cost : 100.99,
+      price : 999.99,
+      location : "Desert Warehouse, shelf 2",
+      mincount : 1,
+      maxcount : 3,
+      inwarranty : true
+    }
+    app.controllers["parts"].__get({where:{partnum:demoPart.partnum}})
+    .then(parts => {
+      if(parts.length>0) return true;
+      app.log("Pre-population the parts table...",myName,6);
+      app.controllers["parts"].__create(demoPart);
+    })
+    .catch(err => {
+      app.log("Something went wrong pre-populating table",myName,3,"!!!");
+    })
+    */
   })(app);
 }
