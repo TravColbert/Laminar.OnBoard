@@ -45,6 +45,20 @@ function calculatedatetimestring(dateTimeString) {
   return;
 }
 
+function fetchIt(url,cb) {
+  console.log("Fetching " + url);
+  fetch(url)
+  .then((response) => {
+    return response.json();
+  })
+  .then((response) => {
+    return cb(response);
+  })
+  .catch(err => {
+    return err;
+  })
+}
+
 function ready(fn) {
   if (document.readyState != 'loading'){
     fn();
