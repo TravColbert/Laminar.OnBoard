@@ -1,5 +1,5 @@
 {
-  "appName":"Stockr (dev)",
+  "appName":"OnBoard (dev)",
   "sessionSecret":"supersecretsessionsecret!",
   "addr":"127.0.0.1",
   "port":443,
@@ -8,9 +8,9 @@
   "smtpServer":"my.mail.server.net",
   "smtpPort":"366",
   "smtpSecurity":false,
-  "smtpFromName":"Stockr",
-  "smtpFromAddr":"us@stockr.net",
-  "smtpDomain":"stockr.net",
+  "smtpFromName":"OnBoard",
+  "smtpFromAddr":"us@onboard.net",
+  "smtpDomain":"onboard.net",
   "homeView":"home",
   "homeModule":false,
   "loginPage":"/login",
@@ -25,17 +25,17 @@
   "dbConnection":{
     "sqlite":{
       "host":"localhost",
-      "user":"stockr",
+      "user":"onboard",
       "password":"test123!",
       "dialect":"sqlite",
-      "storage":"db/stockr.db",
+      "storage":"db/onboard.db",
       "logging":false
     },
     "mysql":{
       "host":"127.0.0.1",
-      "user":"stockr",
+      "user":"onboard",
       "password":"test123!",
-      "database":"stockr",
+      "database":"onboard",
       "charset":"utf8",
       "logging":true
     }
