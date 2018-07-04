@@ -1,7 +1,7 @@
 extends index.pug
 
 block content
-  #main.layout-col.layout-align-center
+  section#main.layout-width-sd.layout-col.layout-align-center
     form#login-form(action="/login" method="post")
       input#secretsauce(type="hidden" name="secretsauce" value=secretSauce)
       .section-hdg.section-hdg-1 Log In
