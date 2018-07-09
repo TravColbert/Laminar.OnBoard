@@ -65,6 +65,7 @@ app.paths = {};
 app.models = {};
 app.modelDefinitions = {};
 app.controllers = {};
+app.elements = {};
 app.routes = {};
 app.socketSessions = [];
 
@@ -169,6 +170,10 @@ app.tools.readDir(app.locals.modelsDir)
 }).then(controllerFiles => {
   return app.tools.processFiles(controllerFiles,app.tools.readController);
 }).then(() => {
+  return app.tools.readDir(app.locals.elementsDir);
+}).then(elementFiles => {
+  return app.tools.processFiles(elementFiles,app.tools.readElement);
+}).then(() => {
   return associateModels();
 }).then(() => {
   return app.tools.startModels(app.models);
@@ -235,6 +240,7 @@ app.tools.readDir(app.locals.modelsDir)
   });
 }).then(() => {
   app.get('/profile/',app.tools.checkAuthentication,app.controllers["users"].getProfile);
+  app.post('/authorizedelements/:element',app.tools.checkAuthentication,app.tools.getElement);
   app.get('/',app.tools.homePage);
   return true;
 }).then(() => {
