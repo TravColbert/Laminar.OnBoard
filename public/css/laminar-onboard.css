@@ -40,17 +40,16 @@ a {
 .btn-search {
   border: none;
 }
-.normal {
-  background: #4577D4;
-}
-.primary {
+.primary, 
+.normal, 
+.submit {
   background: #4577D4; 
 }
 .secondary {
   background: #9CBFFF;
 }
 .tertiary {
-  background: rgba(69,119,212,0.2);
+  background: #4577d433;
 }
 .success {
   background: #2D83D7;
@@ -88,12 +87,12 @@ textarea {
   width: 100%;
 }
 /* Navigation Styles */
-nav, footer {
+header, footer {
   background-color: #3670d6;
   color: #fff;
   box-shadow: 0 0 50px rgba(0,0,0,0.3);
 }
-nav {
+header {
   border-bottom: 1px solid #aaa;
 }
 nav li {
@@ -185,6 +184,10 @@ ul {
 }
 .data {
   font-size: 1.2em;
+}
+.subdata {
+  font-size: 0.8em;
+  color: #909090cc;
 }
 .stock-control, .part-qrcode {
   margin-top: 0.5em;
