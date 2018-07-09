@@ -45,7 +45,7 @@ module.exports = function(app,model) {
       });
     },
     getRolesByDomainId : function(domainId) {
-      let myName = "getRolesByDomainId()";
+      let myName = "getRolesByDomainId";
       return new Promise((resolve,reject) => {
         app.log("Getting all roles with domainId " + domainId,myName,6);
         app.models[model]
@@ -60,7 +60,7 @@ module.exports = function(app,model) {
       })
     },
     getRolesByDomain : function(domain) {
-      let myName = "getRolesByDomain()";
+      let myName = "getRolesByDomain";
       return new Promise((resolve,reject) => {
         app.log("Getting roles associated with '" + domain.name + "' domain",myName,6,"---");
         // domain.getRoles({include:[app.models["roles"]]})
@@ -74,7 +74,7 @@ module.exports = function(app,model) {
       })
     },
     getUsersByDomainId : function(req,res,next) {
-      let myName = "getUsersByDomainId()";
+      let myName = "getUsersByDomainId";
       app.models[model]
       .findById(req.params.id,{include:[{model:app.models["roles"],include:[app.models["users"]]}]})
       .then((domain) => {
