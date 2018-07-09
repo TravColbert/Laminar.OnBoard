@@ -22,6 +22,7 @@
   "controllersDir":"controllers",
   "routesDir":"routes",
   "modulesDir":"modules",
+  "elementsDir":"elements",
   "dbConnection":{
     "sqlite":{
       "host":"localhost",
