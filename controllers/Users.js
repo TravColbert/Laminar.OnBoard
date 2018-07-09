@@ -7,6 +7,27 @@ module.exports = function(app,model) {
   let myModel = model;
   let defaultRoleAtRegistration = "applicant";
   obj = {
+    __create : function(obj) {
+      let myName = "__create";
+      app.log("Creating obj: " + obj,myName,6);
+      return app.controllers["default"].create(model,obj);
+    },
+    __get : function(obj) {
+      let myName = "__get";
+      app.log("Getting obj: " + obj,myName,6);
+      return app.controllers["default"].get(model,obj);
+    },
+    __update : function(obj) {
+      let myName = "__update";
+      app.log("Updating obj: " + obj,myName,6);
+      return app.controllers["default"].update(model,obj);
+    },
+    __delete : function(obj) {
+      let myName = "__delete";
+      app.log("Deleting obj: " + obj,myName,6);
+      return app.controllers["default"].delete(model,obj);
+    },
+
     authenticate : function(req,res,next) {
       let myName = "authenticate()";
       app.log("Authenticating user: " + req.body.email,myName,5);
@@ -355,6 +376,65 @@ module.exports = function(app,model) {
         cb(err);
       });
     },
+    setDefaultDomain : function(req,res,next) {
+      let myName = "setDefaultDomain";
+      return new Promise((resolve,reject) => {
+        let userId = (req.params.id) ? req.params.id : false;
+        let domainId = (req.params.domainId) ? req.params.domainId : false;
+        if(!userId || !domainId) {
+          app.log("No userdId or domainId set",myName,4);
+          reject(new Error("(" + myName + ") No userdId or domainId set"));
+        }
+        app.log("Setting default domain for user: " + userId + " to domain: " + domainId,myName,6);
+        let searchObj = {
+          where:{id:userId},
+          include:[
+            {
+              model:app.models["roles"],
+              include:[
+                app.models["domains"]
+              ]
+            }
+          ]
+        }
+        app.log("Searching for user:" + JSON.stringify(searchObj),myName,6);
+        app.controllers[model].__get(searchObj)
+        .then(user => {
+          if(user!==null)
+            return user[0];
+          reject(new Error("(" + myName + ") No user found"));
+        })
+        .then(user => {
+          // app.log("Found user: " + JSON.stringify(user),myName,6);
+          let domainList = {};
+          user.roles.forEach(role => {
+            role.domains.forEach(domain => {
+              if(!domainList.hasOwnProperty(domain.id))
+                domainList[domain.id] = domain;
+            });
+          });
+          if(domainList.hasOwnProperty(domainId)) return true;
+          reject(new Error("(" + myName + ") User is not enrolled in domain: " + domainId));
+        })
+        .then(response => {
+          if(!response) reject(new Error("(" + myName + ") Default domain assignment failed"));
+          app.log("Domain: " + domainId + " can be assigned as default domain for user: " + userId,myName,6);
+          let searchObj = {
+            values:{defaultDomainId:domainId},
+            where:{where:{id:userId}}
+          };
+          app.log(JSON.stringify(searchObj),myName,6);
+          return app.controllers[model].__update(searchObj);
+        })
+        .then(items => {
+          if(items!==null || items!==0) resolve(res.json(items));
+          reject(new Error("(" + myName + ") Nothing modified"));
+        })
+        .catch(err => {
+          return reject(new Error("(" + myName + ") " + err.message));
+        });
+      });
+    },
     getRolesByUserId : function(req,res,next) {
       let myName = "getRolesByUserId()";
       // let userId = req.params.id;
@@ -394,23 +474,25 @@ module.exports = function(app,model) {
     },
     compileDomainList : function(user) {
       let myName = "compileDomainList()";
-      app.log("Compiling domain list",myName,6,"---");
-      let domainList = [];
-      for(let c=0;c<user.roles.length;c++) {
-        for(let i=0;i<user.roles[c].domains.length;i++) {
-          let domainFound = domainList.filter(v => {
-            app.log(v.id + " : " + user.roles[c].domains[i].id,myName,6);
-            return v.id == user.roles[c].domains[i].id;
-          });
-          if(domainFound.length<1) {
-            app.log("Adding domain: " + user.roles[c].domains[i].id + " to user's domain list",myName,6," - - - ");
-            domainList.push(user.roles[c].domains[i]);
-          } else {
-            app.log("Skipping domain: " + user.roles[c].domains[i].id + " already in user's domain list",myName,6," # # # ");
+      return new Promise((resolve,reject) => {
+        app.log("Compiling domain list",myName,6,"---");
+        let domainList = [];
+        for(let c=0;c<user.roles.length;c++) {
+          for(let i=0;i<user.roles[c].domains.length;i++) {
+            let domainFound = domainList.filter(v => {
+              app.log(v.id + " : " + user.roles[c].domains[i].id,myName,6);
+              return v.id == user.roles[c].domains[i].id;
+            });
+            if(domainFound.length<1) {
+              app.log("Adding domain: " + user.roles[c].domains[i].id + " to user's domain list",myName,6," - - - ");
+              domainList.push(user.roles[c].domains[i]);
+            } else {
+              app.log("Skipping domain: " + user.roles[c].domains[i].id + " already in user's domain list",myName,6," # # # ");
+            }
           }
         }
-      }
-      return domainList;
+        resolve(domainList);
+      });
     },
     logout : function(req,res,next) {
       req.session.destroy((err) => {
