@@ -84,6 +84,20 @@ module.exports = function(app,sequelize) {
       resolve(true);
     });
   };
+  obj.readElement = function(file) {
+    let myName = "readElement";
+    return new Promise((resolve,reject) => {
+      if(app.tools.isFileType(file,"js")) {
+        let fileNameParts = file.split(".");
+        let elementName = fileNameParts[0].toLowerCase();
+        app.log("Assigning element: " + elementName + " from file: " + file,myName,6,"+");
+        let elementDefinition = require("./" + app.locals.elementsDir + "/" + file);
+        app.elements[elementName] = require("./" + app.locals.elementsDir + "/" + file);
+        // app.elements[elementName] = require("./" + app.locals.elementsDir + "/" + file)(app,elementName);  
+      }
+      resolve(true);
+    });
+  };
   obj.readRoute = function(file) {
     let myName = "readRoute";
     return new Promise((resolve,reject) => {
@@ -403,8 +417,9 @@ module.exports = function(app,sequelize) {
       app.controllers["users"].getUserRoles(req.session.user.id)
       .then((user) => {
         if(user===null) return res.send("Couldn't find this user (even though session data is set)");
-        let domainList = app.controllers["users"].compileDomainList(user);
-        //app.controllers["users"].setCurrentDomain(domainId);
+        return app.controllers["users"].compileDomainList(user);
+      })
+      .then(domainList => {
         if(req.session.user.hasOwnProperty("switchDomain")) {
           obj.logThis("Found a switch-domain request for: " + req.session.user.switchDomain,myName,6," - - - ");
           targetDomainId = req.session.user.switchDomain;
@@ -428,9 +443,10 @@ module.exports = function(app,sequelize) {
           req.session.user.currentDomain=switchTo[0];
         }
         req.session.user.domains = domainList;
-        obj.logThis("Session's current domain is ==> " + req.session.user.currentDomain.name,myName,6);
+        obj.logThis("Session's current domain is ==> " + req.session.user.currentDomain.name,myName,6);  
         req.appData.user = req.session.user;
-        return next();
+        return next();  
+        // let domainList = app.controllers["users"].compileDomainList(user);
       })
       .catch((err) => {
         // some error
@@ -581,6 +597,40 @@ module.exports = function(app,sequelize) {
     .catch((err) => {
       return res.send("Not authorized");
     });
+  };
+  obj.getElement = function(req,res,next) {
+    let myName = "appGetElement";
+    app.log("App Elements:\n" + JSON.stringify(app.elements),myName,6);
+    if(app.elements.hasOwnProperty(req.params.element)) {
+      app.log("Found element: " + req.params.element,myName,6);
+      app.tools.checkAuthorization(app.elements[req.params.element].role,req.session.user.id,req.session.user.currentDomain.id)
+      .then(authorized => {
+        if(!authorized) {
+          app.log("User failed authorization check",myName,6);
+          return next();
+        }
+        app.log(myName + ": Authorized for request: " + req.method + ":" + req.route.path);
+        // let element = fetchElement(req.params.element);
+        // let element = app.elements[req.params.element];
+        app.log(myName + ": Sending element: " + JSON.stringify(app.elements[req.params.element]));
+        return res.json(app.elements[req.params.element]);
+      })
+      .catch(err => {
+        app.log(err.message,myName,4);
+        return res.json({'error':err.message});
+      });
+      // if(isAuthorized(req,authElements[req.params.element].role)) {
+      //   logThis(myName + ": Authorized for request: " + req.method + ":" + req.route.path);
+      //   // let element = fetchElement(req.params.element);
+      //   // let element = app.elements[req.params.element];
+      //   logThis(myName + ": Sending element: " + JSON.stringify(app.elements[req.params.element]));
+      //   return res.json(app.elements[req.params.element]);
+      // }
+    }
+    // app.log(myName + "NOT Authorized for request: " + req.method + ":" + req.route.path,myName,4);
+    // return res.json({
+    //   'error':"Not authorized"
+    // });
   };
   obj.setOriginalUrl = function(req,res,next) {
     let myName = "setOriginalUrl()";
