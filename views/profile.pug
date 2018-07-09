@@ -4,34 +4,35 @@ block content
   section.layout-width-sd.layout-col
     .section-hdg.section-hdg-1 My Profile: #{user.fullname}
     .layout-row.layout-width-1-1
-      .user-listing.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-        .itemdetail.layout-col
-          label.label(for="email") Email:
-          .data #{user.email}
-        .itemdetail.layout-col
-          label.label(for="partnum") First Name:
-          .data #{user.firstname}
-        .itemdetail.layout-col
-          label.label(for="partnum") Last Name:
-          .data #{user.lastname}
-        .itemdetail.layout-col
-          label.label(for="partnum") Domains:
-            -
-              let domainList = {};
-              user.roles.forEach(role => {
-                role.domains.forEach(domain => {
-                  if(!domainList.hasOwnProperty(domain.uniqueAppId))
-                    domainList[domain.uniqueAppId] = domain;
+      .itempanel.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
+        .itembanner.layout-col
+          .itemhead User: #{user.fullname} 
+          .itemdetail.layout-col
+            label.label(for="partnum") First Name:
+            .data #{user.firstname}
+          .itemdetail.layout-col
+            label.label(for="partnum") Last Name:
+            .data #{user.lastname}
+          .itemdetail.layout-col
+            label.label(for="email") Email:
+            .data #{user.email}
+        .item-listing.layout-col
+          .itemdetail.layout-col
+            label.label(for="partnum") Domains:
+              -
+                let domainList = {};
+                user.roles.forEach(role => {
+                  role.domains.forEach(domain => {
+                    if(!domainList.hasOwnProperty(domain.uniqueAppId))
+                      domainList[domain.uniqueAppId] = domain;
+                  });
                 });
-              });
-            each domain, uniqeId in domainList
-              .data #{domain.name}
-              //- each domain in role.domains
-              //-   .data #{domain.name}
-        .itemdetail.layout-col
-          label.label Roles:
-            each role in user.roles
-              .data #{role.name}
+              each domain, uniqeId in domainList
+                .data #{domain.name}
+          .itemdetail.layout-col
+            label.label Roles:
+              each role in user.roles
+                .data #{role.name}
       .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
         .infotext.section-hdg.section-hdg-3 Edit User View
         .infotext You can edit a user with this view.
