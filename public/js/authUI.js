@@ -24,12 +24,14 @@ let requestElement = function(parentElement) {
     if(elementJson.hasOwnProperty('error')) {
       console.log(elementJson.error);
     } else {
-      console.log(elementJson);
-      elementJson.parent = parentElement;
-      let user_button = new Laminar.Widget(elementJson);
+      
+      elementJson.element.parent = parentElement;
+      console.log("Retrieved element:\n" + JSON.stringify(elementJson.element));
+      let user_button = new Laminar.Widget(elementJson.element);
       var attributes = Object.keys(parentElement.dataset);
       for(c in attributes) {
         if(attributes[c]!="fetch") {
+          console.log("Setting attribute on child: " + attributes[c]);
           user_button.set(attributes[c],parentElement.dataset[attributes[c]]);
         }
       }
