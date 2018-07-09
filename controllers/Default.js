@@ -40,7 +40,7 @@ module.exports = function(app,model) {
       return new Promise((resolve,reject) => {
         if(!app.models.hasOwnProperty(model)) reject(new Error("Model: " + model + " does not exist"));
         app.log("Updating " + model + ": " + JSON.stringify(obj),myName,6);
-        app.models[model].update(obj.values,{where:obj.where})
+        app.models[model].update(obj.values,obj.where)
         .then(items => {
           app.log(JSON.stringify(items),myName,6);
           resolve(items);
