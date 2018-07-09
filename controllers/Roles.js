@@ -3,6 +3,60 @@ module.exports = function(app,model) {
   let myName = model + "Controller";
   let myModel = model;
   obj = {
+    __create : function(obj) {
+      let myName = "__create";
+      app.log("Creating obj: " + obj,myName,6);
+      return app.controllers["default"].create(model,obj);
+    },
+    __get : function(obj) {
+      let myName = "__get";
+      app.log("Getting obj: " + obj,myName,6);
+      return app.controllers["default"].get(model,obj);
+    },
+    __update : function(obj) {
+      let myName = "__update";
+      app.log("Updating obj: " + obj,myName,6);
+      return app.controllers["default"].update(model,obj);
+    },
+    __delete : function(obj) {
+      let myName = "__delete";
+      app.log("Deleting obj: " + obj,myName,6);
+      return app.controllers["default"].delete(model,obj);
+    },
+
+    get : function(req,res,next) {
+      let myName = "get";
+      let searchObj = {
+        where: {
+          id : req.params.id
+        },
+        include:[
+          {
+            model: app.models["domains"]
+          },
+          {
+            model: app.models["users"]
+          }
+        ]
+      }
+      app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
+      .then(response => {
+        if(!response) {
+          app.log("User failed authorization check",myName,4);
+          return next();
+        }
+        app.log("User is authorized to list roles",myName,6);
+        return app.controllers[model].__get(searchObj);
+      })
+      .then(items => {
+        req.appData.role = items[0];
+        req.appData.view = "role";
+        return next();
+      })
+      .catch(err => {
+        return res.send("Err: " + err.message);
+      })
+    },
     getRoles : function(req,res,next) {
       let myName = "getRoles()";
       app.models[model]
