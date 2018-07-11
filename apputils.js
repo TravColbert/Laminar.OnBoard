@@ -236,18 +236,17 @@ module.exports = function(app,sequelize) {
   };
   obj.render = function(req,res) {
     let myName = "render";
-    // let templateFile = req.appData.view || "index";
     let templateFile = req.appData.view || app.locals.homeView;
-    // obj.logThis(req.appData,myName,6);
     obj.logThis("Query Params: " + JSON.stringify(req.query),myName,6," >>> ");
-    if(req.query) {
-      if(req.query.format=="json") {
+    let format = req.query.format || "html";
+    switch (format.toLowerCase()) {
+      case "json":
         obj.logThis("Rendering in JSON",myName,6);
         return res.json(req.appData);
-      }
+      default:
+        obj.logThis("Rendering template: " + templateFile,myName,6);
+        return res.render(templateFile,req.appData);  
     }
-    obj.logThis("Rendering template: " + templateFile,myName,6);
-    return res.render(templateFile,req.appData);
   },
   obj.makeMessage = function(obj) {
     let myName = "makeMessage";
