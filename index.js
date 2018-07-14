@@ -100,23 +100,25 @@ let setupBasePermissions = function() {
   let adminUser, adminRole;
   let setupPromises = Promise.resolve();
   setupPromises = setupPromises.then(() => {
-    app.log("Looking for user: " + 'admin@' + app.locals.smtpDomain,myName);
+    app.log("Looking for user: " + 'admin@' + app.locals.smtpDomain,myName,6);
     return app.controllers.users.getUserByObj({email:'admin@' + app.locals.smtpDomain});
   }).then(user => {
-    if(user===null) {
+    // The 'get' methods return an array of users
+    if(user.length!=1) {
       app.log("No admin user found - creating",myName,6);
       let adminUserDef = {
-        firstname:'Administrative',
-        lastname:'User',
-        email:'admin@' + app.locals.smtpDomain,
-        verified:true,
-        disabled:false,
-        password:'test123!'
+        "firstname":"Administrative",
+        "lastname":"User",
+        "email":"admin@" + app.locals.smtpDomain,
+        "verified":true,
+        "disabled":false,
+        "password":"test123!"
       };
+      // The 'create' method returns an object, not an array! 
       return app.controllers.users.createUser(adminUserDef);
     } else {
-      app.log("Admin user found",myName,6,"#");
-      return user;
+      // If the "user.length" check (above) passes then we're looking at an array here!
+      return user[0];
     };
   }).then(user => {
     app.log("Admin user: " + user.fullname,myName,6);
