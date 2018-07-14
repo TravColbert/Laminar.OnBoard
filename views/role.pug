@@ -2,13 +2,11 @@ extends index.pug
 
 block content
   section.layout-width-sd.layout-col
-    .section-hdg.section-hdg-1 Role #{role.name}
+    .section-hdg.section-hdg-1 Role Detail
     .layout-row.layout-width-1-1
-      .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
+      .itempanel.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
         .itembanner.layout-col
-          .itemdetail.layout-col
-            label.label(for="rolename") Name:
-            #rolename.data #{role.name}
+          .itemhead Role: #{role.name}
           .itemdetail.layout-col
             label.label(for="roledescription") Description:
             #roledescription.data #{role.description}
@@ -22,7 +20,7 @@ block content
               //- strange: in PUG keys and vals are swapped (below)
               each scope,capability in role.capabilities
                 .data #{capability} : #{scope}
-          #role_edit_button_container.authUI(data-fetch="role_edit" data-href="/role/edit/" + role.id)
+          #role_edit_button_container.authUI(data-fetch="role_edit" data-href="/roles/" + role.id + "/actions/edit/")
         .item-listing.layout-col
           .itemdetail.layout-col
             label.label Users In This Role
@@ -30,9 +28,10 @@ block content
               .data #{user.fullname}
           .itemdetail.layout-col
             label.label Actions:
-            .data.layout-row
+            .data.layout-col
               //- input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")
-              a.btn.submit(href="/roles/" + role.id + "/adduser/") Add User
+              #role_add_user_button_container.authUI(data-fetch="role_add_user" data-href="/roles/" + role.id + "/actions/adduser/")
+              //- a.btn.submit(href="/roles/" + role.id + "/adduser/") Add User
             //- .data.layout-row
             //-   a.btn.cancel(href="/roles/") Cancel
       .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8

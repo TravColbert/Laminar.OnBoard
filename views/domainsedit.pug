@@ -1,11 +1,11 @@
 extends index.pug
 
 block content
-  .layout-col
-    .section-hdg.section-hdg-1 Domain Edit
+  section.layout-width-sd.layout-col
+    .section-hdg.section-hdg-1 Edit Domain
     .layout-row.layout-width-1-1
-      .user-listing.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-        form(action="/domains/" + domain.id method="post")
+      .item-listing.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
+        form(action="/domains/" + domain.id + "/" method="post")
           input(id="id" type="hidden" name="id" value=domain.id)
           .itemdetail.layout-col
             label.label(for="name") Name:

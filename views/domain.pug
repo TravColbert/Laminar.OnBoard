@@ -17,8 +17,10 @@ block content
           .itemdetail.layout-col
             label.label(for="domainroles") Roles:
             each role in domain.roles
-              .data #[a(href="/roles/" + role.id + "/") #{role.name}]
-              .subdata #{role.description}
+              - let targetLoc = "/roles/" + role.id + "/";
+              .subitem-listing.layout-col.layout-width-1-1.clickable(onclick="goTo('" + targetLoc + "')")
+                .data #{role.name}
+                .subdata #{role.description}
           .itemdetail.layout-col
             label.label Actions:
             .data.layout-row
