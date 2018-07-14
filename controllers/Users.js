@@ -260,8 +260,7 @@ module.exports = function(app,model) {
     },
     getUserByObj : function(obj) {
       let myName = "getUserByObj";
-      return app.models[model]
-      .find({where:obj});
+      return app.controllers[model].__get({where:obj});
     },
     editUserForm : function(req,res,next) {
       let myName = "editUserForm()";
@@ -313,10 +312,10 @@ module.exports = function(app,model) {
     },
     createUser : function(userObj) {
       let myName = "createUser";
-      app.log("Creating user",myName,6,"+");
-      return app.models[model]
-      .create(userObj)
-      .then((user) => {
+      app.log("Creating user " + userObj.email,myName,6,"+");
+      return app.controllers[model]
+      .__create(userObj)
+      .then(user => {
         if(user===null) return new Error("(" + myName + ") Could not create user");
         return user;
       })
