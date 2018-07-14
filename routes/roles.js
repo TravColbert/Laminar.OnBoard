@@ -7,9 +7,11 @@ module.exports = function(app) {
   // router.get('/:id/',app.tools.checkAuthentication,app.controllers["roles"].getRole);
   router.get('/:id/',app.tools.checkAuthentication,app.controllers["roles"].get);
   router.get('/:id/actions/edit/',app.tools.checkAuthentication,app.controllers["roles"].editRoleForm);
+  router.get('/:id/actions/adduser/',app.tools.checkAuthentication,app.controllers["roles"].addUserForm);
   router.get('/:id/users/',app.tools.checkAuthentication,app.controllers["roles"].getUsersByRoleId);
   router.get('/:id/domains/',app.tools.checkAuthentication,app.controllers["roles"].getDomainsByRoleId);
   router.post('/',app.tools.checkAuthentication,app.controllers["roles"].createRole);
   router.post('/:id/',app.tools.checkAuthentication,app.controllers["roles"].editRole);
+  router.post('/:id/actions/adduser/',app.tools.checkAuthentication,app.controllers["roles"].addUser);
   return router;
 };
