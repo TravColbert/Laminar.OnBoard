@@ -166,8 +166,7 @@ module.exports = function(app,model) {
         app.log("User is authorized to edit role",myName,6);
         let roleObj = app.tools.pullParams(req.params,["id"]);
         app.log("Getting role with ID: " + roleObj.id,myName,6);
-        app.models[model]
-        .findById(req.params.id)
+        app.models[model].findById(req.params.id)
         .then(role => {
           if(role===null) {
             app.log("Couldn't find role",myName,4);
@@ -184,6 +183,34 @@ module.exports = function(app,model) {
       };
       app.controllers["users"].ifUserHasRole("Super Admin",req.session.user,prepareEditRoleForm);
     },
+    addUserForm : function(req,res,next) {
+      let myName = "addUserForm";
+      let searchObj = {
+        where : {
+          id:req.params.id
+        },
+        include : [
+          {
+            model : app.models["domains"]
+          },
+          {
+            model : app.models["users"]
+          }
+        ]
+      }
+      app.controllers[model].__get(searchObj)
+      .then(roles => {
+        if(!roles[0]) return res.redirect("/roles/");
+        // return res.json(roles[0]);
+        req.appData.pin = app.tools.generateString(6);
+        req.appData.role = roles[0];
+        req.appData.view = "roleadduser";
+        return next();
+      })
+      .catch(err => {
+        return res.send(err.message)
+      });
+    },
     editRole : function(req,res,next) {
       let myName = "editRole()";
       let roleObj = app.tools.pullParams(req.body,["id","name","description","capabilities"]);
@@ -197,6 +224,41 @@ module.exports = function(app,model) {
       .then((roles) => {
         return res.redirect("/roles/" + requestedRole + "/");
       });
+    },
+    addUser : function(req,res,next) {
+      let myName = "addUser";
+      if(!req.body.inviteduser) return res.send("No user nvited to role id: " + req.params.id);
+      // 'inviteduser' is expected to be an email-address matching a user in the DB
+      let invtedUserEmail = req.body.inviteduser;
+      let pin = req.body.pin;
+      let comment = req.body.comment || null;
+      let roleAppid;
+      let searchObj = {
+        where: {
+          id:req.params.id
+        }
+      };
+      app.controllers[model].__get(searchObj)
+      .then(roles => {
+        app.log("Found role appid: " + roles[0].appid,myName,6);
+        return roles[0].appid;
+      })
+      .then(roleAppid => {
+        roleAppid = roleAppid;
+        return app.controllers["invites"].add(roleAppid,invtedUserEmail,pin,comment);
+      })
+      .then(invite => {
+        if(invite.roleAppid==roleAppid && invite.inviteUserEmail==userEmail) {
+          return "Invitation has been made";
+        }
+        return "Invitation has not been made - error somewhere";
+      })
+      .then(response => {
+        return res.send(response);
+      })
+      .catch(err => {
+        return res.send(err.message);
+      })
     },
     createRole : function(roleObj) {
       let myName = "createRole";
