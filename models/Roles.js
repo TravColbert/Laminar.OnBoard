@@ -20,6 +20,25 @@ module.exports = function(Sequelize,app) {
       "capabilities":{
         type: Sequelize.JSONB,
         allowNull: true
+      },
+      "appid":{
+        type: Sequelize.STRING
+      }
+    },
+    options:{
+      hooks:{
+        afterCreate:(role) => {
+          let myName = "role_model:afterCreate()";
+          app.log("creating unique app ID for role: " + role.id,myName,6);
+          role.appId = app.tools.generateString() + role.id;
+          role.update({"appid":role.appId})
+          .then((role) => {
+            app.log("unique app ID generated for role: " + role.id,myName,6);
+          })
+          .catch((err) => {
+            app.log(err.message,myName,4,"===>");
+          })
+        }
       }
     },
     afterSync:function(db){
