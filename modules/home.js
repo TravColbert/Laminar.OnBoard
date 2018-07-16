@@ -21,7 +21,10 @@ module.exports = function(app) {
       let myName = "home";
       app.log("In home module",myName,6,"--->");
       if(req.session.user) {
-        app.controllers["notes"].getNotes(req.session.user.id,req.session.user.currentDomain.id)
+        app.log("A user session appears to be available",myName,6);
+        app.log(req.session.user.id);
+        app.log(req.session.user.currentDomain.id);
+        app.controllers["notes"].getNotesByUserAndDomainId(req.session.user.id,req.session.user.currentDomain.id)
         .then((notes) => {
           if(!notes) {
             app.log("No notes collected");

@@ -3,51 +3,54 @@ module.exports = function(app,model) {
   let myName = model + "Controller";
   let myModel = model;
   obj = {
-    get : function(obj) {
-      let myName = "get(note)";
-      return new Promise((resolve,reject) => {
-        app.log("Getting notes: " + JSON.stringify(obj),myName,6);
-        app.models[model].findAll({where:obj})
-        .then(notes => {
-          if(notes===null) resolve([]);
-          app.log(JSON.stringify(notes),myName,6);
-          resolve(notes);
-        }).catch(err => {
-          app.log(err.message,myName,5);
-          reject(err);
-        });
-      });
+    __create : function(obj) {
+      let myName = "__create";
+      app.log("Creating obj: " + obj,myName,6);
+      return app.controllers["default"].create(model,obj);
     },
-    // getByUserAndDomain : function(userId,domainId) {
-    //   let myName = "getByUserAndDomain(note)";
-    //   return app.controllers[model].get({userId:userId,domainId:domainId});
-    // },
-    // getByUser : function(userId) {
-    //   let myName = "getByUser(note)";
-    //   return app.controllers[model].get({userId:userId});
-    // },
-    // getByDomain : function(domainId) {
-    //   let myName = "getByDomain(note)";
-    //   return app.controllers[model].get({domainId:domainId});
-    // },
-    // getById : function(noteId) {
-    //   let myName = "getByNoteId(note)";
-    //   return app.controllers[model].get({id:noteId});
-    // },
-    getNotes : function(req,res,next) {
-      let myName = "getNotes";
+    __get : function(obj) {
+      let myName = "__get";
+      app.log("Getting obj: " + obj,myName,6);
+      return app.controllers["default"].get(model,obj);
+    },
+    __update : function(obj) {
+      let myName = "__update";
+      app.log("Updating obj: " + obj,myName,6);
+      return app.controllers["default"].update(model,obj);
+    },
+    __delete : function(obj) {
+      let myName = "__delete";
+      app.log("Deleting obj: " + obj,myName,6);
+      return app.controllers["default"].delete(model,obj);
+    },
+
+    getNotesByUserAndDomainId : function(userId,domainId) {
+      let myName = "getNotesByUserAndDomainId";
       let searchObj = {
-        userId : req.session.user.id,
-        domainId : req.session.user.currentDomain.id
+        where : {
+          "userId" : userId,
+          "domainId" : domainId
+        }
       }
-      app.tools.checkAuthorization(["list","all"],searchObj.userId,searchObj.domainId)
+      return app.controllers[model].__get(searchObj);
+    },
+
+    gets : function(req,res,next) {
+      let myName = "gets (notes)";
+      // let searchObj = {
+      //   where : {
+      //     "userId" : req.session.user.id,
+      //     "domainId" : req.session.user.currentDomain.id  
+      //   }
+      // }
+      app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
       .then(response => {
         if(!response) {
           app.log("User failed authorization check",myName,6);
           return next();
         }
         app.log("User is authorized to list notes.",myName,6);
-        return app.controllers[model].get(searchObj);
+        return app.controllers[model].getNotesByUserAndDomainId(req.session.user.id,req.session.user.currentDomain.id);
       })
       .then(notes => {
         req.appData.notes = notes;
@@ -58,10 +61,12 @@ module.exports = function(app,model) {
         return res.send("Err: " + err.message);
       })
     },
-    getNote : function(req,res,next) {
+    get : function(req,res,next) {
       let myName = "getNote()";
       let searchObj = {
-        id : req.params.id
+        where : {
+          "id" : req.params.id
+        }
       }
       app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
       .then(response => {
@@ -70,7 +75,7 @@ module.exports = function(app,model) {
           return next();
         }
         app.log("User is authorized to list notes.",myName,6);
-        return app.controllers[model].get(searchObj);
+        return app.controllers[model].__get(searchObj);
       })
       .then(notes => {
         req.appData.note = notes[0];
@@ -83,44 +88,23 @@ module.exports = function(app,model) {
     },
     editNoteForm : function(req,res,next) {
       let myName = "editNoteForm()";
-      // let prepareEditForm = function(authorized) {
-      //   if(!authorized) {
-      //     app.log("User is NOT authorized to edit!",myName,6);
-      //     return res.send("User not authorized for this view");
-      //   }
-      //   app.log("User is authorized to edit.",myName,6);
-      //   let noteObj = app.tools.pullParams(req.params,["id"]);
-      //   app.log("Getting note with ID: " + noteObj.id,myName,6);
-      //   app.models[model]
-      //   .findById(req.params.id)
-      //   .then(note => {
-      //     if(note===null) {
-      //       app.log("Couldn't find note",myName,4);
-      //       return res.redirect("/notes/");
-      //     }
-      //     req.appData.note = note;
-      //     req.appData.view = "notesedit";
-      //     return next();
-      //   })
-      //   .catch(err => {
-      //     return res.send(myName + ": " + err.message);
-      //   });
-      // };
-      app.models[model]
-      .find({where:{id:req.params.id,userId:req.session.user}})
-      .then((note) => {
-        if(note===null) {
-          app.log("Couldn't find note",myName,4);
-          return res.redirect("/notes/");
+      let searchObj = {
+        where : {
+          "id" : req.params.id,
+          "userId" : req.session.user.id
         }
-        req.appData.note = notes;
+      };
+      app.controllers[model].__get(searchObj)
+      .then(notes => {
+        if(!notes) return res.redirect("/notes/");
+        app.log("Note found: " + notes[0],myName,6);
+        req.appData.note = notes[0];
         req.appData.view = "noteedit";
         return next();
       })
       .catch(err => {
         return res.send(myName + ":" + err.message);
       })
-      // app.controllers["users"].ifUserHasRole(,req.session.user,prepareEditForm);
     },
     editNote : function(req,res,next) {
       let myName = "editNote()";
@@ -129,11 +113,16 @@ module.exports = function(app,model) {
       app.log(noteObj.id + " " + requestedNoteId);
       if(noteObj.id!=requestedNoteId) return res.send("Didn't request the requested note");
       delete noteObj.id;
-      app.models[model]
-      .update(noteObj,{where:{id:req.params.id}})
+      app.log("Updating note: " + JSON.stringify(noteObj),myName,6);
+      app.controllers[model].__update({values:noteObj,options:{where:{"id":requestedNoteId}}})
       .then((notes) => {
+        app.log(notes[0] + " notes updated");
         return res.redirect("/notes/" + requestedNoteId + "/");
       })
+      .catch(err => {
+        app.log("Error: " + err.message,myName,4);
+        return res.send(err.message);
+      });
     },
     createNote : function(req,res,next) {
       let myName = "createNote()";
@@ -141,14 +130,14 @@ module.exports = function(app,model) {
       if(!newNote) return res.send("Required field missing... try again");
       newNote.userId = req.session.user.id;
       app.log("New note: " + JSON.stringify(newNote),myName,6,"::::>");
-      app.models[model]
-      .create(newNote)
+      app.controllers[model].__create(newNote)
       .then(note => {
         return res.redirect('/notes/' + note.id + "/");
       })
       .catch(err => {
+        app.log("Error: " + err.message,myName,4);
         return res.send(err.message);
-      })
+      });
     }
   };
   return obj;
