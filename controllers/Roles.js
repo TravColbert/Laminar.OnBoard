@@ -89,40 +89,23 @@ module.exports = function(app,model) {
       let myName = "getRoleByName";
       app.log("Looking for role with name: " + roleName,myName,6);
       return app.models[model].findOne({where:{name:roleName}});
-      // .then(role => {
-      //   resolve(role);
-      // })
-      // .catch(err => {
-      //   reject(new Error("(" + myName + ") " + err.message));
-      // });
     },
-    // getRoleByName : function(name) {
-    //   let myName = "getRoleByName()";
-    //   return new Promise((resolve,reject) => {
-    //     app.models[model]
-    //     .findOne({where:{name:name}})
-    //     .then((role) => {
-    //       resolve(role);
-    //     })
-    //     .catch((err) => {
-    //       reject(new Error("(" + myName + ") Failed to find role with name: " + name));
-    //     });
-    //   });
-    // },
-    // getRolesByDomainId : function(domainId) {
-    //   let myName = "getRolesByDomainId()";
-    //   return new Promise((resolve,reject) => {
-    //     app.log("Getting all roles with domainId '" + domainId,myName,6);
-    //     app.models[model]
-    //     .findAll({where:{domainId:domainId}})
-    //     .then((roles) => {
-    //       resolve(roles);
-    //     })
-    //     .catch((err) => {
-    //       reject(new Error("(" + myName + ") Could not fetch roles from domain ID '" + domainId));
-    //     })
-    //   })
-    // },
+    getRoleByAppId : function(appId) {
+      let myName = "getRoleByAppId";
+      let searchObj = {
+        where:{"appid" : appId}
+      }
+      return new Promise((resolve,reject) => {
+        app.controllers[model].__get(searchObj)
+        .then(roles => {
+          app.log(roles,myName,6);
+          resolve(roles[0]);
+        })
+        .catch(err => {
+          reject(new Error("(" + myName + ") " + err.message));
+        })
+      });
+    },
     getUsersByRoleId : function(req,res,next) {
       let myName = "getUsersByRoleId";
       app.models[model]
@@ -201,7 +184,6 @@ module.exports = function(app,model) {
       app.controllers[model].__get(searchObj)
       .then(roles => {
         if(!roles[0]) return res.redirect("/roles/");
-        // return res.json(roles[0]);
         req.appData.pin = app.tools.generateString(6);
         req.appData.role = roles[0];
         req.appData.view = "roleadduser";
@@ -227,9 +209,10 @@ module.exports = function(app,model) {
     },
     addUser : function(req,res,next) {
       let myName = "addUser";
-      if(!req.body.inviteduser) return res.send("No user nvited to role id: " + req.params.id);
+      if(!req.body.inviteduser) return res.send("No user invited to role id: " + req.params.id);
       // 'inviteduser' is expected to be an email-address matching a user in the DB
       let invtedUserEmail = req.body.inviteduser;
+      if(!req.body.pin) return res.send("PIN required to invite user");
       let pin = req.body.pin;
       let comment = req.body.comment || null;
       let roleAppid;
@@ -240,21 +223,16 @@ module.exports = function(app,model) {
       };
       app.controllers[model].__get(searchObj)
       .then(roles => {
-        app.log("Found role appid: " + roles[0].appid,myName,6);
-        return roles[0].appid;
+        app.log("Found role unique appid: " + roles[0].uniqueAppId,myName,6);
+        return roles[0].uniqueAppId;
       })
       .then(roleAppid => {
         roleAppid = roleAppid;
         return app.controllers["invites"].add(roleAppid,invtedUserEmail,pin,comment);
       })
       .then(invite => {
-        if(invite.roleAppid==roleAppid && invite.inviteUserEmail==userEmail) {
-          return "Invitation has been made";
-        }
-        return "Invitation has not been made - error somewhere";
-      })
-      .then(response => {
-        return res.send(response);
+        app.log("Invitation has been made",myName,6);
+        return res.send("Invitation has been made");
       })
       .catch(err => {
         return res.send(err.message);
@@ -273,20 +251,6 @@ module.exports = function(app,model) {
         return new Error("(" + myName + ") Could not create role: " + err.message);
       });
     },
-    // createRole : function(req,res,next) {
-    //   let myName = "createRole()";
-    //   let newRole = app.tools.pullParams(req.body,["name"]);
-    //   if(!newRole) return res.send("Required field missing... try again");
-    //   if(req.body.hasOwnProperty("description")) newRole["description"] = req.body.description;
-    //   if(req.body.hasOwnProperty("capabilities")) newRole["capabilities"] = JSON.parse(req.body.capabilities);
-    //   app.models[model]
-    //   .create(newRole)
-    //   .then((record) => {
-    //     req.appData.view = "role";
-    //     req.appData.role = record;
-    //     return next();
-    //   });
-    // },
     connectRoleToDomain : function(role,domain) {
       let myName = "connectRoleToDomain()";
       return new Promise((resolve,reject) => {
