@@ -480,7 +480,6 @@ module.exports = function(app,model) {
     },
     compileDomainList : function(user) {
       let myName = "compileDomainList()";
-      app.log(JSON.stringify(user),myName,6);
       return new Promise((resolve,reject) => {
         app.log("Compiling domain list",myName,6,"---");
         let domainList = [];
