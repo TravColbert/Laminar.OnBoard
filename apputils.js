@@ -34,10 +34,6 @@ module.exports = function(app,sequelize) {
       return sauce.substring(null,length);
     }
   };
-  obj.showPath = function(req,res,next) {
-    app.log("CALCULATED PATH:" + req.path,myName,6);
-    return next();
-  };
   obj.isFileType = function(fileName,type) {
     let myName = "isFileType";
     let extension = fileName.split('.').pop();
@@ -197,25 +193,6 @@ module.exports = function(app,sequelize) {
     obj.clearMessageQueue(req);
     return next();
   };
-  obj.checkFile = function(fileList,successCb,failureCb) {
-    let myName = "checkFile()";
-    if(!Array.isArray(fileList)) fileList = [fileList];
-    if(fileList.length<1) {
-      // app.log("exhausted template file picklist. Quitting",myName,6);
-      // app.log("trying th ")
-      return failureCb(data);
-    }
-    let file = fileList.shift();
-    app.log("looking for template: " + file,myName,6);
-    fs.access(app.locals.viewsDir + "/" + file + ".pug",(err) => {
-      if(err) {
-        app.log("couldn't find template: " + file,myName,6);
-        return obj.checkFile(fileList,successCb);
-      }
-      app.log("found template: " + file,myName,6);
-      return successCb(file);
-    });
-  };
   obj.render = function(req,res) {
     let myName = "render";
     let templateFile = req.appData.view || app.locals.homeView;
@@ -355,30 +332,6 @@ module.exports = function(app,sequelize) {
       });
     })
   };
-  obj.ifUserIsAuthorized = function(capability,user,cb) {
-    let myName = "ifUserIsAuthorized()";
-    // app.log(JSON.stringify(user));
-    app.log("Checking if user " + user.id + " is authorized to: '" + capability + "' on domain: " + user.defaultDomainId,myName);
-
-    let cap = {};
-    cap[capability[0]] = {[Op.eq]:capability[1]};
-    let query = {};
-    query.roles = {capabilities:cap};
-    query.users = {id:user.id};
-    query.domains = (user.defaultDomainId) ? {id:user.defaultDomainId} : null;   // Admin user doesn't have a default domain ATM
-    app.models["roles"]
-    .findAll({where:query.roles||null,include:[{model:app.models["users"],where:query.users||null},{model:app.models["domains"],where:query.domains||null}]})
-    .then(roles => {
-      if(roles===null || roles.length===0) return cb(null,false);
-      app.log(roles.length + " roles found permitting '" + capability + "'",myName,6);
-      // app.log(JSON.stringify(roles));
-      return cb(null,true);
-    })
-    .catch(err => {
-      app.log("error looking up authorizations: " + err.message,myName,2);
-      return cb(err);
-    })
-  };
   obj.setUserAccount = function(req,res,next) {
     var myName = "setUserAccount()";
     app.log("setting user account data...",myName,5);
@@ -451,45 +404,6 @@ module.exports = function(app,sequelize) {
     }
     return res.redirect("/");
   },
-  obj.setSessionData = function(req,res,next) {
-    let myName = "setSessionData()";
-    app.log("Setting base session data... ",myName,6);
-    if(!req.session.views) req.session.views = 0;
-    req.session.views++;
-    app.log("Views: " + req.session.views,myName,6);
-
-    if(req.session.user) {
-      app.log("==== SETTING USER-SPECIFIC ENROLLMENTS IN SESSION DATA: ====",myName,6);
-      // req.appData.user = req.session.user;
-      /* Prepare a call-back function that will continue the login process by
-       * collecting all the domains that the authenticated user has access to.
-       */
-      let cb = function(err,user) {  // domain list is in user
-        if(err) return res.send(err.message);
-        if(user===null) return res.send("No user found");
-        let domainList = [];
-        for(let c=0;c<user.roles.length;c++) {
-          for(let i=0;i<user.roles[c].domains.length;i++) {
-            domainList.push(user.roles[c].domains[i]);
-            if(user.roles[c].domains[i].id==req.session.user.defaultDomainId) req.session.user.currentDomain = user.roles[c].domains[i];
-          }
-        }
-        req.session.user.domains = domainList;
-        if(!req.session.user.currentDomain) req.session.user.currentDomain = domainList[0];
-        app.log("Session's current domain is ==> " + req.session.user.currentDomain.name,myName,6);
-        return next();
-      }
-      return app.controllers["users"].getUserEnrollments(req.session.user.id,cb);
-    }
-
-    // app.log("User: " + req.appData.user,myName,6);
-    return next();
-  };
-  obj.printSessionData = function(req,res,next) {
-    var myName = "printSessionData()";
-    app.log("session: " + JSON.stringify(req.session),myName,5);
-    return next();
-  };
   obj.homePage = function(req,res,next) {
     let myName = "homePage()";
     app.log("queueing home page",myName,5);
@@ -588,8 +502,6 @@ module.exports = function(app,sequelize) {
           return next();
         }
         app.log(myName + ": Authorized for request: " + req.method + ":" + req.route.path);
-        // let element = fetchElement(req.params.element);
-        // let element = app.elements[req.params.element];
         app.log(myName + ": Sending element: " + JSON.stringify(app.elements[req.params.element]));
         return res.json(app.elements[req.params.element]);
       })
@@ -597,27 +509,13 @@ module.exports = function(app,sequelize) {
         app.log(err.message,myName,4);
         return res.json({'error':err.message});
       });
-      // if(isAuthorized(req,authElements[req.params.element].role)) {
-      //   logThis(myName + ": Authorized for request: " + req.method + ":" + req.route.path);
-      //   // let element = fetchElement(req.params.element);
-      //   // let element = app.elements[req.params.element];
-      //   logThis(myName + ": Sending element: " + JSON.stringify(app.elements[req.params.element]));
-      //   return res.json(app.elements[req.params.element]);
-      // }
     }
-    // app.log(myName + "NOT Authorized for request: " + req.method + ":" + req.route.path,myName,4);
-    // return res.json({
-    //   'error':"Not authorized"
-    // });
   };
   obj.setOriginalUrl = function(req,res,next) {
     let myName = "setOriginalUrl()";
     app.log("got a request of type: " + req.protocol + " :" + req.method + " TO: " + req.originalUrl + " URL: " + req.url,myName,4);
-    // app.log();
     if(req.session) {
-      // app.log("session: " + JSON.stringify(req.session),myName,5);
       req.session.originalReq = (req.originalUrl!="/login") ? req.originalUrl : req.session.originalReq;
-      // app.log("session: " + req.session.originalReq);
     }
     return next();
   };
@@ -673,8 +571,5 @@ module.exports = function(app,sequelize) {
     debugLevel = debugLevel || 6;
     return obj.log(string,caller,debugLevel,prefix);
   };
-  app.checkFileList = function(fileList,callBack) {
-    return obj.checkFile(fileList,callBack);
-  }
   return obj;
 };
