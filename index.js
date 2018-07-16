@@ -202,9 +202,7 @@ app.tools.readDir(app.locals.modelsDir)
   app.use(
     app.tools.setCurrentDomain,
     app.tools.setUserAccount,
-    // app.tools.setSessionData,
-    app.tools.setMessage //,
-    //app.tools.printSessionData
+    app.tools.setMessage
   );
 
   /**
