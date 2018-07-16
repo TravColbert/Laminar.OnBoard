@@ -15,6 +15,7 @@
   "homeModule":false,
   "loginPage":"/login",
   "logLevel":6,
+  "invitationTimeoutHours":72,
   "viewsDir":"./views",
   "navDir":"navigation",
   "staticDir":"public",

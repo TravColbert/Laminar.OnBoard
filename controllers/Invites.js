@@ -46,7 +46,7 @@ module.exports = function(app,model) {
     },
 
     getInviteQueryObj : function(userEmail, expirationHours) {
-      expirationHours = expirationHours || 72;
+      expirationHours = expirationHours || app.locals.invitationTimeoutHours;
       // Calculate the date some days ago
       let timeLimit = new Date(new Date() - (1000 * 60 * 60 * expirationHours)); 
       return {
