@@ -495,30 +495,26 @@ module.exports = function(app,sequelize) {
     app.log("queueing home page",myName,5);
     req.appData.sessionId = req.session.id;
     req.appData.view = app.locals.homeView;
+
     if(app.homeModule) {
       app.log("Invoking included home module",myName,6,"+ + + >");
       return app.homeModule.home(req,res,next);
     }
-    return next();
-    // if(req.session.user) {
-    //   app.controllers["notes"].getNotes(req.session.user.id,req.session.user.currentDomain.id)
-    //   .then((notes) => {
-    //     if(!notes) {
-    //       app.log("No notes collected");
-    //       req.appData.notes = null;
-    //     } else {
-    //       app.log("Found some notes");
-    //       req.appData.notes = notes;
-    //     }
-    //     return next();
-    //   })
-    //   .catch((err) => {
-    //     app.log(err.message);
-    //     return res.send("Error: " + err.message);
-    //   });
-    // } else {
-    //   return next();
-    // }
+
+    if(req.session.user) {
+      app.controllers.invites.checkInvites(req.session.user.email)
+      .then(invites => {
+        app.log(invites,myName,6);
+        req.appData.invites = invites;
+        return next();
+      })
+      .catch(err => {
+        app.log(err.message);
+        return res.send(err.message);
+      });  
+    } else {
+      return next();  
+    }
   };
   obj.loginPage = function(req,res,next) {
     let myName = "loginPage()";
