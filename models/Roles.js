@@ -22,22 +22,21 @@ module.exports = function(Sequelize,app) {
         allowNull: true
       },
       "appid":{
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
       }
     },
     options:{
+      getterMethods: {
+        uniqueAppId: function() {
+          return this.appid + this.id;
+        }
+      },  
       hooks:{
-        afterCreate:(role) => {
+        beforeCreate:(role) => {
           let myName = "role_model:afterCreate()";
-          app.log("creating unique app ID for role: " + role.id,myName,6);
-          role.appId = app.tools.generateString() + role.id;
-          role.update({"appid":role.appId})
-          .then((role) => {
-            app.log("unique app ID generated for role: " + role.id,myName,6);
-          })
-          .catch((err) => {
-            app.log(err.message,myName,4,"===>");
-          })
+          app.log("Generating unique app ID for role: " + role.name,myName,6);
+          role.appid = app.tools.generateString();
         }
       }
     },

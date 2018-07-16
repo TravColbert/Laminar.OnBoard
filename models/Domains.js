@@ -31,7 +31,7 @@ module.exports = function(Sequelize,app) {
       hooks:{
         beforeCreate:(domain) => {
           let myName = "domain_model:beforeCreate()";
-          app.log("Generating app-wide ID for domain");
+          app.log("Generating app-wide ID for domain",myName,6);
           domain.appid = app.tools.generateString();
         }
         // ,
