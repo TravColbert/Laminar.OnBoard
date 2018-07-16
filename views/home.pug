@@ -9,13 +9,14 @@ block content
     .layout-width-1-1 Welcome to your web app!
     if(user)
       .layout-width-1-1.layout-col
-        - let invitesNum = invites.length || 0;
-        if(invitesNum)
-          div Note: You've been invited to connect to the folowing domains: #{invitesNum}
-          each invite in invites
-            div #{invite.roleAppid}
-            .layout-width-1-1.layout-row
-              a(href= "/invites/" + invite.roleAppid + "/") #{invite.roleAppid}
+        if(invites)
+          - let invitesNum = invites.length || 0;
+          if(invitesNum)
+            div Note: You've been invited to connect to the folowing domains: #{invitesNum}
+            each invite in invites
+              div #{invite.roleAppid}
+              .layout-width-1-1.layout-row
+                a(href= "/invites/" + invite.roleAppid + "/") #{invite.roleAppid}
         .layout-width-1-2.layout-col Check up on your domains:
           .layout-width-1-1
           if(user.defaultDomainId)
@@ -32,7 +33,7 @@ block content
             input#domain(type="text")
       if(notes)
         if(notes.length>0)
-          .layout-width-1-1.layout-col Notes
+          .layout-width-1-1.layout-col Notes In This Domain:
             each note in notes
               .layout-width-1-1 
                 .notename #[a(href="/notes/" + note.id + "/") #{note.name}]

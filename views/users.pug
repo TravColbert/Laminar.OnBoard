@@ -1,36 +1,33 @@
 extends index.pug
 
 block content
-  .section-hdg.section-hdg-1 Users (#{users.length})
-  .layout-row.layout-width-1-1
-    .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-      ul.itemlist
-        each item in users
-          - let targetLoc = "/users/" + item.id;
-          li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
-            .itemdetail.layout-col
-              .label User:
-              .data #[a(href="/users/" + item.id + "/") #{item.fullname}]
-            - let email = item.email || null
-            if email
+  section.layout-width-sd.layout-col
+    .section-hdg.section-hdg-1 Users (#{users.length})
+    .layout-row.layout-width-1-1
+      .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
+        ul.itemlist
+          each item in users
+            - let targetLoc = "/users/" + item.id;
+            li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
               .itemdetail.layout-col
-                .label Email:
-                .data #{item.email}
-            - let roles = item.roles || null;
-            - console.log("Roles: " + item.roles);
-            if roles
-              .itemdetail.layout-col
-                - let labelLabel = (roles.length>1) ? "Roles" : "Role"
-                .label #{labelLabel}:
-                each role in roles
-                  .data #{role.name}
-
-      #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/users/add")
-        //- a.btn.normal(href="/users/add")
-        //-   i.material-icons add_circle_outline
-        //-   span Add User
-    .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
-      .infotext.section-hdg.section-hdg-3 User List View
-      .infotext This is a list of users. You may edit the user's details by clicking on a user entry.
-      .infotext Click the "Add User" button to create a new user.
-      .infotext Each user is given a user ID that is used by stockr to keep track of the user and the user's cases.
+                .label User:
+                .data #[a(href="/users/" + item.id + "/") #{item.fullname}]
+              - let email = item.email || null
+              if email
+                .itemdetail.layout-col
+                  .label Email:
+                  .data #{item.email}
+              - let roles = item.roles || null;
+              - console.log("Roles: " + item.roles);
+              if roles
+                .itemdetail.layout-col
+                  - let labelLabel = (roles.length>1) ? "Roles" : "Role"
+                  .label #{labelLabel}:
+                  each role in roles
+                    .data #{role.name}
+        #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/actions/create/user/")
+      .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
+        .infotext.section-hdg.section-hdg-3 User List View
+        .infotext This is a list of users. You may edit the user's details by clicking on a user entry.
+        .infotext Click the "Add User" button to create a new user.
+        .infotext Each user is given a user ID that is used by stockr to keep track of the user and the user's cases.
