@@ -39,8 +39,8 @@ module.exports = function(app,model) {
       let myName = "update(default)";
       return new Promise((resolve,reject) => {
         if(!app.models.hasOwnProperty(model)) reject(new Error("Model: " + model + " does not exist"));
-        app.log("Updating " + model + ": " + JSON.stringify(obj),myName,6);
-        app.models[model].update(obj.values,obj.where)
+        app.log("Updating " + model + ": " + obj,myName,6);
+        app.models[model].update(obj.values,obj.options)
         .then(items => {
           app.log(JSON.stringify(items),myName,6);
           resolve(items);
