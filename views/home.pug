@@ -8,7 +8,14 @@ block content
       .layout-width-1-1 It Works!
     .layout-width-1-1 Welcome to your web app!
     if(user)
-      .layout-width-1-1.layout-row
+      .layout-width-1-1.layout-col
+        - let invitesNum = invites.length || 0;
+        if(invitesNum)
+          div Note: You've been invited to connect to the folowing domains: #{invitesNum}
+          each invite in invites
+            div #{invite.roleAppid}
+            .layout-width-1-1.layout-row
+              a(href= "/invites/" + invite.roleAppid + "/") #{invite.roleAppid}
         .layout-width-1-2.layout-col Check up on your domains:
           .layout-width-1-1
           if(user.defaultDomainId)

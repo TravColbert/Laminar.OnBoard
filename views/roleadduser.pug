@@ -28,13 +28,17 @@ block content
               .data #{user.fullname}
           .itemdetail.layout-col
             form(action="/roles/" + role.id + "/actions/adduser/" method="post")
-              label.label Add/Invite User:
+              label.label Add/Invite User Email:
               .data.layout-col
                 input(id="inviteduser" type="text" name="inviteduser")
               label.label PIN:
               .data.layout-col
                 input(id="pin" type="text" name="pin" value= pin)
                 .subdata The person you invite to this role must provide this PIN. Please communicate this PIN to them so they can accept the invitation.
+              label.label Comment (optional):
+              .data.layout-col
+                input(id="comment" type="text" name="comment")
+                .subdata Notes on the invite (optional)
               label.label Actions:
               .data.layout-row
                 input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")

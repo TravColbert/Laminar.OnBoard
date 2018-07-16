@@ -1,9 +1,9 @@
 extends index.pug
 
 block content
-  .layout-col
+  section.layout-col
     .section-hdg.section-hdg-1 Create #{modelName}
-    .user-listing.layout-col
+    .item-listing.layout-col
       - let model = template.model;
       form(action="/" + model + "/" method="post")
         .inputusername
