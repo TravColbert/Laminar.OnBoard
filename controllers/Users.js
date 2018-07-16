@@ -5,7 +5,7 @@ module.exports = function(app,model) {
   if(!model) return false;
   let myName = model + "Controller";
   let myModel = model;
-  let defaultRoleAtRegistration = "applicant";
+  // let defaultRoleAtRegistration = "applicant";
   obj = {
     __create : function(obj) {
       let myName = "__create";
@@ -258,6 +258,13 @@ module.exports = function(app,model) {
         });
       });
     },
+    getUserByEmail : function(email) {
+      let myName = "getUserByEmail";
+      let searchObj = {
+        where : { "email" : email }
+      };
+      return app.controllers[model].__get(searchObj);
+    },
     getUserByObj : function(obj) {
       let myName = "getUserByObj";
       return app.controllers[model].__get({where:obj});
@@ -473,6 +480,7 @@ module.exports = function(app,model) {
     },
     compileDomainList : function(user) {
       let myName = "compileDomainList()";
+      app.log(JSON.stringify(user),myName,6);
       return new Promise((resolve,reject) => {
         app.log("Compiling domain list",myName,6,"---");
         let domainList = [];
