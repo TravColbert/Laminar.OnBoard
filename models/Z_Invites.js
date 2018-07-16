@@ -4,17 +4,11 @@ module.exports = function(Sequelize,app) {
     schema:{
       "roleAppid":{
         type: Sequelize.STRING,
-        references: {
-          model:app.models["roles"],
-          key:"appid"
-        }
+        allowNull: false
       },
       "userEmail":{
         type: Sequelize.STRING,
-        references: {
-          model:app.models["users"],
-          key:"email"
-        }
+        allowNull: false
       },
       "pin":{
         type: Sequelize.STRING,
@@ -22,6 +16,10 @@ module.exports = function(Sequelize,app) {
       },
       "comment":{
         type: Sequelize.STRING
+      },
+      "accepted":{
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       }
     }
   }
