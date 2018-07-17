@@ -109,6 +109,14 @@ ul {
   margin: 0;
   padding: 0;
 }
+i.big-icon {
+  font-size: 4em;
+  padding: 0;
+  margin: 0
+}
+.app-features {
+  padding-bottom: 1.5em;
+}
 .infotext {
   padding: 0.1em 0.75em;
   font-size: 0.8em;

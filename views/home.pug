@@ -2,40 +2,68 @@ extends index.pug
 
 block content
   section.layout-width-sd.layout-col
-    if(user)
-      .layout-width-1-1 Hello #{user.email}!
-    else
-      .layout-width-1-1 It Works!
-    .layout-width-1-1 Welcome to your web app!
-    if(user)
+    .layout-width-1-1.layout-col
+      .layout-width-1-1.layout-col 
+        h1 Congrats! Here's your awesome web app.
       .layout-width-1-1.layout-col
+      if(user) 
+        h2 Welcome, #{user.email}!
+      else 
+        h2 It Works!
+      .layout-width-1-1.layout-row.layout-md-col.layout-wrap
+        .app-features.layout-width-1-2.layout-md-width-1-1 
+          .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
+            i.material-icons.big-icon folder 
+          .layout-width-3-4.text-align-justify This is your front page. When you log in you'll get access to you domains. Domains are groupings of similar data. Use domains like filling cabinets.
+        .app-features.layout-width-1-2.layout-md-width-1-1
+          .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
+            i.material-icons.big-icon people 
+          .layout-width-3-4.text-align-justify Create or invite users to collaborate with you in your domains. Those users can create their own domains of data too.
+        .app-features.layout-width-1-2.layout-md-width-1-1
+          .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
+            i.material-icons.big-icon receipt 
+          .layout-width-3-4.text-align-justify You can create notes and other pieces of data in your domains. Notes are visible by all users that are collaborating with you in your domains.
+        .app-features.layout-width-1-2.layout-md-width-1-1
+          .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
+            i.material-icons.big-icon security
+          .layout-width-3-4.text-align-justify Everything's secure! Your web app is locked-down and sealed tight by default. Only you and your collaborators can see your data.
+    .layout-width-1-1.layout-col
+      if(user)
         if(invites)
-          - let invitesNum = invites.length || 0;
-          if(invitesNum)
-            div Note: You've been invited to connect to the folowing domains: #{invitesNum}
-            each invite in invites
-              div #{invite.roleAppid}
-              .layout-width-1-1.layout-row
-                a(href= "/invites/" + invite.roleAppid + "/") #{invite.roleAppid}
-        .layout-width-1-2.layout-col Check up on your domains:
-          .layout-width-1-1
-          if(user.defaultDomainId)
-            .layout-width-1-1 Your default domain is: #{user.defaultDomainId}
-          if(user.domains)
-            each domain in user.domains
-              .layout-width-1-1
-                - let selectedDomain = (user.currentDomain.id==domain.id) ? "*" : "";
-                - let switchToDomain = (user.currentDomain.id!=domain.id) ? "/users/" + user.id + "/actions/switchdomain/" + domain.id + "/" : "";
-                .test.clickable(onclick="goTo('" + switchToDomain + "')") #{domain.name} (id: #{domain.id}) #{selectedDomain}
-        .layout-width-1-2.layout-col
+          .layout-width-1-2.layout-col
+            - let invitesNum = invites.length || 0;
+            if(invitesNum)
+              div Note: You've been invited to connect to the folowing domains: #{invitesNum}
+              each invite in invites
+                div #{invite.roleAppid}
+                .layout-width-1-1.layout-row
+                  a(href= "/invites/" + invite.roleAppid + "/") #{invite.roleAppid}
+        .layout-width-1-1.layout-col 
+          h3 You have access to these domains:
+          .layout-width-1-1.layout-row.layout-md-col.layout-wrap
+            if(user.defaultDomainId)
+              .layout-width-1-1 Your default domain is: #{user.defaultDomainId}
+            if(user.domains)
+              each domain in user.domains
+                .layout-width-1-2.layout-md-width-1-1.layout-col
+                  .layout-col
+                    .itemhead.layout-col 
+                      a(href="/domains/" + domain.id + "/") #{domain.name}
+                    .layout-col
+                      .itemdetail #{domain.description}
+                      - let selectedDomain = (user.currentDomain.id==domain.id) ? "*" : "";
+                      - let switchToDomain = (user.currentDomain.id!=domain.id) ? "/users/" + user.id + "/actions/switchdomain/" + domain.id + "/" : "";
+                      if(user.currentDomain.id!=domain.id)
+                        .clickable(onclick="goTo('" + switchToDomain + "')") Set as default
+        .item-listing.layout-width-1-1.layout-col
           .layout-width-1-1 Create a new domain here:
           .layout-width-1-1
             input#domain(type="text")
-      if(notes)
-        if(notes.length>0)
-          .layout-width-1-1.layout-col Notes In This Domain:
-            each note in notes
-              .layout-width-1-1 
-                .notename #[a(href="/notes/" + note.id + "/") #{note.name}]
-              .layout-width-1-1
-                .notedescription #{note.description}
+    if(notes)
+      if(notes.length>0)
+        .layout-width-1-1.layout-col Notes In This Domain:
+          each note in notes
+            .layout-width-1-1 
+              .notename #[a(href="/notes/" + note.id + "/") #{note.name}]
+            .layout-width-1-1
+              .notedescription #{note.description}
