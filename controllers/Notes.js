@@ -24,14 +24,25 @@ module.exports = function(app,model) {
       return app.controllers["default"].delete(model,obj);
     },
 
-    getNotesByUserAndDomainId : function(userId,domainId) {
+    getByUserAndDomainId : function(userId,domainId) {
       let myName = "getNotesByUserAndDomainId";
       let searchObj = {
         where : {
           "userId" : userId,
           "domainId" : domainId
         }
+      };
+      app.log("Looking for notes in: " + searchObj,myName,6);
+      return app.controllers[model].__get(searchObj);
+    },
+    getByDomainId : function(domainId) {
+      let myName = "getByDomainId";
+      let searchObj = {
+        where : {
+          "domainId" : domainId
+        }
       }
+      app.log("Looking for notes in domain: " + domainId,myName,6);
       return app.controllers[model].__get(searchObj);
     },
 
@@ -50,7 +61,7 @@ module.exports = function(app,model) {
           return next();
         }
         app.log("User is authorized to list notes.",myName,6);
-        return app.controllers[model].getNotesByUserAndDomainId(req.session.user.id,req.session.user.currentDomain.id);
+        return app.controllers[model].getByDomainId(req.session.user.currentDomain.id);
       })
       .then(notes => {
         req.appData.notes = notes;
@@ -138,6 +149,23 @@ module.exports = function(app,model) {
         app.log("Error: " + err.message,myName,4);
         return res.send(err.message);
       });
+    },
+    countNotesByDomain : function(domainId) {
+      let myName = "countNotesByDomain";
+      return new Promise((resolve,reject) => {
+        let searchObj = {
+          where:{"domainId" : domainId}
+        };
+        app.controllers[model].__get(searchObj)
+        .then(notes => {
+          app.log("Counted: " + notes.length + " notes",myName,6);
+          resolve(notes.length);
+        })
+        .catch(err => {
+          app.log("Error: " + err.messages);
+          reject(err);
+        })
+      })
     }
   };
   return obj;
