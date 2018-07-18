@@ -39,7 +39,7 @@ block content
                 .layout-width-1-1.layout-row
                   a(href= "/invites/" + invite.roleAppid + "/") #{invite.roleAppid}
         .layout-width-1-1.layout-col 
-          h3 You have access to these domains:
+          h2 Here are your domains:
           .layout-width-1-1.layout-row.layout-md-col.layout-wrap
             if(user.defaultDomainId)
               .layout-width-1-1 Your default domain is: #{user.defaultDomainId}
@@ -55,6 +55,14 @@ block content
                       - let switchToDomain = (user.currentDomain.id!=domain.id) ? "/users/" + user.id + "/actions/switchdomain/" + domain.id + "/" : "";
                       if(user.currentDomain.id!=domain.id)
                         .clickable(onclick="goTo('" + switchToDomain + "')") Set as default
+                    .layout-width-1-1.layout-col
+                      each note in domain.notes
+                        .item-listing.layout-row
+                          .layout-row.layout-align-center
+                            i.material-icons.text-grow-x3 receipt
+                          .layout-col 
+                            .nobreak #{note.name}
+                            .layout-row #{note.description}
         .item-listing.layout-width-1-1.layout-col
           .layout-width-1-1 Create a new domain here:
           .layout-width-1-1
@@ -67,3 +75,17 @@ block content
               .notename #[a(href="/notes/" + note.id + "/") #{note.name}]
             .layout-width-1-1
               .notedescription #{note.description}
+    if(!user)
+      .layout-width-1-1.layout-row.layout-justify-center.layout-align-center
+        h2 Get Started: 
+        //- .layout-width-1-1.layout-row.text-align-center
+        .layout-row
+          a(href="/login/")
+            i.material-icons verified_user
+            div Login
+        .layout-row
+          a(href="/register/") 
+            i.material-icons fingerprint
+            div Register
+        
+        
