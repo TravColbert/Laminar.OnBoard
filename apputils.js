@@ -405,21 +405,29 @@ module.exports = function(app,sequelize) {
     return res.redirect("/");
   },
   obj.homePage = function(req,res,next) {
-    let myName = "homePage()";
+    let myName = "homePage";
     app.log("queueing home page",myName,5);
     req.appData.sessionId = req.session.id;
     req.appData.view = app.locals.homeView;
 
-    if(app.homeModule) {
-      app.log("Invoking included home module",myName,6,"+ + + >");
-      return app.homeModule.home(req,res,next);
-    }
-
     if(req.session.user) {
+      app.log("Session detected",myName,6);
       app.controllers.invites.checkInvites(req.session.user.email)
       .then(invites => {
-        app.log(invites,myName,6);
+        let numInvites = (invites) ? invites.length : 0;
+        app.log("Invites found: " + numInvites,myName,6);
         req.appData.invites = invites;
+        return true;
+      })
+      .then((localModuleExists) => {
+        app.log("Invoke custom 'home' module = " + localModuleExists,myName,6);
+        if(localModuleExists) {
+          return app.homeModule.home(req,res,next);
+        } else {
+          return;
+        }
+      })
+      .then(() => {
         return next();
       })
       .catch(err => {
@@ -427,6 +435,7 @@ module.exports = function(app,sequelize) {
         return res.send(err.message);
       });  
     } else {
+      app.log("No session detected",myName,6);
       return next();  
     }
   };
