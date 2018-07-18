@@ -19,29 +19,46 @@ module.exports = function(app) {
      */
     home : function(req,res,next) {
       let myName = "home";
-      app.log("In home module",myName,6,"--->");
-      if(req.session.user) {
-        app.log("A user session appears to be available",myName,6);
-        app.log(req.session.user.id);
-        app.log(req.session.user.currentDomain.id);
-        app.controllers["notes"].getNotesByUserAndDomainId(req.session.user.id,req.session.user.currentDomain.id)
-        .then((notes) => {
-          if(!notes) {
-            app.log("No notes collected");
-            req.appData.notes = null;
-          } else {
-            app.log("Found some notes");
-            req.appData.notes = notes;
-          }
-          return next();
-        })
-        .catch((err) => {
-          app.log(err.message);
-          return res.send("Error: " + err.message);
+      app.log("In custom home module",myName,6);
+
+      let processDomain = function(domain) {
+        let myName = "processDomains";
+        return new Promise((resolve,reject) => {
+          app.controllers["notes"].getByDomainId(domain.id)
+          .then(notes => {
+            app.log("Found " + notes.length + " notes",myName,6);
+            resolve(notes);
+          })
+          .catch(err => {
+            reject(err);
+          });
         });
-      } else {
-        return next();
-      };
+      }
+
+      // If there is no user let's move on...
+      if(!req.session.user) {
+        app.log("No user session appears to exist. Moving on...",myName,6);
+        return true;
+      }
+
+      app.log("A user session appears to be available",myName,6);
+
+      let domainPromises = Promise.resolve();
+      // Get notes for each domain
+      req.session.user.domains.forEach(domain => {
+        domainPromises = domainPromises.then(data => {
+          app.log("Processing domain: " + domain.name,myName,6);
+          app.log("Previous domain note count: " + data,myName,6);
+          return processDomain(domain);
+        })
+        .then(notes => {
+          let noteCount = (notes) ? notes.length : 0;
+          app.log("Found " + noteCount + " notes",myName,6);
+          domain.notes = notes;
+          return domain.notes.length;
+        })
+      }); 
+      return domainPromises; 
     }
   }
   return obj;
