@@ -114,6 +114,7 @@ module.exports = function(app,model) {
     checkInvites : function(userEmail,expirationHours) {
       let myName = "checkInvites";
       return new Promise((resolve,reject) => {
+        app.log("Checking invites for: " + userEmail,myName,6);
         let searchObj = app.controllers[model].getInviteQueryObj(userEmail,expirationHours);
         app.controllers.invites.__get(searchObj)
         .then(invites => {
