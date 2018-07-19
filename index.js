@@ -9,6 +9,7 @@ const app = express();
 let myName = "setup";
 
 app.locals = JSON.parse(fs.readFileSync('config.json'));
+app.secrets = JSON.parse(fs.readFileSync('secrets.json'));
 app.locals.url = "https://" + app.locals.addr;
 if(app.locals.port!="443") app.locals.url += ":" + app.locals.port;
 const options = {
@@ -19,21 +20,21 @@ const options = {
 const Sequelize = require('sequelize');
 
 var sequelize = new Sequelize(
-  app.locals.dbConnection.sqlite.database,
-  app.locals.dbConnection.sqlite.user,
-  app.locals.dbConnection.sqlite.password,
+  app.locals.dbConnection[app.locals.activeDbConnection].database,
+  app.locals.dbConnection[app.locals.activeDbConnection].user,
+  app.secrets.dbConnection[app.locals.activeDbConnection].password,
   {
-    host:app.locals.dbConnection.sqlite.host,
-    dialect:"sqlite",
+    host:app.locals.dbConnection[app.locals.activeDbConnection].host,
+    dialect:app.locals.activeDbConnection,
     // For SQLite only :
-    storage:app.locals.dbConnection.sqlite.storage,
+    storage:app.locals.dbConnection[app.locals.activeDbConnection].storage,
     // Logging:
-    logging: app.locals.dbConnection.sqlite.logging
+    logging: app.locals.dbConnection[app.locals.activeDbConnection].logging
   }
 );
 
 let sessionConfig = {
-  secret:app.locals.sessionSecret,
+  secret:app.secrets.sessionSecret,
   resave:false,
   saveUninitialized:false
 };
@@ -112,7 +113,7 @@ let setupBasePermissions = function() {
         "email":"admin@" + app.locals.smtpDomain,
         "verified":true,
         "disabled":false,
-        "password":"test123!"
+        "password":app.secrets["admin@" + app.locals.smtpDomain]
       };
       // The 'create' method returns an object, not an array! 
       return app.controllers.users.createUser(adminUserDef);

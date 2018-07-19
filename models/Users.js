@@ -79,34 +79,6 @@ module.exports = function(Sequelize,app) {
           });
         }
       }
-      // ,
-      // scopes:{
-      //   administratorUsers:{
-      //     include:[
-      //       {
-      //         model: app.models["roles"],
-      //         where:{name:"administrator"}
-      //       }
-      //     ]
-      //   }
-      // }
-    },
-    afterSync:function(db){
-      db.count({where:{email:'admin@test.com'}}).then(function(count) {
-        app.log("Found " + count + " records",null,6);
-        if(count===0) {
-          db.create({
-            firstname:'Administrative',
-            lastname:'User',
-            email:'admin@test.com',
-            verified:true,
-            disabled:false,
-            password:'test123!'
-          }).then((record) => {
-            app.log("Inserted: '" + record.email + "' user");
-          });
-        }
-      });
     }
   };
 };
