@@ -302,7 +302,7 @@ app.tools.readDir(app.locals.modelsDir)
  */
 let server = https.createServer(options,app);
 let io = require('socket.io').listen(server);
-server.listen(app.locals.port,function() {
+server.listen(app.locals.port,app.locals.host,function() {
   app.log(app.locals.appName + " server listening on port " + app.locals.port,myName,4);
   app.log("logLevel: " + app.locals.logLevel,myName,4);
 });

@@ -1,5 +1,6 @@
 {
   "appName":"OnBoard (dev)",
+  "host":"0.0.0.0",
   "addr":"127.0.0.1",
   "port":443,
   "keyFile":"tls/server.key",
