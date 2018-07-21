@@ -539,6 +539,28 @@ module.exports = function(app,sequelize) {
     app.log("queueing to original request: " + redirectTo,myName,5);
     return res.redirect(redirectTo);
   };
+  obj.sendEmail = function(mailObj,toArray) {
+    let myName = "sendEmail";
+    return new Promise((resolve,reject) => {
+      mailObj.FromEmail = app.locals.smtpFromAddr;
+      mailObj.FromName = app.locals.smtpFromName;
+      mailObj.Recipients = toArray;
+      app.log("Prepared email object for sending: " + JSON.stringify(mailObj),myName,6);
+      
+      let sendMail = app.mailjet.post("send");
+
+      sendMail
+      .request(mailObj)
+      .then(result => {
+        app.log("Here's what happened: " + result,myName,6);
+        resolve(result);
+      })
+      .catch(err => {
+        app.log("Error: " + err.message,myName,4);
+        reject(err);
+      });
+    })
+  };
   obj.secureTest = function(req,res,next) {
     var myName = "secureTest";
     app.log("Request to render secure test page",myName);

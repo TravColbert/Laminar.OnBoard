@@ -134,6 +134,20 @@ module.exports = function(app,model) {
         app.models[model]
         .create(userRegistrationObj)
         .then((record) => {
+          // This is where we'd launch an e-mail confirmation
+          let mailObj = {
+            "Subject" : "Welcome to This Cool App!",
+            "Text-part" : "Hi there! To Complete your sign-in go here: " + app.locals.addr + "/verify."        
+          };
+          app.log("Attempting to send notification to: " + record.email,myName,6);
+          return app.tools.sendEmail(mailObj,[{"Email":record.email}]);
+        })
+        .then(result => {
+          if(result) {
+            app.log("I think we sent the email!");
+          } else {
+            app.log("I think something went wrong!");
+          }
           req.appData.view = "registrationcomplete";
           return next();
         });

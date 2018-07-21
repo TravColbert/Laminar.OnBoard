@@ -1,18 +1,19 @@
 {
-  "name": "my_project",
+  "name": "Froogle.io",
   "version": "1.0.0",
-  "description": "my_project description",
+  "description": "a simple expense-tracker based on Laminar.OnBoard",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "my_email@email.com",
+  "author": "trav.colbert@gmail",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
+    "node-mailjet": "^3.2.1",
     "nodemailer": "^4.6.3",
     "pug": "^2.0.1",
     "sequelize": "^4.37.1",
