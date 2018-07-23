@@ -545,9 +545,9 @@ module.exports = function(app,sequelize) {
       mailObj.FromEmail = app.locals.smtpFromAddr;
       mailObj.FromName = app.locals.smtpFromName;
       mailObj.Recipients = toArray;
-      app.log("Prepared email object for sending: " + JSON.stringify(mailObj),myName,6);
       
-      let sendMail = app.mailSender.post("send");
+      let sendMail = app.mailjet.post("send");
+      app.log("Prepared email object for sending: " + JSON.stringify(mailObj),myName,6);
 
       sendMail
       .request(mailObj)
