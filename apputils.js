@@ -542,21 +542,25 @@ module.exports = function(app,sequelize) {
   obj.sendEmail = function(mailObj,toArray) {
     let myName = "sendEmail";
     return new Promise((resolve,reject) => {
-      mailObj.FromEmail = app.locals.smtpFromAddr;
-      mailObj.FromName = app.locals.smtpFromName;
-      mailObj.Recipients = toArray;
+      mailObj.From = {
+        "Email": app.locals.smtpFromAddr,
+	"Name": app.locals.smtpFromName
+      };
+      mailObj.To = toArray;
       
-      let sendMail = app.mailjet.post("send");
-      app.log("Prepared email object for sending: " + JSON.stringify(mailObj),myName,6);
+      let finalObj = {"Messages":[mailObj]};
+      
+      let sendMail = app.mailjet.post("send",{'version':'v3.1'});
+      app.log("Prepared email object for sending: " + JSON.stringify(finalObj),myName,6);
 
       sendMail
-      .request(mailObj)
+      .request(finalObj)
       .then(result => {
         app.log("Here's what happened: " + result,myName,6);
         resolve(result);
       })
       .catch(err => {
-        app.log("Error: " + err.message,myName,4);
+        app.log("Error: " + JSON.stringify(err),myName,4);
         reject(err);
       });
     })
