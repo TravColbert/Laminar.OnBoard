@@ -137,7 +137,7 @@ module.exports = function(app,model) {
           // This is where we'd launch an e-mail confirmation
           let mailObj = {
             "Subject" : "Welcome to This Cool App!",
-            "TextPart" : "Hi there! To Complete your sign-in go here: " + app.locals.addr + "/verify."        
+            "TextPart" : "Hi there! To Complete your sign-in go here: <a href=\"https://" + app.locals.addr + "/" + record.uniqueAppId + "/\">Verify My Account</a>"
           };
           app.log("Attempting to send notification to: " + record.email,myName,6);
           return app.tools.sendEmail(mailObj,[{"Email":record.email}]);
