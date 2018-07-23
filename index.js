@@ -40,7 +40,7 @@ app.mailjet = require('node-mailjet').connect(app.secrets["mail-api-key"], app.s
   perform_api_call: true // used for tests. default is true
 });
 
-const mailSender = app.mailjet.post('sender');
+app.mailSender = app.mailjet.post('sender');
 
 // ... or...
 // .connect(app.secrets.mail-api-key, app.secrets.mail-api-secret);
