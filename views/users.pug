@@ -7,7 +7,7 @@ block content
       .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
         ul.itemlist
           each item in users
-            - let targetLoc = "/users/" + item.id;
+            - let targetLoc = "/users/" + item.id + "/";
             li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
               .itemdetail.layout-col
                 .label User:
