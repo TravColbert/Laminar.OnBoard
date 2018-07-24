@@ -56,25 +56,26 @@ block content
                       if(user.currentDomain.id!=domain.id)
                         .clickable(onclick="goTo('" + switchToDomain + "')") Set as default
                     .layout-width-1-1.layout-col
-                      each note in domain.notes
-                        .item-listing.layout-row
-                          .layout-row.layout-align-center
-                            i.material-icons.text-grow-x3 receipt
-                          .layout-col 
-                            .nobreak #{note.name}
-                            .layout-row #{note.description}
+                      if(domain.notes)
+                        each note in domain.notes
+                          .item-listing.layout-row
+                            .layout-row.layout-align-center
+                              i.material-icons.text-grow-x3 receipt
+                            .layout-col 
+                              .nobreak #{note.name}
+                              .layout-row #{note.description}
         .item-listing.layout-width-1-1.layout-col
           .layout-width-1-1 Create a new domain here:
           .layout-width-1-1
             input#domain(type="text")
-    if(notes)
-      if(notes.length>0)
-        .layout-width-1-1.layout-col Notes In This Domain:
-          each note in notes
-            .layout-width-1-1 
-              .notename #[a(href="/notes/" + note.id + "/") #{note.name}]
-            .layout-width-1-1
-              .notedescription #{note.description}
+    //- if(notes)
+    //-   if(notes.length>0)
+    //-     .layout-width-1-1.layout-col Notes In This Domain:
+    //-       each note in notes
+    //-         .layout-width-1-1 
+    //-           .notename #[a(href="/notes/" + note.id + "/") #{note.name}]
+    //-         .layout-width-1-1
+    //-           .notedescription #{note.description}
     if(!user)
       .layout-width-1-1.layout-row.layout-justify-center.layout-align-center
         h2 Get Started: 
