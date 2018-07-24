@@ -57,6 +57,7 @@ block content
                         .clickable(onclick="goTo('" + switchToDomain + "')") Set as default
                     .layout-width-1-1.layout-col
                       if(domain.notes)
+                        .layout-row.layout-width-1-1 Notes:
                         each note in domain.notes
                           .item-listing.layout-row
                             .layout-row.layout-align-center
@@ -68,14 +69,6 @@ block content
           .layout-width-1-1 Create a new domain here:
           .layout-width-1-1
             input#domain(type="text")
-    //- if(notes)
-    //-   if(notes.length>0)
-    //-     .layout-width-1-1.layout-col Notes In This Domain:
-    //-       each note in notes
-    //-         .layout-width-1-1 
-    //-           .notename #[a(href="/notes/" + note.id + "/") #{note.name}]
-    //-         .layout-width-1-1
-    //-           .notedescription #{note.description}
     if(!user)
       .layout-width-1-1.layout-row.layout-justify-center.layout-align-center
         h2 Get Started: 
