@@ -400,7 +400,7 @@ module.exports = function(app,sequelize) {
     app.log(domainId + ":" + req.params.domainId,myName,6);
     if(domainId==req.params.domainId) {
       req.session.user.switchDomain = domainId;
-      app.log("Domain-switch request granted for domain " + req.session.user.switchDomain,myName,6);
+      app.log("Domain-switch request granted for domain " + req.session.user.switchDomain,myName,4);
     }
     return res.redirect("/");
   },
@@ -419,9 +419,10 @@ module.exports = function(app,sequelize) {
         req.appData.invites = invites;
         return true;
       })
-      .then((localModuleExists) => {
-        app.log("Invoke custom 'home' module = " + localModuleExists,myName,6);
-        if(localModuleExists) {
+      .then(() => {
+        app.log("Invoking custom 'home' module = " + app.locals.homeModule,myName,6);
+        if(app.homeModule) {
+          app.log("Inserting custom 'home' module...",myName,6)
           return app.homeModule.home(req,res,next);
         } else {
           return;
