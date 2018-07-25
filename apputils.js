@@ -486,14 +486,23 @@ module.exports = function(app,sequelize) {
       .findById(req.session.user.currentDomain.id)
       .then(domain => {
         if(domain===null) return res.send("Couldn't determine a valid domain");
-        domain.getRoles().then(roles => {
-          if(roles===null || roles.length===0) return res.send("No roles found");
-          // req.appData.user = req.session.user;
-          req.appData.domain = domain;
-          req.appData.roles = roles;
-          req.appData.view = model + action;
-          return next();
-        })
+        req.appData.domain = domain;
+        return domain.getRoles();
+      })
+      .then(roles => {
+        if(roles===null || roles.length===0) return res.send("No roles found");
+        // req.appData.user = req.session.user;
+        req.appData.roles = roles;
+        req.appData.view = model + action;
+        app.log("Model is: " + model,myName,6);
+        if(app.controllers[model].hasOwnProperty(action + "Form"))
+          return app.controllers[model][action + "Form"](req,res);
+        else 
+          return false
+      })
+      .then((data) => {
+        if(data) req.appData[model] = data;
+        return next();
       });
     })
     .catch((err) => {
