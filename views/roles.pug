@@ -5,7 +5,6 @@ block content
     .section-hdg.section-hdg-1 Roles (#{roles.length})
     .layout-row.layout-width-1-1
       .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-        a(href="/rolecreate/") Create
         ul.itemlist
           each item in roles
             - let targetLoc = "/roles/" + item.id + "/";
@@ -18,7 +17,7 @@ block content
                 .itemdetail.layout-col
                   .label Description:
                   .data #{item.description}
-        #user_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="role_add" data-href="/roles/add")
+        #role_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="role_add" data-href="/actions/create/roles/")
           //- a.btn.normal(href="/roles/add")
           //-   i.material-icons add_circle_outline
           //-   span Add User

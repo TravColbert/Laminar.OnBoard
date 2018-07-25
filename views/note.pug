@@ -18,11 +18,6 @@ block content
           label.label Body:
           .data #{note.body}
         #note_edit_button_container.editnote.layout-row.layout-justify-between.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
-        //- #note_edit_button_container.noteuser.layout-row.layout-justify-between #[a(href="/notes/" + note.id + "/actions/edit/") Edit]
-        //- #note_add_button_container.noteuser.layout-row.layout-justify-between.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
-          //- a.btn.normal(href="/users/add")
-          //-   i.material-icons add_circle_outline
-          //-   span Add User
       .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
         .infotext.section-hdg.section-hdg-3 Note View
         .infotext This is a list of users. You may edit the user's details by clicking on a user entry.
