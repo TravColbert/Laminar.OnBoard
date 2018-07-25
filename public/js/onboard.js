@@ -30,9 +30,13 @@ function dateInputExists() {
   return false;
 }
 
-function makeDatePicker(element) {
+function makeDatePicker(element,dateTime) {
+  console.log("Setting up flatpickr: " + dateTime);
   if(element) flatpickr(element, {
-    enableTime: true
+    enableTime: true,
+    altInput: true,
+    altFormat: "F j, Y, h:i K",
+    defaultDate: dateTime
   });
   return;
 }
@@ -43,6 +47,16 @@ function calculatedatetimestring(dateTimeString) {
   // let datetimestring = document.getElementById("datetimeselect").value;
   datetime.value = Date.parse(dateTimeString);
   return;
+}
+
+function preLoadDateTimeSelectors() {
+  console.log("Setting up date-time picker(s)");
+  let dateTimePickers = document.getElementsByClassName("datetimepicker");
+  let dateTime = new Date();
+  console.log("Current dateTime: " + dateTime + " hour: " + dateTime.getHours() + " Minutes: " + dateTime.getMinutes());
+  Array.prototype.filter.call(dateTimePickers,(dateTimePicker) => {
+    makeDatePicker(dateTimePicker,dateTime);
+  });
 }
 
 function fetchIt(url,cb) {
@@ -67,4 +81,6 @@ function ready(fn) {
   }
 }
 
-ready();
+ready(() => {
+  preLoadDateTimeSelectors();
+});
