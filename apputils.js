@@ -501,7 +501,7 @@ module.exports = function(app,sequelize) {
           return false
       })
       .then((data) => {
-        if(data) req.appData[model] = data;
+        if(data) req.appData[model + action] = data;
         return next();
       });
     })
