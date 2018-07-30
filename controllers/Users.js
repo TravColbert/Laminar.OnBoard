@@ -406,52 +406,21 @@ module.exports = function(app,model) {
           reject(new Error("(" + myName + ") No userdId or domainId set"));
         }
         app.log("Setting default domain for user: " + userId + " to domain: " + domainId,myName,6);
+        app.log("Current user is a member of target domain: " + app.tools.currentUserHasDomain(req,domainId),myName,6,"-->");
+
         let searchObj = {
-          where:{id:userId},
-          include:[
-            {
-              model:app.models["roles"],
-              include:[
-                app.models["domains"]
-              ]
-            }
-          ]
-        }
-        app.log("Searching for user:" + JSON.stringify(searchObj),myName,6);
-        app.controllers[model].__get(searchObj)
-        .then(user => {
-          if(user!==null)
-            return user[0];
-          reject(new Error("(" + myName + ") No user found"));
-        })
-        .then(user => {
-          // app.log("Found user: " + JSON.stringify(user),myName,6);
-          let domainList = {};
-          user.roles.forEach(role => {
-            role.domains.forEach(domain => {
-              if(!domainList.hasOwnProperty(domain.id))
-                domainList[domain.id] = domain;
-            });
-          });
-          if(domainList.hasOwnProperty(domainId)) return true;
-          reject(new Error("(" + myName + ") User is not enrolled in domain: " + domainId));
-        })
-        .then(response => {
-          if(!response) reject(new Error("(" + myName + ") Default domain assignment failed"));
-          app.log("Domain: " + domainId + " can be assigned as default domain for user: " + userId,myName,6);
-          let searchObj = {
-            values:{defaultDomainId:domainId},
-            where:{where:{id:userId}}
-          };
-          app.log(JSON.stringify(searchObj),myName,6);
-          return app.controllers[model].__update(searchObj);
-        })
+          values:{defaultDomainId:domainId},
+          options:{where:{id:userId}}
+        };
+        app.log(JSON.stringify(searchObj),myName,6);
+        app.controllers[model].__update(searchObj)
         .then(items => {
           if(items!==null || items!==0) resolve(res.json(items));
           reject(new Error("(" + myName + ") Nothing modified"));
         })
         .catch(err => {
-          return reject(new Error("(" + myName + ") " + err.message));
+          app.log("Error: " + err.message,myName,4);
+          reject(new Error("(" + myName + ") " + err.message));
         });
       });
     },

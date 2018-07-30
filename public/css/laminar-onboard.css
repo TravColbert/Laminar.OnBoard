@@ -222,26 +222,26 @@ i.big-icon {
 }
 
 
-li.compactpartslist:nth-child(even) {
+li.compactitem:nth-child(even) {
   background-color: inherit;
 }
-li.compactpartslist:nth-child(odd) {
+li.compactitem:nth-child(odd) {
   background-color: rgb(247, 245, 245);
 }
 
-.compactpartslist #partmake {
+.compactitem #partmake {
   flex-grow: 1;
 }
-.compactpartslist .partdetails {
+.compactitem .partdetails {
   font-size: 0.8em;
 }
-.compactpartslist #partdescription {
+.compactitem #partdescription {
   flex-grow: 1;
 }
-/* .compactpartslist #partavailability {
+/* .compactitem #partavailability {
   flex-basis: 15%;
 } */
-.compactpartslist #partwarranty {
+.compactitem #partwarranty {
   font-size: 1em;
   margin: 0 1em;
 }

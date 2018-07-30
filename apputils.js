@@ -404,6 +404,13 @@ module.exports = function(app,sequelize) {
     }
     return res.redirect("/");
   },
+  obj.currentUserHasDomain = function(req,domainId) {
+    let myName = "currentUserHasDomain";
+    // app.log(req.session.user,myName,6,"-->");
+    return req.session.user.domains.filter(domain => {
+      return domain.id==domainId;
+    }).length>0;
+  },
   obj.homePage = function(req,res,next) {
     let myName = "homePage";
     app.log("queueing home page",myName,5);
