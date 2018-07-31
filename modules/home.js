@@ -2,7 +2,7 @@ module.exports = function(app) {
   let obj = {
     /**
      * Define a 'home' method that gets called before the home view is started.
-     * Use this to prepare the environment for your app's custome home page.
+     * Use this to prepare the environment for your app's custom home page.
      * 
      * req, res, and next should be passed to the methods here.
      * 
@@ -16,6 +16,11 @@ module.exports = function(app) {
      *    referenced in the template. In this case, the template is going to be
      *    'home.pug'.
      *  - all of your controllers and models are available below.
+     */
+
+    /**
+     * The example below collects the note objects in the user's domains and 
+     * puts them in a notes[] array.
      */
     home : function(req,res,next) {
       let myName = "home";
