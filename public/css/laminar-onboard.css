@@ -40,10 +40,10 @@ a {
 .btn-search {
   border: none;
 }
-.primary, 
-.normal, 
+.primary,
+.normal,
 .submit {
-  background: #4577D4; 
+  background: #4577D4;
 }
 .secondary {
   background: #9CBFFF;
@@ -192,6 +192,13 @@ i.big-icon {
 }
 .data {
   font-size: 1.2em;
+}
+.currencysign {
+
+}
+.currencyamount {
+  text-align: right;
+  margin: 0 0.5em;
 }
 .subdata {
   font-size: 0.8em;
