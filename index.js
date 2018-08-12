@@ -1,4 +1,7 @@
 #!/usr/bin/node
+console.log(`Current directory: ${process.cwd()}`);
+const cwd = __dirname + "/";
+console.log('Script directory is:',cwd);
 const fs = require('fs');
 const https = require('https');
 const express = require('express');
@@ -8,13 +11,13 @@ const app = express();
 
 let myName = "setup";
 
-app.locals = JSON.parse(fs.readFileSync('config.json'));
-app.secrets = JSON.parse(fs.readFileSync('secrets.json'));
+app.locals = JSON.parse(fs.readFileSync(cwd + 'config.json'));
+app.secrets = JSON.parse(fs.readFileSync(cwd + 'secrets.json'));
 app.locals.url = "https://" + app.locals.addr;
 if(app.locals.port!="443") app.locals.url += ":" + app.locals.port;
 const options = {
-  key: fs.readFileSync(app.locals.keyFile),
-  cert: fs.readFileSync(app.locals.certFile)
+  key: fs.readFileSync(cwd + app.locals.keyFile),
+  cert: fs.readFileSync(cwd + app.locals.certFile)
 };
 
 const Sequelize = require('sequelize');
@@ -27,7 +30,7 @@ var sequelize = new Sequelize(
     host:app.locals.dbConnection[app.locals.activeDbConnection].host,
     dialect:app.locals.activeDbConnection,
     // For SQLite only :
-    storage:app.locals.dbConnection[app.locals.activeDbConnection].storage,
+    storage:cwd + app.locals.dbConnection[app.locals.activeDbConnection].storage,
     // Logging:
     logging: app.locals.dbConnection[app.locals.activeDbConnection].logging
   }
@@ -60,10 +63,10 @@ const navigation = require('./navigation')(app);
 /**
  * Configuration
  */
-app.set('views',app.locals.viewsDir);
+app.set('views',cwd + app.locals.viewsDir);
 app.set('view engine','pug');
 app.set('query parser',true);
-app.use(express.static(app.locals.staticDir));
+app.use(express.static(cwd + app.locals.staticDir));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(session(sessionConfig));
@@ -92,7 +95,7 @@ let associateModels = function() {
     app.models["notes"].belongsTo(app.models["users"],{as:"user"});             // makes notes.userId
     return (app.models);
   }).then(() => {
-    return app.tools.readDir(app.locals.modelsDir + "/associations");
+    return app.tools.readDir(cwd + app.locals.modelsDir + "/associations");
   }).then(associations => {
     return app.tools.processFiles(associations,app.tools.readAssociation);
   }).catch(err => {
@@ -172,15 +175,15 @@ let setupBasePermissions = function() {
   return setupPromises;
 }
 
-app.tools.readDir(app.locals.modelsDir)
+app.tools.readDir(cwd + app.locals.modelsDir)
 .then(modelFiles => {
   return app.tools.processFiles(modelFiles,app.tools.readModel);
 }).then(() => {
-  return app.tools.readDir(app.locals.controllersDir);
+  return app.tools.readDir(cwd + app.locals.controllersDir);
 }).then(controllerFiles => {
   return app.tools.processFiles(controllerFiles,app.tools.readController);
 }).then(() => {
-  return app.tools.readDir(app.locals.elementsDir);
+  return app.tools.readDir(cwd + app.locals.elementsDir);
 }).then(elementFiles => {
   return app.tools.processFiles(elementFiles,app.tools.readElement);
 }).then(() => {
@@ -190,7 +193,7 @@ app.tools.readDir(app.locals.modelsDir)
 }).then(() => {
   return setupBasePermissions();
 }).then(() => {
-  return app.tools.readDir(app.locals.modelsDir + "/modelstartups");
+  return app.tools.readDir(cwd + app.locals.modelsDir + "/modelstartups");
 }).then(modelStartupFiles => {
   return app.tools.processFiles(modelStartupFiles,app.tools.readModelStartup);
 }).then(() => {
@@ -237,7 +240,7 @@ app.tools.readDir(app.locals.modelsDir)
    *
    * All of these routes can be excluded or replaced.
    */
-  return app.tools.readDir(app.locals.routesDir);
+  return app.tools.readDir(cwd + app.locals.routesDir);
 }).then(routeFiles => {
   return app.tools.processFiles(routeFiles,app.tools.readRoute);
 }).then(() => {
