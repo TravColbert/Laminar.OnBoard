@@ -11,6 +11,10 @@ a {
   text-decoration: none;
   color: inherit;
 }
+h4 a {
+  text-decoration: underline;
+  text-decoration-style: dashed;
+}
 .btn {
 /*   border: 1px solid #ddd; */
   border-radius: 5px;
