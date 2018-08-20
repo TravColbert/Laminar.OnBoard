@@ -70,16 +70,7 @@ block content
           .layout-width-1-1
             input#domain(type="text")
     if(!user)
-      .layout-width-1-1.layout-row.layout-justify-center.layout-align-center
-        h2 Get Started: 
-        //- .layout-width-1-1.layout-row.text-align-center
-        .layout-row
-          a(href="/login/")
-            i.material-icons verified_user
-            div Login
-        .layout-row
-          a(href="/register/") 
-            i.material-icons fingerprint
-            div Register
-        
+      .layout-width-1-1.layout-col
+        h2 Get Started!
+        +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
         

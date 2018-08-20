@@ -1,4 +1,18 @@
 doctype html
+
+mixin login-or-register(loginText,registerText)
+  .layout-width-1-1.layout-row.layout-md-col.layout-wrap
+    .app-features.layout-width-1-2.layout-md-width-1-1.layout-sm-width-1-1.layout-xs-width-1-1.clickable(onclick="goTo('/login/')")
+      .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
+        i.material-icons.big-icon verified_user
+      .layout-width-3-4.text-align-justify= loginText
+      //- .layout-width-3-4.text-align-justify Log-In to see your financial dashboard. Manage your log of expenses. Create a personalized budget. Keep important people informed.
+    .app-features.layout-width-1-2.layout-md-width-1-1.layout-sm-width-1-1.layout-xs-width-1-1.clickable(onclick="goTo('/register/')")
+      .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
+        i.material-icons.big-icon fingerprint
+      .layout-width-3-4.text-align-justify= registerText
+      //- .layout-width-3-4.text-align-justify Get started by creating an account. Begin tracking your daily expenditures. Feel better knowing how your money is spent.
+
 html
   include head.pug
   include headoptions.pug
