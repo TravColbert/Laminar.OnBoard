@@ -1,5 +1,15 @@
 extends index.pug
 
+mixin userpill(title,link)
+  .layout-row.pill.tertiary
+    if block
+      .pillicon.tertiary
+        i.material-icons face
+      block
+    else
+      .pillicon.tertiary +
+      .pilllabel.nobreak= title
+
 block content
   section.layout-width-sd.layout-col
     .section-hdg.section-hdg-1 Role Detail
@@ -24,8 +34,10 @@ block content
         .item-listing.layout-col
           .itemdetail.layout-col
             label.label Users In This Role
-            each user in role.users
-              .data #{user.fullname}
+            .layout-row.layout-wrap
+              each user in role.users
+                +userpill(user.fullname)
+              +userpill("add user")
           .itemdetail.layout-col
             label.label Actions:
             .data.layout-col
