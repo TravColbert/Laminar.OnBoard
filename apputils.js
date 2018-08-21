@@ -518,7 +518,7 @@ module.exports = function(app,sequelize) {
   };
   obj.getElement = function(req,res,next) {
     let myName = "appGetElement";
-    app.log("App Elements:\n" + JSON.stringify(app.elements),myName,6);
+    // app.log("App Elements:\n" + JSON.stringify(app.elements),myName,6);
     if(app.elements.hasOwnProperty(req.params.element)) {
       app.log("Found element: " + req.params.element,myName,6);
       app.tools.checkAuthorization(app.elements[req.params.element].role,req.session.user.id,req.session.user.currentDomain.id)
@@ -561,7 +561,7 @@ module.exports = function(app,sequelize) {
     return new Promise((resolve,reject) => {
       mailObj.From = {
         "Email": app.locals.smtpFromAddr,
-	"Name": app.locals.smtpFromName
+        "Name": app.locals.smtpFromName
       };
       mailObj.To = toArray;
       
