@@ -85,6 +85,27 @@ module.exports = function(app,model) {
         return res.send(err.message);
       });
     },
+    getRoleById : function(roleId) {
+      let myName = "getRoleById";
+      return new Promise((resolve,reject) => {
+        let searchObj = {
+          where : {
+            id : roleId
+          }
+        }
+        app.controllers[model].__get(searchObj)
+        .then(roles => {
+          if(roles!=null || roles.length>0) {
+            resolve(roles[0]);
+          }
+          resolve(false);
+        })
+        .catch(err => {
+          app.log("Error: " + err.message);
+          reject(err);
+        });
+      });
+    },
     getRoleByName : function(roleName) {
       let myName = "getRoleByName";
       app.log("Looking for role with name: " + roleName,myName,6);
@@ -232,7 +253,8 @@ module.exports = function(app,model) {
       })
       .then(invite => {
         app.log("Invitation has been made",myName,6);
-        return res.send("Invitation has been made");
+        return res.redirect("/roles/" + req.params.id + "/");
+        // return res.send("Invitation has been made");
       })
       .catch(err => {
         return res.send(err.message);
