@@ -2,7 +2,8 @@ const express = require('express');
 var router = express.Router();
 
 module.exports = function(app) {
-  router.get('/',app.tools.checkAuthentication,app.controllers["domains"].getDomains);
+  // router.get('/',app.tools.checkAuthentication,app.controllers["domains"].getDomains);
+  router.get('/',app.tools.checkAuthentication,app.controllers["domains"].getMyDomains);
   router.get('/:id/',app.tools.checkAuthentication,app.controllers["domains"].getDomain);
   router.get('/:id/actions/edit/',app.tools.checkAuthentication,app.controllers["domains"].editDomainForm);
   // router.get('/:id/actions/invite/',app.tools.checkAuthentication,app.controllers["domains"].invite);
