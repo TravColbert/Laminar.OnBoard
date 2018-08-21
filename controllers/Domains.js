@@ -3,6 +3,67 @@ module.exports = function(app,model) {
   let myName = model + "Controller";
   let myModel = model;
   obj = {
+    __create : function(obj) {
+      let myName = "__create";
+      app.log("Creating obj: " + obj,myName,6);
+      return app.controllers["default"].create(model,obj);
+    },
+    __get : function(obj) {
+      let myName = "__get";
+      app.log("Getting obj: " + obj,myName,6);
+      return app.controllers["default"].get(model,obj);
+    },
+    __update : function(obj) {
+      let myName = "__update";
+      app.log("Updating obj: " + obj,myName,6);
+      return app.controllers["default"].update(model,obj);
+    },
+    __delete : function(obj) {
+      let myName = "__delete";
+      app.log("Deleting obj: " + obj,myName,6);
+      return app.controllers["default"].delete(model,obj);
+    },
+
+    getDomainsByUserId : function(userId) {
+      let myName = "getDomainsByUserId";
+      let searchObj = {
+        where : {
+          "userId" : userId
+        },
+        include : [
+          {
+            model : app.models["roles"],
+            include : [
+              app.models["domains"]
+            ]
+          }
+        ]
+      }
+      return app.models["usersroles"].findAll(searchObj);
+    },
+
+    gets : function(req,res,next) {
+      let myName = "gets (domains)";
+      app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
+      .then(response => {
+        if(!response) {
+          app.log("User failed authorization check",myName,6);
+          return next();
+        }
+        app.log("User is authorized to list domains",myName,6);
+        return app.controllers[model].getDomainsByUserId(req.session.user.id);
+      })
+      .then(domains => {
+        if(domains===null) return res.redirect('/');
+        req.appData.domains = domains;
+        req.appData.view = "domains";
+        return next();
+      })
+      .catch(err => {
+        app.log("Err: " + err.message,myName,3);
+        return res.redirect("/");
+      });
+    },
     get : function(obj) {
       let myName = "get(domains)";
       return new Promise((resolve,reject) => {
@@ -16,8 +77,14 @@ module.exports = function(app,model) {
         })
       })
     },
+    getMyDomains : function(req,res,next) {
+      let myName = "getMyDomains";
+      req.appData.domains = req.session.user.domains;
+      req.appData.view = "domains";
+      return next();
+    },
     getDomains : function(req,res,next) {
-      let myName = "getRoles()";
+      let myName = "getDomains()";
       app.models[model]
       .findAll()
       .then((domains) => {
