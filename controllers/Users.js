@@ -150,7 +150,12 @@ module.exports = function(app,model) {
           }
           req.appData.view = "registrationcomplete";
           return next();
-        });
+        })
+        .catch(err => {
+          app.log("Register user error:" + err.message);
+          req.appData.view = "registrationcomplete";
+          return next();
+        })
       });
     },
     verifyUser : function(req,res,next) {
@@ -415,8 +420,13 @@ module.exports = function(app,model) {
         app.log(JSON.stringify(searchObj),myName,6);
         app.controllers[model].__update(searchObj)
         .then(items => {
-          if(items!==null || items!==0) resolve(res.json(items));
+          if(items!==null || items!==0) {
+            return true;
+          }
           reject(new Error("(" + myName + ") Nothing modified"));
+        })
+        .then(() => {
+          res.redirect("/");
         })
         .catch(err => {
           app.log("Error: " + err.message,myName,4);
