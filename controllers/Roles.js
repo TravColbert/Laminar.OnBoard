@@ -249,7 +249,7 @@ module.exports = function(app,model) {
       })
       .then(roleAppid => {
         roleAppid = roleAppid;
-        return app.controllers["invites"].add(roleAppid,invtedUserEmail,pin,comment);
+        return app.controllers["invites"].add(roleAppid,invtedUserEmail,req.session.user.email,pin,comment);
       })
       .then(invite => {
         app.log("Invitation has been made",myName,6);
