@@ -10,6 +10,9 @@ module.exports = function(Sequelize,app) {
         type: Sequelize.STRING,
         allowNull: false
       },
+      "fromEmail":{
+        type: Sequelize.STRING
+      },
       "pin":{
         type: Sequelize.STRING,
         allowNull: false
