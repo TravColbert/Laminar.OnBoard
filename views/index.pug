@@ -14,9 +14,13 @@ mixin login-or-register(loginText,registerText)
 mixin create-or-see-domains(domainName)
   .item-listing.layout-width-1-1.layout-row
     .layout-width-1-2
-      a.btn.secondary(href="/domains/") #{domainName} List
+      a.btn.secondary(href="/domains/")
+        i.material-icons list_alt
+        span #{domainName} List
     .layout-width-1-2
-      a.btn.primary(href="/actions/create/domains/") Create #{domainName}
+      a.btn.primary(href="/actions/create/domains/")
+        i.material-icons check_circle_outline
+        span Create #{domainName}
 
 html
   include head.pug

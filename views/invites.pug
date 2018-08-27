@@ -1,14 +1,16 @@
 .layout-width-1-1.layout-col
   - let invitesNum = invites.length || 0;
   if(invitesNum)
-    div Note: You've been invited to connect to the folowing domains: #{invitesNum}
+    h2 Invitations
+    .layout-width-1-1 Note: You've been invited to connect to the folowing domains: #{invitesNum}
     each invite in invites
       .item-listing.layout-width-1-1.layout-col
         .layout-width-1-1
           .layout-width-1-8
             i.material-icons new_releases
-          .layout-width-7-8 Invitation #: #{invite.roleAppid}
-        .layout-width-1-1.layout-col You've probably received notification about this invitation. If not you can ignore it for now.
+          .layout-width-7-8.layout-col
+            .layout-width-1-1 Invitation #: #{invite.roleAppid}
+            .layout-width-1-1 You've probably received notification about this invitation. If not you can ignore it for now.
         .layout-width-1-1.layout-row
           .layout-width-1-2.layout-row
             a.btn.btn-small.primary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
