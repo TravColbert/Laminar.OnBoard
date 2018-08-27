@@ -9,7 +9,9 @@
           .layout-width-1-8
             i.material-icons new_releases
           .layout-width-7-8.layout-col
-            .layout-width-1-1 Invitation #: #{invite.roleAppid}
+            .layout-width-1-1 From: #{invite.fromEmail}
+            if(invite.comment)
+              .layout-width-1-1 #{invite.comment}
             .layout-width-1-1 You've probably received notification about this invitation. If not you can ignore it for now.
         .layout-width-1-1.layout-row
           .layout-width-1-2.layout-row
