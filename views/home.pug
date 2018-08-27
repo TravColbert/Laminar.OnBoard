@@ -3,25 +3,25 @@ extends index.pug
 block content
   section.layout-width-sd.layout-col
     .layout-width-1-1.layout-col
-      .layout-width-1-1.layout-col 
+      .layout-width-1-1.layout-col
         h1 Congrats! Here's your awesome web app.
       .layout-width-1-1.layout-col
-      if(user) 
+      if(user)
         h2 Welcome, #{user.email}!
-      else 
+      else
         h2 It Works!
       .layout-width-1-1.layout-row.layout-md-col.layout-wrap
         .app-features.layout-width-1-2.layout-md-width-1-1.layout-sm-width-1-1.layout-xs-width-1-1
           .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
-            i.material-icons.big-icon folder 
+            i.material-icons.big-icon folder
           .layout-width-3-4.text-align-justify This is your front page. When you're logged-in you'll get access to you domains. Domains are groupings of similar data. Use domains like filling cabinets.
         .app-features.layout-width-1-2.layout-md-width-1-1.layout-sm-width-1-1.layout-xs-width-1-1
           .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
-            i.material-icons.big-icon people 
+            i.material-icons.big-icon people
           .layout-width-3-4.text-align-justify Create or invite users to collaborate with you in your domains. Those users can create their own domains of data too.
         .app-features.layout-width-1-2.layout-md-width-1-1.layout-sm-width-1-1.layout-xs-width-1-1
           .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
-            i.material-icons.big-icon receipt 
+            i.material-icons.big-icon receipt
           .layout-width-3-4.text-align-justify You can create notes and other pieces of data in your domains. Notes are visible by all users that are collaborating with you in your domains.
         .app-features.layout-width-1-2.layout-md-width-1-1.layout-sm-width-1-1.layout-xs-width-1-1
           .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
@@ -30,47 +30,10 @@ block content
     .layout-width-1-1.layout-col
       if(user)
         if(invites)
-          .layout-width-1-1.layout-col
-            - let invitesNum = invites.length || 0;
-            if(invitesNum)
-              h3 You've been invited by other users to connect to their domains:
-              .layout-width-1-1.layout-row.layout-wrap
-                each invite in invites
-                  .item-listing.layout-width-1-2.layout-col
-                    .itemhead Invitation: #{invite.roleAppid}
-                    .itemdetail To: #{invite.userEmail}
-                    .itemdetail Comment: #{invite.comment}
-                    a.btn.primary(href= "/invites/" + invite.roleAppid) Accept
-                    a.btn.secondary(href= "/") Ignore
-        .layout-width-1-1.layout-col 
-          h2 Here are your personal domains:
-          .layout-width-1-1.layout-row.layout-md-col.layout-wrap
-            if(user.domains)
-              each domain in user.domains
-                if domain.name!="Trash Domain" && domain.name!="Default Domain"
-                  .item-listing.layout-width-1-2.layout-md-width-1-1.layout-col
-                    .layout-col
-                      .itemhead.layout-col
-                        a(href="/domains/" + domain.id + "/") #{domain.name}
-                      .layout-col
-                        .itemdetail #{domain.description}
-                        - let selectedDomain = (user.currentDomain.id==domain.id) ? "*" : null;
-                        - let switchToDomain = (user.currentDomain.id!=domain.id) ? "/users/" + user.id + "/actions/switchdomain/" + domain.id + "/" : "";
-                        if(user.currentDomain.id!=domain.id)
-                          a.btn.btn-small.tertiary.layout-width-1-2(href= switchDomain ) Set As Default
-                      .layout-width-1-1.layout-col
-                        if(domain.notes)
-                          .layout-row.layout-width-1-1 Notes:
-                          each note in domain.notes
-                            .item-listing.layout-row
-                              .layout-row.layout-align-center
-                                i.material-icons.text-grow-x3 receipt
-                              .layout-col
-                                .nobreak #{note.name}
-                                .layout-row #{note.description}
+          include invites
+        +list-domains("Domain")
         +create-or-see-domains("Domain")
     if(!user)
       .layout-width-1-1.layout-col
         h2 Get Started!
         +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
-        
