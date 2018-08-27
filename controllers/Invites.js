@@ -24,13 +24,14 @@ module.exports = function(app,model) {
       return app.controllers["default"].delete(model,obj);
     },
 
-    add : function(roleAppid,userEmail,pin,comment) {
+    add : function(roleAppid,userEmail,fromEmail,pin,comment) {
       let myName = "add";
       return new Promise((resolve,reject) => {
         app.log("Adding new invite: " + roleAppid + " : " + userEmail + " : " + pin,myName,6);
         let createObj = {
           roleAppid : roleAppid,
           userEmail : userEmail,
+          fromEmail : fromEmail,
           pin : pin,
           comment : comment
         };
