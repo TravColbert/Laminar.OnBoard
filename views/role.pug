@@ -1,14 +1,13 @@
 extends index.pug
 
-mixin userpill(title,link)
-  .layout-row.pill.tertiary
-    if block
-      .pillicon.tertiary
-        i.material-icons face
-      block
-    else
-      .pillicon.tertiary +
-      .pilllabel.nobreak= title
+mixin userpill(title,link,icon)
+  - if(!link) link="#"
+  .layout-row.pill.tertiary.layout-align-center.clickable(onclick="goTo('" + link + "')")
+    .pillicon.tertiary
+      if(icon)
+        i.material-icons #{icon}
+    .pilllabel.nobreak= title
+    block
 
 block content
   section.layout-width-sd.layout-col
@@ -36,8 +35,8 @@ block content
             label.label Users In This Role
             .layout-row.layout-wrap
               each user in role.users
-                +userpill(user.fullname)
-              +userpill("add user")
+                +userpill(user.fullname,`/users/${user.id}/`,"face")
+              //- +userpill("add user",`/roles/${role.id}/actions/adduser/`,"check_circle_outline")
           .itemdetail.layout-col
             label.label Actions:
             .data.layout-col
