@@ -85,7 +85,7 @@ module.exports = function(app,sequelize) {
         app.log(elementName,myName,6,"+");
         let elementDefinition = require("./" + app.locals.elementsDir + "/" + file);
         app.elements[elementName] = require("./" + app.locals.elementsDir + "/" + file);
-        // app.elements[elementName] = require("./" + app.locals.elementsDir + "/" + file)(app,elementName);  
+        // app.elements[elementName] = require("./" + app.locals.elementsDir + "/" + file)(app,elementName);
       }
       resolve(true);
     });
@@ -106,7 +106,7 @@ module.exports = function(app,sequelize) {
     return new Promise((resolve,reject) => {
       if(app.tools.isFileType(file,"js")) {
         app.log(file,myName,6,"+");
-        let association = require("./" + app.locals.modelsDir + "/associations/" + file)(app);  
+        let association = require("./" + app.locals.modelsDir + "/associations/" + file)(app);
       }
       resolve(true);
     });
@@ -116,7 +116,7 @@ module.exports = function(app,sequelize) {
     return new Promise((resolve,reject) => {
       if(app.tools.isFileType(file,"js")) {
         app.log("Requiring " + file,myName,6);
-        let modelStartup = require("./" + app.locals.modelsDir + "/modelstartups/" + file)(app);        
+        let modelStartup = require("./" + app.locals.modelsDir + "/modelstartups/" + file)(app);
       }
       resolve(true);
     });
@@ -189,6 +189,7 @@ module.exports = function(app,sequelize) {
     req.appData.title = app.locals.appName;
     app.log("PATHS: " + JSON.stringify(app.paths),myName,5);
     req.appData.modelName = obj.getModelName(req);
+    req.appData.models = [];
     app.log("setting MODEL name: " + req.appData.modelName,myName,5);
     obj.clearMessageQueue(req);
     return next();
@@ -201,10 +202,16 @@ module.exports = function(app,sequelize) {
     switch (format.toLowerCase()) {
       case "json":
         app.log("Rendering in JSON",myName,6);
-        return res.json(req.appData);
+        let returnObj = {};
+        req.appData.models.forEach(model => {
+          app.log(`Loading model ${model} in JSON return data`,myName,6);
+          console.log(req.appData[model]);
+          // returnObj[model] = req.appData[model];
+        })
+        return res.json(returnObj);
       default:
         app.log("Rendering template: " + templateFile,myName,6);
-        return res.render(templateFile,req.appData);  
+        return res.render(templateFile,req.appData);
     }
   },
   obj.makeMessage = function(obj) {
@@ -377,9 +384,9 @@ module.exports = function(app,sequelize) {
           req.session.user.currentDomain=switchTo[0];
         }
         req.session.user.domains = domainList;
-        app.log("Session's current domain is ==> " + req.session.user.currentDomain.name,myName,6);  
+        app.log("Session's current domain is ==> " + req.session.user.currentDomain.name,myName,6);
         req.appData.user = req.session.user;
-        return next();  
+        return next();
         // let domainList = app.controllers["users"].compileDomainList(user);
       })
       .catch((err) => {
@@ -441,10 +448,10 @@ module.exports = function(app,sequelize) {
       .catch(err => {
         app.log(err.message);
         return res.send(err.message);
-      });  
+      });
     } else {
       app.log("No session detected",myName,6);
-      return next();  
+      return next();
     }
   };
   obj.loginPage = function(req,res,next) {
@@ -504,7 +511,7 @@ module.exports = function(app,sequelize) {
         app.log("Model is: " + model,myName,6);
         if(app.controllers[model].hasOwnProperty(action + "Form"))
           return app.controllers[model][action + "Form"](req,res);
-        else 
+        else
           return false
       })
       .then((data) => {
@@ -564,9 +571,9 @@ module.exports = function(app,sequelize) {
         "Name": app.locals.smtpFromName
       };
       mailObj.To = toArray;
-      
+
       let finalObj = {"Messages":[mailObj]};
-      
+
       let sendMail = app.mailjet.post("send",{'version':'v3.1'});
       app.log("Prepared email object for sending: " + JSON.stringify(finalObj),myName,6);
 
