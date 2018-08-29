@@ -31,6 +31,8 @@ block content
       if(user)
         if(invites)
           include invites
+        if(notes)
+          include notes-list
         +list-domains("Domain")
         +create-or-see-domains("Domain")
     if(!user)
