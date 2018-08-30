@@ -30,8 +30,9 @@ module.exports = function(app,model) {
 
     authenticate : function(req,res,next) {
       let myName = "authenticate()";
-      app.log("Authenticating user: " + req.body.email,myName,5);
-      app.models[model].findOne({where:{email:req.body.email,verified:true,disabled:false}})
+      let loginAccountName = req.body.email.toLowerCase();
+      app.log("Authenticating user: " + loginAccountName,myName,5);
+      app.models[model].findOne({where:{email:loginAccountName,verified:true,disabled:false}})
       .then((user) => {
         if(user===null) {
           app.log("User is not found or not verified or not allowed",myName,4);
@@ -59,7 +60,7 @@ module.exports = function(app,model) {
                 defaultDomainId : user.defaultDomainId
               }
               req.session.user = userObj;
-              app.log(req.session.user,myName);
+              app.log(req.session.user,myName,6);
               return next();
 
 
@@ -126,6 +127,8 @@ module.exports = function(app,model) {
       // Check that the passwords are verified...
       if(userRegistrationObj.password!=userRegistrationObj.passwordverify) return res.send("Passwords do not match... try again");
       // That the email address has not been used already...
+      // lowercase the email...
+      userRegistrationObj.email = userRegistrationObj.email.toLowerCase();
       app.models[model].count({where:{email:userRegistrationObj.email}})
       .then((count) => {
         if(count>0) return res.send("An account with this email already exists... try again");
