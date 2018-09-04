@@ -197,6 +197,17 @@ app.tools.readDir(cwd + app.locals.modelsDir)
 }).then(modelStartupFiles => {
   return app.tools.processFiles(modelStartupFiles,app.tools.readModelStartup);
 }).then(() => {
+  // Parse headoptions file, if available
+  fs.readFile(cwd + "/headoptions.json",(err,data) => {
+    if(err) {
+      app.log("No headoptions file found");
+    } else {
+      app.log("Head options: " + data,myName,6);
+      app.headOptions = JSON.parse(data);
+    }
+  });
+  return;
+}).then(() => {
   /**
    * SET BASE APP CONFIGURATON
    */

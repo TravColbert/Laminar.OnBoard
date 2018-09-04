@@ -211,6 +211,10 @@ module.exports = function(app,sequelize) {
         return res.json(returnObj);
       default:
         app.log("Rendering template: " + templateFile,myName,6);
+        if(app.headOptions) {
+          req.appData.headoptions = app.headOptions;
+          app.log(req.appData.headoptions);
+        }
         return res.render(templateFile,req.appData);
     }
   },
