@@ -4,7 +4,7 @@ footer.layout-row.layout-width-1-1.layout-align-center
     .madewith Made with Laminar
   .layout-col.layout-align-center.layout-size-x1
     - userName = account || null;
-    - if(userName) userName = userName[0].toUpperCase() + userName.slice(1);
+    //- - if(userName) userName = userName[0].toUpperCase() + userName.slice(1);
     div Hi &nbsp;#[a(href='/profile/') #{userName}]
   .layout-col
     - let totalTime = stopTime - startTime;
