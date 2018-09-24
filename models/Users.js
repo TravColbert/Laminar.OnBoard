@@ -27,6 +27,10 @@ module.exports = function(Sequelize,app) {
         lm_label:"Last Name",
         lm_placeholder:"last (family) name"
       },
+      "nickname":{
+        type: Sequelize.STRING,
+        unique: true
+      },
       "verified":{
         type: Sequelize.BOOLEAN,
         defaultValue: false
