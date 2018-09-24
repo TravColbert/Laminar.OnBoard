@@ -28,7 +28,7 @@ mixin list-domains(domainText)
     .layout-width-1-1.layout-row.layout-md-col.layout-wrap
       if(user.domains)
         each domain in user.domains
-          if domain.name!="Trash Domain" && domain.name!="Default Domain"
+          if domain.name!="Trash"
             .item-listing.layout-width-1-2.layout-md-width-1-1.layout-col
               .layout-col
                 .itemhead.layout-row #[a(href="/domains/" + domain.id + "/") #{domain.name}] #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") stars]
