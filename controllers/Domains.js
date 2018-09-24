@@ -99,16 +99,47 @@ module.exports = function(app,model) {
     },
     getDomain : function(req,res,next) {
       let myName = "getDomain()";
-      app.models[model]
-      .findById(req.params.id,{include:[app.models["roles"]]})
+      let searchObj;
+      app.log("Getting domain: " + req.params.id);
+      if(Number.isInteger(parseInt(req.params.id))) {
+        searchObj = {
+          where: {
+            id: req.params.id
+          },
+          include:[app.models["roles"]]
+        };
+      } else {
+        // Might be a reference to a nickname
+        searchObj = {
+          where: {
+            "urn":req.params.id
+          },
+          include:[app.models["roles"]]
+        }
+      }
+      app.controllers[model].__get(searchObj)
       .then(domain => {
         if(domain===null) return res.redirect('/');
-        req.appData.domain = domain;
+        req.appData.models.push("domain");
+        req.appData.domain = domain[0];
         req.appData.view = "domain";
         return next();
       })
       .catch(err => {
         res.send(err.message);
+      });
+    },
+    getDomainById : function(id) {
+      let myName = "getDomainById";
+      let searchObj = {
+        where: {
+          id:id
+        },
+        include:[app.models["roles"]]
+      }
+      app.models[model].__get(searchObj)
+      .then(domain => {
+        return domain;
       });
     },
     getRolesByDomainId : function(domainId) {
