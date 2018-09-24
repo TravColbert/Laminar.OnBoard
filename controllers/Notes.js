@@ -137,7 +137,7 @@ module.exports = function(app,model) {
     },
     createNote : function(req,res,next) {
       let myName = "createNote()";
-      let newNote = app.tools.pullParams(req.body,["name","description","body","public","userId","domainId"]);
+      let newNote = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
       if(!newNote) return res.send("Required field missing... try again");
       newNote.userId = req.session.user.id;
       app.log("New note: " + JSON.stringify(newNote),myName,6,"::::>");
