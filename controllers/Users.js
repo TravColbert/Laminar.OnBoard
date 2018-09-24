@@ -129,9 +129,19 @@ module.exports = function(app,model) {
       // That the email address has not been used already...
       // lowercase the email...
       userRegistrationObj.email = userRegistrationObj.email.toLowerCase();
-      app.models[model].count({where:{email:userRegistrationObj.email}})
+      searchObj = {where:{}};
+      if(req.body.nickname) {
+        searchObj.where = {
+          $or:[{"email":userRegistrationObj.email},{"nickname":req.body.nickname}]
+        };
+      } else {
+        searchObj.where = {
+          "email":userRegistrationObj.email
+        }
+      }
+      app.models[model].count(searchObj)
       .then((count) => {
-        if(count>0) return res.send("An account with this email already exists... try again");
+        if(count>0) return res.send("An account with this email or nickname already exists... try again");
         app.log("Email address is free to use. Continuing with registration...",myName,5);
         delete userRegistrationObj.passwordverify;
         app.models[model]
@@ -161,8 +171,30 @@ module.exports = function(app,model) {
         })
       });
     },
+    nicknameIsUnique : function(nickname) {
+      let myName = "nicknameIsUnique";
+      return new Promise((resolve,reject) => {
+        let searchObj = {
+          where : {
+            "nickname" : nickname
+          }
+        }
+        app.controllers[model].__get(searchObj)
+        .then(result => {
+          if(result.length>0) {
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        })
+        .catch(err => {
+          app.log(err.message,myName,4);
+          resolve(false);
+        })
+      })
+    },
     verifyUser : function(req,res,next) {
-      let myName = "verifyUser()";
+      let myName = "verifyUser";
       app.models[model]
       .findOne({where:{'appid':req.params.id,verified:false}})
       .then(user => {
