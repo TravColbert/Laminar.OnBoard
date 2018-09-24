@@ -5,15 +5,17 @@ block content
     form#login-form(action="/register/" method="post")
       .section-hdg.section-hdg-1 Register User
       div
-        input#email(type="text" name="email" placeholder="email address" autofocus)
+        input#email(type="text" name="email" placeholder="email address" tabindex=1 required autofocus)
       div
-        input#firstname(type="text" name="firstname" placeholder="first name")
+        input#firstname(type="text" name="firstname" placeholder="first name" tabindex=2)
       div
-        input#lastname(type="text" name="lastname" placeholder="last name")
+        input#lastname(type="text" name="lastname" placeholder="last name" tabindex=3)
       div
-        input#password(type="password" name="password" placeholder="Passphrase")
+        input#nickname(type="text" name="nickname" pattern="[\\d\\w\\-]{6,}" title="Only letters, numbers and dashes (-) allowed. No spaces." placeholder="nickname" tabindex=4)
       div
-        input#passwordverify(type="password" name="passwordverify" placeholder="Verify Passphrase")
+        input#password(type="password" name="password" placeholder="Passphrase" tabindex=5 required)
+      div
+        input#passwordverify(type="password" name="passwordverify" placeholder="Verify Passphrase" tabindex=6 required)
       div.layout-row.layout-justify-between
         input#submit.btn.normal.layout-width-1-1(type="submit" value="Register")
 
