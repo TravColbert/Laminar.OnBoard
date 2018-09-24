@@ -1,8 +1,7 @@
 module.exports = function(app,model) {
   if(!model) return false;
   let myName = model + "Controller";
-  let myModel = model;
-  obj = {
+  return {
     __create : function(obj) {
       let myName = "__create";
       app.log("Creating obj: " + obj,myName,6);
@@ -23,6 +22,105 @@ module.exports = function(app,model) {
       app.log("Deleting obj: " + obj,myName,6);
       return app.controllers["default"].delete(model,obj);
     },
+
+    /* UPDATED METHODS
+    create : function(req,res,next) {
+      let myName = "create(" + model + ")";
+      req.appData.models.push(model);
+      app.log(req.body,myName,6);
+      let obj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
+      app.log("Create object: " + JSON.stringify(obj),myName,6);
+      app.controllers[model].__create(obj)
+      .then(result => {
+        if(!result) {
+          req.appData[model] = [];
+        } else {
+          req.appData[model] = result;
+        }
+        return next();
+      })
+      .catch(err => {
+        req.appData[model] = [];
+        req.appData.errors.push(err);
+        return next();
+      });
+    },
+    get : function(req,res,next) {
+      let myName = "get(" + model + ")";
+      req.appData.models.push(model);
+      let obj = app.tools.makeObj(req.query,app.modelDefinitions[model].requiredFields.concat(app.modelDefinitions[model].optionalFields));
+      if(req.params.id) obj.id = req.params.id;
+      app.log("Search obj: " + JSON.stringify(obj),myName,6);
+      let searchObj = {
+        "where" : obj
+      };
+      app.controllers[model].__get(searchObj)
+      .then(result => {
+        if(!result) {
+          req.appData[model] = [];
+        } else {
+          req.appData[model] = result;
+        }
+        return next();
+      })
+      .catch(err => {
+        req.appData[model] = [];
+        req.appData.errors.push(err);
+        return next();
+      });
+    },
+    update : function(req,res,next) {
+      let myName = "update(" + model + ")";
+      req.appData.models.push(model);
+      app.log(req.body,myName,6);
+      let obj = app.tools.makeObj(req.body,app.modelDefinitions[model].requiredFields.concat(app.modelDefinitions[model].optionalFields));
+      app.log("Update object: " + JSON.stringify(obj),myName,6);
+      let updateObj = {
+        "options":{
+          "where":{"id":req.params.id}
+        },
+        "values":obj
+      };
+      app.controllers[model].__update(updateObj)
+      .then(result => {
+        if(!result) {
+          req.appData[model] = [];
+        } else {
+          req.appData[model] = result;
+        }
+        return next();
+      })
+      .catch(err => {
+        req.appData[model] = [];
+        req.appData.errors.push(err);
+        return next();
+      });
+    },
+    delete : function(req,res,next) {
+      let myName = "delete(" + model + ")";
+      req.appData.models.push(model);
+      let deleteObj = {
+        "where":{
+          "id":req.params.id
+        }
+      };
+      app.log("Delete object: " + JSON.stringify(deleteObj),myName,6);
+      app.controllers[model].__delete(deleteObj)
+      .then(result => {
+        if(!result) {
+          req.appData[model] = [];
+        } else {
+          req.appData[model] = result;
+        }
+        return next();
+      })
+      .catch(err => {
+        req.appData[model] = [];
+        req.appData.errors.push(err);
+        return next();
+      });
+    }
+    */
 
     getDomainsByUserId : function(userId) {
       let myName = "getDomainsByUserId";
@@ -315,5 +413,4 @@ module.exports = function(app,model) {
       })
     }
   };
-  return obj;
 };
