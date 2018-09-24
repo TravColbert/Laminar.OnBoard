@@ -149,6 +149,85 @@ module.exports = function(app,sequelize) {
     });
     return associationPromises;
   };
+  obj.setupBasePermissions = function() {
+    let myName = "setupBasePermissions";
+    app.log("Setting up admin user...",myName,6);
+  
+    let adminUser;
+    let defaultDomain, trashDomain;
+    let setupPromises = Promise.resolve();
+    setupPromises = setupPromises.then(() => {
+      app.log("Looking for user: " + 'admin@' + app.locals.smtpDomain,myName,6);
+      return app.controllers.users.getUserByObj({email:'admin@' + app.locals.smtpDomain});
+    }).then(user => {
+      // The 'get' methods return an array of users
+      if(user.length<1) {
+        app.log("No admin user found - creating",myName,6);
+        let adminUserDef = {
+          "firstname":"Administrative",
+          "lastname":"User",
+          "email":"admin@" + app.locals.smtpDomain,
+          "verified":true,
+          "disabled":false,
+          "password":app.secrets["admin@" + app.locals.smtpDomain]
+        };
+        // The 'create' method returns an object, not an array! 
+        return app.controllers.users.createUser(adminUserDef);
+      } else {
+        // If the "user.length" check (above) passes then we're looking at an array here!
+        return user[0];
+      };
+    }).then(user => {
+      adminUser = user;
+      app.log("Admin user: " + adminUser.fullname,myName,6);
+      return app.controllers.roles.getRoleByName("Super Admin");
+    }).then(role => {
+      if(role===null) {
+        app.log("No super-admin role found... creating",myName,6,"+");
+        let adminRoleDef = {
+          name:"Super Admin",
+          description:"Role can manage all models in all domains (super-admin users)",
+          capabilities:{'edit':'all','create':'all','list':'all','delete':'all'}
+        };
+        return app.controllers.roles.createRole(adminRoleDef);
+      } else {
+        app.log("Super-admin role found. Good.",myName,6);
+        return role;
+      }
+    }).then(role => {
+      app.log(role,myName,6,"#");
+      return adminUser.addRole(role,{through:{comment:"Initial creation phase"}});
+    }).then(() => {
+      app.log("Admin user connected to admin role",myName,6,"-");
+      app.log("Making default domains",myName,6,"+");
+      defaultDomain = {
+        name:"Default",
+        urn:"default",
+        description:"The default domain",
+        settings:{
+          visible: ["notes"]
+        },
+        ownerId:adminUser.id
+      };
+      trashDomain = {
+        name:"Trash",
+        urn:"trash",
+        description:"The trashcan of domains",
+        settings:{
+          visible: false
+        },
+        ownerId:adminUser.id
+      };
+      return app.controllers.domains.createDomain(defaultDomain,adminUser.id);
+    })
+    .then(() => {
+      return app.controllers.domains.createDomain(trashDomain,adminUser.id);
+    })
+    .catch(err => {
+      app.log(err.message,myName,3,"!");
+    });
+    return setupPromises;  
+  };
   obj.startModels = function(models) {
     let myName = "startModels";
     app.log("Starting models...",myName,6);
