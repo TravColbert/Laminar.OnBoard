@@ -95,6 +95,10 @@ app.tools.readDir(app.cwd + app.locals.modelsDir)
 }).then(controllerFiles => {
   return app.tools.processFiles(controllerFiles,app.tools.readController);
 }).then(() => {
+  return app.tools.readDir(cwd + app.locals.elementsDir);
+}).then(elementFiles => {
+  return app.tools.processFiles(elementFiles,app.tools.readElement);
+}).then(() => {
   // Bind associations and start the models
   return app.tools.associateModels();
 }).then(() => {
