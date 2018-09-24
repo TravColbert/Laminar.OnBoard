@@ -30,6 +30,8 @@ module.exports = function(Sequelize,app) {
         type: Sequelize.STRING
       }
     },
+    requiredFields: ["name","urn"],
+    optionalFields: ["description","settings"],
     options:{
       getterMethods: {
         uniqueAppId: function() {

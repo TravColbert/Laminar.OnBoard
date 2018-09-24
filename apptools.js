@@ -195,7 +195,6 @@ module.exports = function(app,sequelize) {
         return role;
       }
     }).then(role => {
-      app.log(role,myName,6,"#");
       return adminUser.addRole(role,{through:{comment:"Initial creation phase"}});
     }).then(() => {
       app.log("Admin user connected to admin role",myName,6,"-");

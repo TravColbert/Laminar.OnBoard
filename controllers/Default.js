@@ -2,7 +2,7 @@ module.exports = function(app,model) {
   if(!model) return false;
   let myName = model + "Controller";
   let myModel = model;
-  obj = {
+  return {
     create : function(model,obj) {
       let myName = "create(default)";
       return new Promise((resolve,reject) => {
@@ -68,5 +68,4 @@ module.exports = function(app,model) {
       })
     }
   };
-  return obj;
 };
