@@ -531,6 +531,13 @@ img.border-circle {
 .text-nobreak {
   white-space: nowrap;
 }
+.pre {
+  display: block;
+  font-family: monospace;
+  white-space: pre;
+  margin: 1em 0;
+  font-size: 0.8em !important;
+}
 @media only screen and (max-width: 424px) {
   body {
     font-size: 0.8em;
