@@ -23,7 +23,7 @@ module.exports = function(Sequelize,app) {
       }
     },
     requiredFields: ["name"],
-    optionalFields: ["description","body","public","appid"],
+    optionalFields: ["id","description","body","public","appid"],
     options:{
       hooks:{
         afterCreate:(note) => {
