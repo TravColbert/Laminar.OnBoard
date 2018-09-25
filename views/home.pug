@@ -27,12 +27,14 @@ block content
           .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
             i.material-icons.big-icon security
           .layout-width-3-4.text-align-justify Everything's secure! Your web app is locked-down and sealed tight by default. Only you and your collaborators can see your data.
+    if(notes)
+      if(notes.length>0)
+        .layout-width-1-1.layout-col
+          include noteslist
     .layout-width-1-1.layout-col
       if(user)
         if(invites)
           include invites
-        if(notes)
-          include notes-list
         +list-domains("Domain")
         +create-or-see-domains("Domain")
     if(!user)
