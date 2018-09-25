@@ -304,7 +304,7 @@ module.exports = function(app,sequelize) {
         let returnObj = {};
         req.appData.models.forEach(model => {
           app.log(`Loading model ${model} in JSON return data`,myName,6);
-          console.log(req.appData[model]);
+          // console.log(req.appData[model]);
           returnObj[model] = req.appData[model];
           returnObj["errors"] = req.appData.errors;
         });
@@ -315,7 +315,7 @@ module.exports = function(app,sequelize) {
           req.appData.headoptions = app.headOptions;
           // app.log(req.appData.headoptions);
         }
-        app.log(req.appData);
+        // app.log(req.appData);
         return res.render(templateFile,req.appData);
     }
   },
