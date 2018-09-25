@@ -1,15 +1,12 @@
 doctype html
 
 mixin login-or-register(loginText,registerText)
-  .layout-width-1-1.layout-row.layout-md-col.layout-wrap
-    .app-features.layout-width-1-2.layout-md-width-1-1.layout-sm-width-1-1.layout-xs-width-1-1.clickable(onclick="goTo('/login/')")
-      .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
-        i.material-icons.big-icon verified_user
-      .layout-width-3-4.text-align-justify= loginText
-    .app-features.layout-width-1-2.layout-md-width-1-1.layout-sm-width-1-1.layout-xs-width-1-1.clickable(onclick="goTo('/register/')")
-      .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
-        i.material-icons.big-icon fingerprint
-      .layout-width-3-4.text-align-justify= registerText
+  .app-features.clickable(onclick="goTo('/login/')")
+    i.material-icons.big-icon verified_user
+    div= loginText
+  .app-features.clickable(onclick="goTo('/register/')")
+    i.material-icons.big-icon fingerprint
+    div= registerText
 
 mixin create-or-see-domains(domainName)
   .item-listing.layout-width-1-1.layout-row
@@ -61,9 +58,9 @@ html
   if(headoptions)
     for headoption in headoptions
       +link(headoption)
-  body.header-static.footer-static.layout-align-center
+  body
     include navigation.pug
-    #main.content.layout-height-1-1.layout-width-1-1.layout-col.layout-align-center
+    content#main
       include messages.pug
       block content
     block scripts
