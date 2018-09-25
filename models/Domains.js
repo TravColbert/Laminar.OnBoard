@@ -23,6 +23,10 @@ module.exports = function(Sequelize,app) {
         lm_placeholder:"description of the domain",
         lm_classlist:["lm_textarea","layout-width-1-2"]
       },
+      "public":{
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       "settings":{
         type: Sequelize.JSON
       },

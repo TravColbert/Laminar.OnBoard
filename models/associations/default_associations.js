@@ -9,6 +9,7 @@ module.exports = function(app) {
     app.models["users"].belongsTo(app.models["domains"],{as:'defaultDomain'});  // makes users.defaultDomainId field
     app.models["users"].hasOne(app.models["domains"],{as:'owner'});             // makes domains.ownerId field
     app.models["notes"].belongsTo(app.models["domains"],{as:'domain'});         // makes notes.domainId
+    app.models["domains"].hasMany(app.models["notes"]);
     app.models["notes"].belongsTo(app.models["users"],{as:"user"});             // makes notes.userId
   })(app);
 }
