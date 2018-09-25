@@ -123,6 +123,7 @@ module.exports = function(app,model) {
       app.controllers[model].__get(searchObj)
       .then(notes => {
         app.log(notes);
+        if(!notes || notes.length==0) return res.redirect('/blog/');
         req.appData.note = notes[0];
         req.appData.view = "blogentry";
         return next();
@@ -150,7 +151,8 @@ module.exports = function(app,model) {
     },
     editNote : function(req,res,next) {
       let myName = "editNote()";
-      let noteObj = app.tools.pullParams(req.body,["id","name","description","body","public"]);
+      let noteObj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
+
       let requestedNoteId = req.params.id;
       app.log(noteObj.id + " " + requestedNoteId);
       if(noteObj.id!=requestedNoteId) return res.send("Didn't request the requested note");
