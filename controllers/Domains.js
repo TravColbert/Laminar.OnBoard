@@ -212,7 +212,9 @@ module.exports = function(app,model) {
           where: {
             "urn":req.params.id
           },
-          include:[app.models["roles"]]
+          include:[
+            app.models["roles"]
+          ]
         }
       }
       app.controllers[model].__get(searchObj)
