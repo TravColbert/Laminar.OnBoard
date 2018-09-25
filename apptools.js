@@ -203,6 +203,7 @@ module.exports = function(app,sequelize) {
         name:"Default",
         urn:"default",
         description:"The default domain",
+        public:true,
         settings:{
           visible: ["notes"]
         },
@@ -212,6 +213,7 @@ module.exports = function(app,sequelize) {
         name:"Trash",
         urn:"trash",
         description:"The trashcan of domains",
+        public:false,
         settings:{
           visible: false
         },
@@ -311,8 +313,9 @@ module.exports = function(app,sequelize) {
         app.log("Rendering template: " + templateFile,myName,6);
         if(app.headOptions) {
           req.appData.headoptions = app.headOptions;
-          app.log(req.appData.headoptions);
+          // app.log(req.appData.headoptions);
         }
+        app.log(req.appData);
         return res.render(templateFile,req.appData);
     }
   },
@@ -518,6 +521,38 @@ module.exports = function(app,sequelize) {
     req.appData.sessionId = req.session.id;
     req.appData.view = app.locals.homeView;
 
+    let homePagePromises = Promise.resolve();
+    homePagePromises = homePagePromises.then(() => {
+      if(app.tools.isAuthenticated(req)) {
+        return app.controllers.invites.checkInvites(req.session.user.email)
+        .then(invites => {
+          let numInvites = (invites) ? invites.length : 0;
+          app.log("Invites found: " + numInvites,myName,6);
+          req.appData.invites = invites;
+          return true;
+        });
+      } else {
+        return false;
+      }
+    })
+    .then((result) => {
+      if(!result) app.log("No invites found");
+      app.log("Checking for custom 'home' module: " + app.locals.homeModule,myName,6);
+      if(app.homeModule) {
+        app.log("Inserting custom 'home' module...",myName,6)
+        return app.homeModule.home(req,res,next);
+      } else {
+        return;
+      }
+    })
+    .then(() => {
+      return next();
+    })
+    .catch((err) => {
+      app.log(err.message);
+      return res.send(err.message);
+    });
+    /*
     if(req.session.user) {
       app.log("Session detected",myName,6);
       app.controllers.invites.checkInvites(req.session.user.email)
@@ -528,7 +563,7 @@ module.exports = function(app,sequelize) {
         return true;
       })
       .then(() => {
-        app.log("Invoking custom 'home' module = " + app.locals.homeModule,myName,6);
+        app.log("Checking for custom 'home' module: " + app.locals.homeModule,myName,6);
         if(app.homeModule) {
           app.log("Inserting custom 'home' module...",myName,6)
           return app.homeModule.home(req,res,next);
@@ -547,6 +582,7 @@ module.exports = function(app,sequelize) {
       app.log("No session detected",myName,6);
       return next();
     }
+    */
   };
   obj.loginPage = function(req,res,next) {
     let myName = "loginPage()";
