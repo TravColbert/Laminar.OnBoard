@@ -97,6 +97,37 @@ module.exports = function(app,model) {
         return res.send("Err: " + err.message);
       });
     },
+    getAsBlog : function(req,res,next) {
+      // The maindifference here is that we assume that we aren't authentcated.
+      // We also check to see if 1) the domain is marked public and 2) the note
+      // is marked public
+      let searchObj = {
+        where:{
+          id:req.params.id,
+          public: true
+        },
+        include: [
+          {
+            model: app.models["domains"],
+            where: {
+              public: true
+            },
+            as:"domain"
+          },
+          {
+            model: app.models["users"],
+            as:"user"
+          }
+        ]
+      }
+      app.controllers[model].__get(searchObj)
+      .then(notes => {
+        app.log(notes);
+        req.appData.note = notes[0];
+        req.appData.view = "blogentry";
+        return next();
+      });
+    },
     editNoteForm : function(req,res,next) {
       let myName = "editNoteForm()";
       let searchObj = {
