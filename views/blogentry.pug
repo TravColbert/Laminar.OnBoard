@@ -9,5 +9,8 @@ block content
         p #{note.updatedAt}
       .layout-width-1-1.layout-col
         p #{note.description}
+      .hidden.markdownInput #{note.body}
       .layout-width-1-1.layout-col
-        p #{note.body}
+        div#markdownOutput.layout-col
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.8.6/showdown.min.js")
+

@@ -1,3 +1,17 @@
+function convertMarkdownInput() {
+  let markdownInputs = document.querySelectorAll('.markdownInput');
+  if(markdownInputs.length==0) return false;
+  let markdownOutput = document.getElementById('markdownOutput');
+  if(!markdownOutput) return false;
+  let converter = new showdown.Converter();
+  let html = "";
+  markdownInputs.forEach(markdownInput => {
+    html += converter.makeHtml(markdownInput.innerHTML);
+  });
+  markdownOutput.innerHTML = html;
+  return true;
+}
+
 function ackMessage(messageNum) {
   fetch('/messages/ack/' + messageNum,{
     method:'GET',
@@ -83,4 +97,5 @@ function ready(fn) {
 
 ready(() => {
   preLoadDateTimeSelectors();
+  convertMarkdownInput();
 });
