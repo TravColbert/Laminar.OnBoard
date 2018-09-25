@@ -337,7 +337,7 @@ module.exports = function(app,model) {
           return res.send("User not authorized for this view");
         }
         app.log("User is authorized to edit domain",myName,6);
-        let domainObj = app.tools.pullParams(req.params,["id"]);
+        let domainObj = app.tools.pullParams(req.params,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
         app.log("Getting domain with ID: " + domainObj.id,myName,6);
         app.models[model]
         .findById(req.params.id)
@@ -359,7 +359,7 @@ module.exports = function(app,model) {
     },
     editDomain : function(req,res,next) {
       let myName = "editDomain()";
-      let domainObj = app.tools.pullParams(req.body,["id","name","description"]);
+      let domainObj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
       let requestedDomainId = req.params.id;
       app.log(domainObj.id + " " + requestedDomainId);
       if(domainObj.id!=requestedDomainId) return res.send("Didn't request the requested domain");
@@ -398,7 +398,7 @@ module.exports = function(app,model) {
     },
     create : function(req,res,next) {
       let myName = "create (domain)";
-      let newDomain = app.tools.pullParams(req.body,["name"]);
+      let newDomain = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
       if(!newDomain) return res.send("Required field missing... try again");
       if(req.body.hasOwnProperty("description")) newDomain["description"] = req.body.description;
       newDomain.ownerId = req.session.user.id;
