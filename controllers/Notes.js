@@ -2,7 +2,7 @@ module.exports = function(app,model) {
   if(!model) return false;
   let myName = model + "Controller";
   let myModel = model;
-  obj = {
+  return {
     __create : function(obj) {
       let myName = "__create";
       app.log("Creating obj: " + obj,myName,6);
@@ -51,7 +51,7 @@ module.exports = function(app,model) {
       // let searchObj = {
       //   where : {
       //     "userId" : req.session.user.id,
-      //     "domainId" : req.session.user.currentDomain.id  
+      //     "domainId" : req.session.user.currentDomain.id
       //   }
       // }
       app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
@@ -95,7 +95,7 @@ module.exports = function(app,model) {
       })
       .catch(err => {
         return res.send("Err: " + err.message);
-      })      
+      });
     },
     editNoteForm : function(req,res,next) {
       let myName = "editNoteForm()";
@@ -115,7 +115,7 @@ module.exports = function(app,model) {
       })
       .catch(err => {
         return res.send(myName + ":" + err.message);
-      })
+      });
     },
     editNote : function(req,res,next) {
       let myName = "editNote()";
@@ -140,6 +140,7 @@ module.exports = function(app,model) {
       let newNote = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
       if(!newNote) return res.send("Required field missing... try again");
       newNote.userId = req.session.user.id;
+      newNote.domainId = req.session.user.currentDomain.id;
       app.log("New note: " + JSON.stringify(newNote),myName,6,"::::>");
       app.controllers[model].__create(newNote)
       .then(note => {
@@ -164,9 +165,8 @@ module.exports = function(app,model) {
         .catch(err => {
           app.log("Error: " + err.messages);
           reject(err);
-        })
-      })
+        });
+      });
     }
   };
-  return obj;
 };
