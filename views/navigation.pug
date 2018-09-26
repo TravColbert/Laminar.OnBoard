@@ -1,11 +1,11 @@
 header
-  nav(role=navigation)
+  nav(role=navigation).top
     #menu-title
       div#app-title
         a(href="/")= title
       label#menu-hamburger(for="show-menu") &#9776;
     input#show-menu(type="checkbox" role="button")
-    ul
+    ul.nav
       each item in menu
         li
           a(href= item.link)

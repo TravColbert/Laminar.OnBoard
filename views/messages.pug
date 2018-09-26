@@ -1,18 +1,17 @@
-.messages.layout-width-1-1.layout-col
+.messages
   - let numMessages = messages.length;
   if numMessages>0
-    .section-hdg.section-hdg-1.layout-width-1-1 Messages: #{numMessages}
-
-    .item-listing.layout-row
-      .itemsidebar.layout-col.layout-width-1-8.layout-align-center
+    .section-hdg Messages: #{numMessages}
+    .item-listing
+      .itemsidebar
         i.material-icons.item-icon message
-      .itemcontent.layout-col.layout-width-7-8
+      .itemcontent
         each message in messages
           - let messageClass = "msg-" + message.type;
           - let messageText = message.text;
-          .msg.layout-row.layout-width-1-1.layout-justify-between.layout-align-center.messageClass(id="msg" + message.msgId)
-            .itemdetail.layout-width-7-8.layout-col
+          .msg.messageClass(id="msg" + message.msgId)
+            .itemdetail
               .label Message:
               .data #{messageText}
-            .itemdetail.layout-width-1-8.layout-col.layout-align-end
+            .itemdetail
               i.material-icons.item-icon.clickable(id="msg_close_" + message.msgId onclick="ackMessage('" + message.msgId + "')") close

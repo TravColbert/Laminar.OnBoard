@@ -9,7 +9,7 @@ mixin login-or-register(loginText,registerText)
     div= registerText
 
 mixin create-or-see-domains(domainName)
-  .item-listing.layout-width-1-1.layout-row
+  .item-listing
     .layout-width-1-2
       a.btn.secondary(href="/domains/")
         i.material-icons list_alt
@@ -59,9 +59,14 @@ html
     for headoption in headoptions
       +link(headoption)
   body
-    include navigation.pug
-    content#main
-      include messages.pug
-      block content
+    //- main
+      //- include navigation.pug
+      //- div
+        //- include messages.pug
+    block content
     block scripts
-  include foot.pug
+    include foot.pug
+  script(src='/js/authUI.js')
+  script(src='/js/onboard.js')
+  //- script(src='/js/laminar.js')
+  //- script(src='/js/socket.js')

@@ -1,23 +1,36 @@
 extends index.pug
 
 block content
-  section#main.layout-col.layout-align-center
+  article.register
     form#login-form(action="/register/" method="post")
       .section-hdg.section-hdg-1 Register User
-      div
+      div.field
+        label Email Address:
         input#email(type="text" name="email" placeholder="email address" tabindex=1 required autofocus)
-      div
+      div.field
+        label First (given) Name:
         input#firstname(type="text" name="firstname" placeholder="first name" tabindex=2)
-      div
+      div.field
+        label Last (Family) Name:
         input#lastname(type="text" name="lastname" placeholder="last name" tabindex=3)
-      div
+      div.field
+        label Nickname:
         input#nickname(type="text" name="nickname" pattern="[\\d\\w\\-]{6,}" title="Only letters, numbers and dashes (-) allowed. No spaces." placeholder="nickname" tabindex=4)
-      div
-        input#password(type="password" name="password" placeholder="Passphrase" tabindex=5 required)
-      div
-        input#passwordverify(type="password" name="passwordverify" placeholder="Verify Passphrase" tabindex=6 required)
-      div.layout-row.layout-justify-between
+      div.field
+        label Passphrase:
+        input#password(type="password" name="password" placeholder="passphrase" tabindex=5 required)
+      div.field
+        label Passphrase (verify):
+        input#passwordverify(type="password" name="passwordverify" placeholder="verify passphrase" tabindex=6 required)
+      div.field
         input#submit.btn.normal.layout-width-1-1(type="submit" value="Register")
+  nav.bottom
+    ul.nav
+      each item in menu
+        li
+          a(href= item.link)
+            i.material-icons.menu-icon #{item.icon}
+            | #{item.text}
 
 block scripts
   script(src='/js/bcrypt.min.js')

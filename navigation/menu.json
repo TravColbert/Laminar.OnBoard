@@ -3,7 +3,8 @@
     {"link":"/blog/","text":"Blog","icon":"content_copy"},
     {"link":"/notes/","text":"Notes","icon":"content_paste","secured":true},
     {"link":"/expenses/","text":"Expense","icon":"credit_card","secured":true},
-    {"link":"/login/","text":"Log In","icon":"verified_user","secured":false},
-    {"link":"/logout/","text":"Log Out","icon":"highlight_off","secured":true}
+    {"link":"/login/","text":"Sign In","icon":"verified_user","secured":false},
+    {"link":"/logout/","text":"Log Out","icon":"highlight_off","secured":true},
+    {"link":"/register/","text":"Sign Up","icon":"fingerprint","secured":false}
   ]
 }
