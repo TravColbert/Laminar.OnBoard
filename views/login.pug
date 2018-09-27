@@ -1,18 +1,29 @@
 extends index.pug
 
 block content
-  section#main.layout-width-sd.layout-col.layout-align-center
-    form#login-form(action="/login" method="post")
-      input#secretsauce(type="hidden" name="secretsauce" value=secretSauce)
-      .section-hdg.section-hdg-1 Log In
-      div
-        input#email(type="text" name="email" placeholder="email address" autofocus)
-      div
-        input#password(type="password" name="password" placeholder="Passphrase")
-      .layout-row.layout-justify-between
-        input#submit.btn.normal.layout-width-1-1(type="submit" value="Login")
-      .layout-row.layout-justify-center Not a user?&nbsp;
-        a(href="/register/") Register here.
+  article.title
+    .maintitle.textshadow
+      h1= title
+      h2 Sign In here
+    .secondarytitle
+      form#login-form(action="/login" method="post")
+        input#secretsauce(type="hidden" name="secretsauce" value=secretSauce)
+        .section-hdg.section-hdg-1 Log In
+        div
+          input#email(type="text" name="email" placeholder="email address" autofocus)
+        div
+          input#password(type="password" name="password" placeholder="Passphrase")
+        .layout-row.layout-justify-between
+          input#submit.btn.normal.layout-width-1-1(type="submit" value="Login")
+        .layout-row.layout-justify-center Not a user?&nbsp;
+          a(href="/register/") Register here.
+  nav.bottom.textshadow
+    ul.nav
+      each item in menu
+        li
+          a(href= item.link)
+            i.material-icons.menu-icon #{item.icon}
+            | #{item.text}
 
 block scripts
   script(src='/js/bcrypt.min.js')
