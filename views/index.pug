@@ -1,5 +1,23 @@
 doctype html
 
+mixin main-title(subTitleText)
+  .brandbox.textshadow
+    h1.maintitle= title
+    h2.subtitle= subTitleText
+
+mixin main-title-sidebar(sidebarText)
+  .secondarytitle
+    div= sidebarText
+
+mixin card(icon,title,body,footer)
+  - if(icon===null) icon = "face"
+  .card
+    .card-image
+      i.material-icons= icon
+    .card-title= title
+    .card-body= body
+    .card-footer= footer
+
 mixin login-or-register(loginText,registerText)
   .app-features.clickable(onclick="goTo('/login/')")
     i.material-icons.big-icon verified_user
