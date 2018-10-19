@@ -729,6 +729,8 @@ module.exports = function(app,sequelize) {
   obj.pullParams = function(sourceObj,arr,optArr) {
     let myName = "pullParams";
     let returnObj = {};
+    arr = arr || [];
+    optArr = optArr || [];
     for(let requiredValue of arr) {
       if(!sourceObj.hasOwnProperty(requiredValue)) return false;
       returnObj[requiredValue] = sourceObj[requiredValue];
