@@ -34,7 +34,7 @@ openssl genrsa -des3 -out server.key -passout pass:[your_password] 1024
 This command works:
 
 ```bash
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout privatekey.key -out certificate.crt
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt
 ```
 ### Generate a Certificate Signing Request
 
