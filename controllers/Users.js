@@ -218,7 +218,7 @@ module.exports = function(app,model) {
               return res.send("Something went wrong when we tried to add the default role to the user: " + err.message);
             });
           };
-          app.controllers["domains"].fetchRoleByName("Default Domain","Default Role",cb);
+          app.controllers["domains"].fetchRoleByName("Default","Default Role",cb);
         })
         .catch(err => {
           return res.send("Could not set verified to true or disabled to false: " + err.message);
