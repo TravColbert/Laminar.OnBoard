@@ -1,7 +1,7 @@
 {
-  "name": "Froogle.io",
+  "name": "Laminar.OnBoard",
   "version": "1.0.0",
-  "description": "a simple expense-tracker based on Laminar.OnBoard",
+  "description": "Starting-point for a secure but simple Express web application",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,7 +13,6 @@
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
-    "flatpickr": "^4.5.1",
     "node-mailjet": "^3.2.1",
     "nodemailer": "^4.6.3",
     "pug": "^2.0.1",
@@ -27,5 +26,13 @@
   "bugs": {
     "url": "https://github.com/TravColbert/Laminar.OnBoard/issues"
   },
-  "homepage": "https://github.com/TravColbert/Laminar.OnBoard#readme"
+  "homepage": "https://github.com/TravColbert/Laminar.OnBoard#readme",
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
+  }
 }
