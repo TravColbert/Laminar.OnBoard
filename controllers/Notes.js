@@ -126,6 +126,25 @@ module.exports = function(app,model) {
         if(!notes || notes.length==0) return res.redirect('/blog/');
         req.appData.note = notes[0];
         req.appData.view = "blogentry";
+        searchObj = {
+          attributes:['id','name','description','updatedAt'],
+          where:{
+            public: true
+          },
+          order:[
+            ['updatedAt','DESC']
+          ],
+          include: [
+            {
+              model: app.models["users"],
+              as:"user"
+            }
+          ]
+        }
+        return app.controllers[model].__get(searchObj);
+      })
+      .then(notes => {
+        req.appData.notes = notes;
         return next();
       });
     },
