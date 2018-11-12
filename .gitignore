@@ -9,3 +9,4 @@ tls/*.crt
 tls/*.key
 db/
 test/
+*.code-workspace
