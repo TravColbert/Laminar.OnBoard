@@ -234,7 +234,10 @@ module.exports = function(app,model) {
       app.models[model]
       .findById(userId)
       .then(user => {
-        if(user===null) return res.redirect('/');
+        app.log("Found user: " + JSON.stringify(user));
+        // if(user===null) return res.redirect('/');
+        if(user===null) return false;
+        app.log("Adding role: " + roleId);
         user.addRole(roleId)
         .then(function() {
           return true;

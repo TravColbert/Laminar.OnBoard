@@ -315,7 +315,7 @@ module.exports = function(app,sequelize) {
           req.appData.headoptions = app.headOptions;
           // app.log(req.appData.headoptions);
         }
-        // app.log(req.appData);
+        app.log(req.appData);
         return res.render(templateFile,req.appData);
     }
   },

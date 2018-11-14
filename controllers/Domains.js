@@ -23,13 +23,15 @@ module.exports = function(app,model) {
       return app.controllers["default"].delete(model,obj);
     },
 
-    /* UPDATED METHODS
+    /* UPDATED METHODS */
     create : function(req,res,next) {
       let myName = "create(" + model + ")";
       req.appData.models.push(model);
       app.log(req.body,myName,6);
       let obj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
-      app.log("Create object: " + JSON.stringify(obj),myName,6);
+      obj.ownerId = req.session.user.id;
+      // obj.settings = {"visible":true};
+      app.log("Create object (domain): " + JSON.stringify(obj),myName,6);
       app.controllers[model].__create(obj)
       .then(result => {
         if(!result) {
@@ -119,9 +121,42 @@ module.exports = function(app,model) {
         req.appData.errors.push(err);
         return next();
       });
-    }
-    */
+    },
+    /* */
 
+    createDomain : function(req,res,next) {
+      let myName = "createDomain(" + model + ")";
+      req.appData.models.push(model);
+      app.log(req.body,myName,6);
+      let obj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
+      obj.ownerId = req.session.user.id;
+      app.controllers[model].__create(obj)
+      .then(result => {
+        app.log("Created domain: " + JSON.stringify(result),myName,5);
+        // Create default roles
+        return app.controllers["roles"].createDefaultRoles(result);
+      })
+      .then(roles => {
+        app.log("Roles created: " + JSON.stringify(roles),myName,5);
+        // Add ownerId to Admin role...
+        let adminRole = roles.filter(role => {
+          return (role.name.indexOf("Admin")>=0);
+        })[0];
+        if(!adminRole) return false;
+        app.log("Found admin role: " + JSON.stringify(adminRole));
+        app.log("User: " + JSON.stringify(req.session.user));
+        return app.controllers["users"].enrollUserInRoleById(req.session.user.id,adminRole.id);
+      })
+      .then(result => {
+        app.log(result,myName,5);
+        return next;
+      })
+      .catch(err => {
+        req.appData[model] = [];
+        req.appData.errors.push(err);
+        return next();
+      });
+    },
     getDomainsByUserId : function(userId) {
       let myName = "getDomainsByUserId";
       let searchObj = {
@@ -162,6 +197,7 @@ module.exports = function(app,model) {
         return res.redirect("/");
       });
     },
+    /*
     get : function(obj) {
       let myName = "get(domains)";
       return new Promise((resolve,reject) => {
@@ -175,6 +211,7 @@ module.exports = function(app,model) {
         })
       })
     },
+    */
     getMyDomains : function(req,res,next) {
       let myName = "getMyDomains";
       req.appData.domains = req.session.user.domains;
@@ -369,50 +406,6 @@ module.exports = function(app,model) {
       .then((domains) => {
         return res.redirect("/domains/" + requestedDomainId + "/");
       });
-    },
-    createDomain : function(domainObj,creatorUserId) {
-      let myName = "createDomain";
-      let adminRole;
-      app.log("Attempting to create domain: " + domainObj.name + " for user: " + creatorUserId,myName,6);
-      return app.models[model].create(domainObj)
-      .then(domain => {
-        app.log(domain.name + " created",myName,6);
-        return app.controllers["roles"].createDefaultRoles(domain);
-      }).then(roles => {
-        app.log("Roles created: " + roles,myName,6,"::>");
-        adminRole = roles.filter((v) => {
-          return v.name=="Admin Role";
-        })[0];
-        app.log("This is the admin role: " + JSON.stringify(adminRole),myName,6,"!!!!");
-        app.log("Time to connect creator-user: " + creatorUserId + " to admin role",myName,6);
-        return app.controllers["users"].getUserById(creatorUserId);
-      }).then(user => {
-        app.log("Found creator-user: " + user.fullname,myName,6,"::>");
-        return adminRole.addUser(user,{through:{comment:"Creator-owner added to admin role for domain"}});
-      }).then(() => {
-        app.log("I think the user is in the domain's admin role",myName,6);
-        return true;
-      }).catch(err => {
-        return new Error("(" + myName + ") " + err.message);
-      });
-    },
-    create : function(req,res,next) {
-      let myName = "create (domain)";
-      let newDomain = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
-      if(!newDomain) return res.send("Required field missing... try again");
-      if(req.body.hasOwnProperty("description")) newDomain["description"] = req.body.description;
-      newDomain.ownerId = req.session.user.id;
-      app.controllers[model]
-      .createDomain(newDomain,req.session.user.id)
-      .then(domain => {
-        app.log(JSON.stringify(domain),myName,6,"##>");
-        app.log("Domain create: " + domain.name,myName,6);
-        return next();
-      })
-      .catch(err => {
-        app.log("Error: " + err.message,myName,3);
-        return res.send(err.message);
-      })
     }
   };
 };
