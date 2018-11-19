@@ -122,7 +122,7 @@ module.exports = function(app,model) {
       }
       app.controllers[model].__get(searchObj)
       .then(notes => {
-        app.log(notes);
+        app.log("Found notes: " + JSON.stringify(notes),myName,6);
         if(!notes || notes.length==0) return res.redirect('/blog/');
         req.appData.note = notes[0];
         req.appData.view = "blogentry";
@@ -145,6 +145,33 @@ module.exports = function(app,model) {
       })
       .then(notes => {
         req.appData.notes = notes;
+        return next();
+      });
+    },
+    getNotesInDomain : function(req,res,next) {
+      let searchObj = {
+        where : {
+          public: true
+        },
+        include : [
+          {
+            model : app.models["domains"],
+            where : {
+              public : true,
+              urn : req.params.domainId
+            },
+            as : "domain"
+          },
+          {
+            model : app.models["users"],
+            as : "user"
+          }
+        ]
+      }
+      app.controllers[model].__get(searchObj)
+      .then(notes => {
+        req.appData.notes = notes;
+        req.appData.view = "bloghome";
         return next();
       });
     },

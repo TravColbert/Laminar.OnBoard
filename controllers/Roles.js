@@ -275,6 +275,7 @@ module.exports = function(app,model) {
     },
     connectRoleToDomain : function(role,domain) {
       let myName = "connectRoleToDomain()";
+      app.log(JSON.stringify(role),myName,6);
       return new Promise((resolve,reject) => {
         app.log("Connecting role: '" + role.name + "' to '" + domain.name,myName,6," --- ");
         domain.addRoles(role)

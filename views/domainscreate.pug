@@ -9,7 +9,7 @@ block content
           .inputdomainname.itemdetail.layout-col
             label.label(for="name") Domain Name:
             .data
-              input#name(type="text" name="name" placeholder="name of domain" autofocus)
+              input#name(type="text" name="name" placeholder="name of domain" autofocus pattern="[A-Za-z- ]{6,}")
           .inputdomaindescription.itemdetail.layout-col
             label.label(for="description") Description:
             .data
@@ -17,7 +17,7 @@ block content
           .inputdomaindescription.itemdetail.layout-col
             label.label(for="urn") Short Name:
             .data
-              input#description(type="text" name="urn" placeholder="short name for domain")
+              input#urn(type="text" name="urn" placeholder="short name for domain" pattern="[^! %/\*]{6,}")
           .domainsubmit.itemdetail.layout-col
             label.label Actions:
             .data
@@ -36,5 +36,9 @@ block content
           .infotext Lenovo
           .infotext HP
         .infotext.important This is a required field.
+
+block scripts
+  script(src='/js/domainscreate.js')
+
 
 

@@ -122,15 +122,46 @@ module.exports = function(app,model) {
         return next();
       });
     },
-    /* */
-
     createDomain : function(req,res,next) {
       let myName = "createDomain(" + model + ")";
+      let createdDomain;
       req.appData.models.push(model);
       app.log(req.body,myName,6);
       let obj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
       obj.ownerId = req.session.user.id;
-      app.controllers[model].__create(obj)
+      return app.controllers[model].__create(obj)
+      .then(result => {
+        app.log("Created domain: " + JSON.stringify(result),myName,5);
+        createdDomain = result;
+        // Create default roles
+        return app.controllers["roles"].createDefaultRoles(result);
+      })
+      .then(roles => {
+        app.log("Roles created: " + JSON.stringify(roles),myName,5);
+        // Add ownerId to Admin role...
+        let adminRole = roles.filter(role => {
+          return (role.name.indexOf("Admin")>=0);
+        })[0];
+        if(!adminRole) return false;
+        app.log("Found admin role: " + JSON.stringify(adminRole),myName,6);
+        app.log("User: " + JSON.stringify(req.session.user),myName,6);
+        return app.controllers["users"].enrollUserInRoleById(req.session.user.id,adminRole.id);
+      })
+      .then(() => {
+        app.log("Domain creation complete",myName,6);
+        req.appData.domain = createdDomain;
+        req.appData.view = "domain";
+        return res.redirect("/domains/" + createdDomain.id);
+      })
+      .catch(err => {
+        req.appData[model] = [];
+        req.appData.errors.push(err);
+        return next();
+      });
+    },
+    createDomainAndRoles : function(obj,owner) {
+      let myName = "createDomainAndRoles";
+      return app.controllers[model].__create(obj)
       .then(result => {
         app.log("Created domain: " + JSON.stringify(result),myName,5);
         // Create default roles
@@ -144,17 +175,16 @@ module.exports = function(app,model) {
         })[0];
         if(!adminRole) return false;
         app.log("Found admin role: " + JSON.stringify(adminRole));
-        app.log("User: " + JSON.stringify(req.session.user));
-        return app.controllers["users"].enrollUserInRoleById(req.session.user.id,adminRole.id);
+        app.log("User: " + JSON.stringify(owner));
+        return app.controllers["users"].enrollUserInRoleById(owner.id,adminRole.id);
       })
       .then(result => {
         app.log(result,myName,5);
-        return next;
+        return result;
       })
       .catch(err => {
-        req.appData[model] = [];
-        req.appData.errors.push(err);
-        return next();
+        app.log(err,myName,4);
+        return err;
       });
     },
     getDomainsByUserId : function(userId) {
@@ -347,20 +377,40 @@ module.exports = function(app,model) {
         return false;
       })
     },
-    fetchRoleByName : function(domainName,roleName,cb) {
+    fetchRoleByName : function(domainName,roleName) {
       let myName = "fetchRoleByName()";
-      app.models[model]
-      .find({where:{name:domainName},include:[{model:app.models["roles"],where:{name:roleName}}]})
+      let searchObj = {
+        where:{
+          name:domainName
+        },
+        include:[
+          {
+            model:app.models["roles"],
+            where:{name:roleName}
+          }
+        ]
+      };
+      return app.controllers[model].__get(searchObj)
       .then(domain => {
-        if(domain===null) cb(null,false);
-        // app.log("Domain info: " + JSON.stringify(domain),myName,6,">>>>");
-        cb(null,domain);
+        return domain;
       })
       .catch(err => {
         app.log("Error: " + err.message,myName,4);
-        cb(err);
       });
     },
+    // fetchRoleByName : function(domainName,roleName,cb) {
+    //   let myName = "fetchRoleByName()";
+    //   app.models[model]
+    //   .find({where:{name:domainName},include:[{model:app.models["roles"],where:{name:roleName}}]})
+    //   .then(domain => {
+    //     if(domain===null) cb(null,false);
+    //     cb(null,domain);
+    //   })
+    //   .catch(err => {
+    //     app.log("Error: " + err.message,myName,4);
+    //     cb(err);
+    //   });
+    // },
     editDomainForm : function(req,res,next) {
       let myName = "editDomainForm()";
       // Does user have rights to edit this user record?

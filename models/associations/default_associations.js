@@ -13,4 +13,3 @@ module.exports = function(app) {
     app.models["notes"].belongsTo(app.models["users"],{as:"user"});             // makes notes.userId
   })(app);
 }
-

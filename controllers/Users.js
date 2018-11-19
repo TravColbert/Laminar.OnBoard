@@ -195,36 +195,48 @@ module.exports = function(app,model) {
     },
     verifyUser : function(req,res,next) {
       let myName = "verifyUser";
+      let verifiedUser;
       app.models[model]
       .findOne({where:{'appid':req.params.id,verified:false}})
       .then(user => {
-        user.update({verified:true,disabled:false})
-        .then(user => {
-          let cb = function(err,domain) {
-            if(err) return res.send(err.message);
-            if(!domain) res.send("No domain found with default role");
-            // app.log("Default Role: " + JSON.stringify(domain.roles[0]),myName,6,">>>>>");
-            user.addRoles(domain.roles[0].id)
-            .then(() => {
-              // app.log("User: " + JSON.stringify(user),myName,6,"!!!!!!");
-              user.update({defaultDomainId:domain.id})
-              .then(function() {
-                req.appData.user = user;
-                req.appData.view = "verificationcomplete";
-                return next();
-              })
-            })
-            .catch(err => {
-              return res.send("Something went wrong when we tried to add the default role to the user: " + err.message);
-            });
-          };
-          app.controllers["domains"].fetchRoleByName("Default","Default Role",cb);
-        })
-        .catch(err => {
-          return res.send("Could not set verified to true or disabled to false: " + err.message);
-        });
+        return user.update({verified:true,disabled:false});
+      })
+      .then(user => {
+        app.log(JSON.stringify(user),myName,6);
+        verifiedUser = user;
+        // let cb = function(err,domain) {
+        //   if(err) return res.send(err.message);
+        //   if(!domain) res.send("No domain found with default role");
+        //   // app.log("Default Role: " + JSON.stringify(domain.roles[0]),myName,6,">>>>>");
+        //   user.addRoles(domain.roles[0].id)
+        //   .then(() => {
+        //     // app.log("User: " + JSON.stringify(user),myName,6,"!!!!!!");
+        //     user.update({defaultDomainId:domain.id})
+        //     .then(function() {
+        //       req.appData.user = user;
+        //       req.appData.view = "verificationcomplete";
+        //       return next();
+        //     })
+        //   })
+        //   .catch(err => {
+        //     return res.send("Something went wrong when we tried to add the default role to the user: " + err.message);
+        //   });
+        // };
+        // app.controllers["domains"].fetchRoleByName("Default","Default Role",cb);
+        return app.controllers["domains"].fetchRoleByName("Default","Default Role");
+      })
+      .then(domain => {
+        app.log(domain,myName,6);
+        if(!domain) res.send("No domain found with default role");
+        return verifiedUser.update({defaultDomainId:domain.id});
+      })
+      .then(() => {
+        req.appData.user = verifiedUser;
+        req.appData.view = "verificationcomplete";
+        return next();
       })
       .catch(err => {
+        app.log("Could not verify user: " + err.message,myName,4);
         // return res.send("Could not find a user that needs to be verified. " + err.message);
         return res.redirect("/");
       });
@@ -500,7 +512,6 @@ module.exports = function(app,model) {
     requestNewDomain : function(user,newDomainId) {
       let myName = "requestNewDomain()";
       app.log("Request to switch user " + user.id + " to domain: " + newDomainId,myName,6);
-      // let domainList = app.controllers["users"].compileDomainList(user);
       app.log(user.domains.length + " domains found",myName,6,"+ + + ");
       let targetDomain = user.domains.filter((v) => {
         return v.id == newDomainId;
@@ -514,20 +525,31 @@ module.exports = function(app,model) {
       return new Promise((resolve,reject) => {
         app.log("Compiling domain list",myName,6,"---");
         let domainList = [];
-        for(let c=0;c<user.roles.length;c++) {
-          for(let i=0;i<user.roles[c].domains.length;i++) {
+        for(let role of user.roles) {
+          for(let domain of role.domains) {
+            // Checks to see if domain is already in domainList
             let domainFound = domainList.filter(v => {
-              app.log(v.id + " : " + user.roles[c].domains[i].id,myName,6);
-              return v.id == user.roles[c].domains[i].id;
+              return v.id == domain.id;
             });
             if(domainFound.length<1) {
-              app.log("Adding domain: " + user.roles[c].domains[i].id + " to user's domain list",myName,6," - - - ");
-              domainList.push(user.roles[c].domains[i]);
-            } else {
-              app.log("Skipping domain: " + user.roles[c].domains[i].id + " already in user's domain list",myName,6," # # # ");
+              domainList.push(domain);
             }
           }
         }
+        // for(let c=0;c<user.roles.length;c++) {
+        //   for(let i=0;i<user.roles[c].domains.length;i++) {
+        //     let domainFound = domainList.filter(v => {
+        //       return v.id == user.roles[c].domains[i].id;
+        //     });
+        //     if(domainFound.length<1) {
+        //       app.log("Adding domain: " + user.roles[c].domains[i].id + " to user's domain list",myName,6," - - - ");
+        //       domainList.push(user.roles[c].domains[i]);
+        //     } else {
+        //       app.log("Skipping domain: " + user.roles[c].domains[i].id + " already in user's domain list",myName,6," # # # ");
+        //     }
+        //   }
+        // }
+        app.log(JSON.stringify(domainList),myName,6);
         resolve(domainList);
       });
     },
