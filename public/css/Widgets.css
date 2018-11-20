@@ -1,0 +1,13 @@
+.hidden {
+  display: none
+}
+.changed {
+  border: 2px solid rgb(247, 179, 33);
+  border-radius: 3px;
+  background: rgba(228, 218, 184, 0.5);
+}
+.error {
+  border: 2px solid rgb(247, 47, 33);
+  border-radius: 3px;
+  /* background: rgba(255, 254, 254, 0.774);   */
+}
