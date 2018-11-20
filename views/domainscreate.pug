@@ -14,10 +14,18 @@ block content
             label.label(for="description") Description:
             .data
               input#description(type="text" name="description" placeholder="description of domain")
-          .inputdomaindescription.itemdetail.layout-col
+          .inputdomainurn.itemdetail.layout-col
             label.label(for="urn") Short Name:
             .data
               input#urn(type="text" name="urn" placeholder="short name for domain" pattern="[^! %/\*]{6,}")
+          .inputdomainpublic.itemdetail.layout-col
+            label.label Public:
+            .data
+              input#public.hidden(type="checkbox" name="public" value="true")
+              label.togglepublicfalse(for="public")
+                i.material-icons.toggle.toggleoff toggle_off
+              label.togglepublictrue(for="public")
+                i.material-icons.toggle.toggleon toggle_on
           .domainsubmit.itemdetail.layout-col
             label.label Actions:
             .data
