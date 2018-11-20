@@ -1,0 +1,66 @@
+header {
+  /* background: #333; */
+}
+nav {
+  align-items: baseline;
+  padding: 0.3em 0.6em;
+}
+nav, footer {
+  /* color: #ccc; */
+}
+nav a {
+  font-size: 1.1em;
+  text-decoration: none;
+  color: inherit;
+}
+nav #menu-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  white-space: nowrap;
+}
+nav > a {
+  display: none;
+}
+nav > #show-menu, nav label {
+  display: none;
+}
+nav ul, nav ol {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+#app-title, #menu-hamburger {
+  font-size: 1.3em;
+}
+#menu-hamburger {
+  font-weight: bold;
+}
+footer {
+  padding: 0em 0.5em;
+  font-size: 0.7em;
+}
+@media screen and (max-width: 424px) {
+  nav {
+    align-items: initial;
+  }
+  nav #menu-title {
+    font-size: 1.3em;
+    font-weight: bold;
+  }
+  nav label {
+    display: flex;
+  }
+  nav > #show-menu:checked ~ ul {
+    display: flex;
+  }
+  nav > ul, nav > ol {
+    padding: 0 0.6em;
+  }
+  nav li {
+    padding: 0.6em;
+    /* border-bottom: 1px solid #ddd; */
+  }
+  nav li:last-child {
+    border: none;
+  }
+}
