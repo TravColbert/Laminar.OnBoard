@@ -1,0 +1,16 @@
+extends index.pug
+
+block content
+  section.layout-width-sd.layout-col
+    .section-hdg.section-hdg-1 Create #{modelName}
+    .user-listing.layout-col
+      - let model = template.model;
+      form(action="/" + model + "/" method="post")
+        each item in template.elements
+          .itemdetail.layout-col !{item}
+        .submit.itemdetail.layout-col
+          .label Actions:
+          .data
+            input#submit.btn.normal.buttonconfirm(type="submit" value="Confirm")
+            a.btn.cancel.buttoncancel(href="/" + model + "/") Cancel
+
