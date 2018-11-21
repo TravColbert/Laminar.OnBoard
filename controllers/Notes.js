@@ -5,22 +5,22 @@ module.exports = function(app,model) {
   return {
     __create : function(obj) {
       let myName = "__create";
-      app.log("Creating obj: " + obj,myName,6);
+      app.log("Creating obj: " + JSON.stringify(obj),myName,6);
       return app.controllers["default"].create(model,obj);
     },
     __get : function(obj) {
       let myName = "__get";
-      app.log("Getting obj: " + obj,myName,6);
+      app.log("Getting obj: " + JSON.stringify(obj),myName,6);
       return app.controllers["default"].get(model,obj);
     },
     __update : function(obj) {
       let myName = "__update";
-      app.log("Updating obj: " + obj,myName,6);
+      app.log("Updating obj: " + JSON.stringify(obj),myName,6);
       return app.controllers["default"].update(model,obj);
     },
     __delete : function(obj) {
       let myName = "__delete";
-      app.log("Deleting obj: " + obj,myName,6);
+      app.log("Deleting obj: " + JSON.stringify(obj),myName,6);
       return app.controllers["default"].delete(model,obj);
     },
 
@@ -146,6 +146,59 @@ module.exports = function(app,model) {
       .then(notes => {
         req.appData.notes = notes;
         return next();
+      });
+    },
+    getPublicNotes : function() {
+      let myName = "getPublicNotes";
+      let searchObj = {
+        where:{
+          public: true
+        },
+        order:[
+          ['updatedAt','DESC']
+        ],
+        include: [
+          {
+            model: app.models["domains"],
+            where: {
+              public: true
+            },
+            as:"domain"
+          },
+          {
+            model: app.models["users"],
+            as:"user"
+          }
+        ]
+      }
+      return app.controllers[model].__get(searchObj)
+      .then(notes => {
+        return notes;
+      });
+    },
+    getNotesByUserId : function(userId) {
+      let myName = "getNotesByUserId";
+      let searchObj = {
+        order:[
+          ['updatedAt','DESC']
+        ],
+        include : [
+          {
+            model: app.models["domains"],
+            as:"domain"
+          },
+          {
+            model : app.models["users"],
+            as : "user",
+            where : {
+              id : userId
+            }
+          }
+        ]
+      }
+      return app.controllers[model].__get(searchObj)
+      .then(notes => {
+        return notes;
       });
     },
     getNotesInDomain : function(req,res,next) {

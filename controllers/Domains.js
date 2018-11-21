@@ -392,6 +392,7 @@ module.exports = function(app,model) {
       };
       return app.controllers[model].__get(searchObj)
       .then(domain => {
+        app.log("Found domains/roles: " + JSON.stringify(domain),myName,6);
         return domain;
       })
       .catch(err => {

@@ -196,6 +196,7 @@ module.exports = function(app,model) {
     verifyUser : function(req,res,next) {
       let myName = "verifyUser";
       let verifiedUser;
+      let defaultRole;
       app.models[model]
       .findOne({where:{'appid':req.params.id,verified:false}})
       .then(user => {
@@ -204,31 +205,20 @@ module.exports = function(app,model) {
       .then(user => {
         app.log(JSON.stringify(user),myName,6);
         verifiedUser = user;
-        // let cb = function(err,domain) {
-        //   if(err) return res.send(err.message);
-        //   if(!domain) res.send("No domain found with default role");
-        //   // app.log("Default Role: " + JSON.stringify(domain.roles[0]),myName,6,">>>>>");
-        //   user.addRoles(domain.roles[0].id)
-        //   .then(() => {
-        //     // app.log("User: " + JSON.stringify(user),myName,6,"!!!!!!");
-        //     user.update({defaultDomainId:domain.id})
-        //     .then(function() {
-        //       req.appData.user = user;
-        //       req.appData.view = "verificationcomplete";
-        //       return next();
-        //     })
-        //   })
-        //   .catch(err => {
-        //     return res.send("Something went wrong when we tried to add the default role to the user: " + err.message);
-        //   });
-        // };
-        // app.controllers["domains"].fetchRoleByName("Default","Default Role",cb);
         return app.controllers["domains"].fetchRoleByName("Default","Default Role");
       })
       .then(domain => {
-        app.log(domain,myName,6);
+        app.log("I found this as my default domain: " + JSON.stringify(domain),myName,6);
+        if(domain[0].roles) {
+          app.log("Got these for roles: " + JSON.stringify(domain[0].roles),myName,6);
+          defaultRole = domain[0].roles[0];
+        }
         if(!domain) res.send("No domain found with default role");
-        return verifiedUser.update({defaultDomainId:domain.id});
+        return verifiedUser.update({defaultDomainId:domain[0].id});
+      })
+      .then(() => {
+        app.log("Adding user to default Role...",myName,6);
+        return app.controllers["roles"].addUserToRole(verifiedUser,defaultRole);
       })
       .then(() => {
         req.appData.user = verifiedUser;

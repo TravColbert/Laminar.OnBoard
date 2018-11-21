@@ -489,7 +489,7 @@ module.exports = function(app,sequelize) {
         return app.controllers["users"].compileDomainList(user);
       })
       .then(domainList => {
-        app.log("User data: " + req.session.user,myName,6);
+        app.log("User data: " + JSON.stringify(req.session.user),myName,6);
         if(req.session.user.hasOwnProperty("switchDomain")) {
           app.log("Found a switch-domain request for: " + req.session.user.switchDomain,myName,6);
           targetDomainId = req.session.user.switchDomain;
@@ -497,6 +497,8 @@ module.exports = function(app,sequelize) {
           app.log("No switch-domain request found. Looking for a defaultDomain: " + req.session.user.defaultDomainId,myName,6);
           targetDomainId = req.session.user.defaultDomainId;
         } else {
+          app.log("Might be this...",myName,6);
+          app.log(JSON.stringify(domainList),myName,6);
           app.log("No default domain set. Chosing the first on the list: " + domainList[0].id,myName,6);
           targetDomainId = domainList[0].id;
         }
@@ -515,7 +517,7 @@ module.exports = function(app,sequelize) {
       })
       .catch((err) => {
         // some error
-        app.log("There was an error!: " + err.message);
+        app.log("There was an error!: " + JSON.stringify(err) + " " + err.message,myName,2);
         return res.send("This is the reason why we can't continue: " + err.message);
       })
     } else {
