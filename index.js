@@ -119,10 +119,8 @@ app.tools.readDir(app.cwd + app.locals.modelsDir)
 }).then(menuFiles => {
   return app.tools.processFiles(menuFiles,app.tools.readMenu);
 }).then(() => {
-  // app.menu = require("./" + app.locals.navDir + "/menu.json")["main"];
-  let mainMenu = require("./" + app.locals.navDir + "/menu.json")["main"];
-  app.menu = app.menu.concat(mainMenu);
-  console.log(app.menu);
+  // Include the main menu
+  app.menu = app.menu.concat(require("./" + app.locals.navDir + "/menu.json")["main"]);
 }).then(() => {
   // Parse headoptions file, if available
   fs.readFile(cwd + "/headoptions.json",(err,data) => {
