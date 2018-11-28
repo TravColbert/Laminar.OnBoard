@@ -20,7 +20,8 @@ module.exports = function(app,sequelize) {
       debugLevel = debugLevel || 0;
       prefix = prefix || ":";
       if(debugLevel <= app.locals.logLevel) {
-        return console.log(caller,prefix,string);
+        // return console.log(caller,prefix,string);
+        return app.debug("(%s) %s",caller,string);
       }
       return false;
     },

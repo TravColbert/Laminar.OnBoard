@@ -12,6 +12,7 @@ const myName = "setup";
 
 app.locals = JSON.parse(fs.readFileSync(cwd + 'config.json'));
 app.secrets = JSON.parse(fs.readFileSync(cwd + 'secrets.json'));
+app.debug = require('debug')('laminar');
 
 // Configure host:port
 app.locals.url = "https://" + app.locals.addr;
@@ -38,7 +39,11 @@ var sequelize = new Sequelize(
   }
 );
 
-console.log("Keys: " + app.secrets["mail-api-key"] + ":" + app.secrets["mail-api-secret"]);
+// Incorporate our tools file
+app.tools = require('./apptools')(app,sequelize);
+
+app.log("Keys: " + app.secrets["mail-api-key"] + ":" + app.secrets["mail-api-secret"]);
+// debug("Keys: %s : %s",app.secrets["mail-api-key"],app.secrets["mail-api-secret"]);
 
 app.mailjet = require('node-mailjet').connect(app.secrets["mail-api-key"], app.secrets["mail-api-secret"], {
   url: app.locals.smtpServer, // default is the API url
@@ -51,9 +56,6 @@ let sessionConfig = {
   resave:false,
   saveUninitialized:false
 };
-
-// Incorporate our tools file
-app.tools = require('./apptools')(app,sequelize);
 
 // Setup default Home module
 app.homeModule = false; 
