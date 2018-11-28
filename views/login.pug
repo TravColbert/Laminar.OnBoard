@@ -1,0 +1,18 @@
+extends index.pug
+
+block content
+  section#main.layout-width-sd.layout-col.layout-align-center
+    form#login-form(action="/login" method="post")
+      input#secretsauce(type="hidden" name="secretsauce" value=secretSauce)
+      .section-hdg.section-hdg-1 Log In
+      div
+        input#email(type="text" name="email" placeholder="email address" autofocus)
+      div
+        input#password(type="password" name="password" placeholder="Passphrase")
+      .layout-row.layout-justify-between
+        input#submit.btn.normal.layout-width-1-1(type="submit" value="Login")
+      .layout-row.layout-justify-center Not a user?&nbsp;
+        a(href="/register/") Register here.
+
+block scripts
+  script(src='/js/bcrypt.min.js')
