@@ -42,8 +42,7 @@ var sequelize = new Sequelize(
 // Incorporate our tools file
 app.tools = require('./apptools')(app,sequelize);
 
-app.log("Keys: " + app.secrets["mail-api-key"] + ":" + app.secrets["mail-api-secret"]);
-// debug("Keys: %s : %s",app.secrets["mail-api-key"],app.secrets["mail-api-secret"]);
+app.debug("Keys: %s : %s",app.secrets["mail-api-key"],app.secrets["mail-api-secret"]);
 
 app.mailjet = require('node-mailjet').connect(app.secrets["mail-api-key"], app.secrets["mail-api-secret"], {
   url: app.locals.smtpServer, // default is the API url
