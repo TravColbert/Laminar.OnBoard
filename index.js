@@ -66,9 +66,6 @@ if(app.locals.hasOwnProperty("homeModule")) {
   }
 }
 
-// Prepare navigation object
-const navigation = require('./navigation')(app);
-
 // Basic Express setup: templater, query-parsing, ...
 app.set('views',cwd + app.locals.viewsDir);
 app.set('view engine','pug');
@@ -86,6 +83,10 @@ app.modelDefinitions = {};
 app.controllers = {};
 app.elements = {};
 app.routes = {};
+app.menu = [];
+
+// Prepare navigation object
+const navigation = require('./navigation')(app);
 
 // Build app starting with model-hydration
 app.tools.readDir(app.cwd + app.locals.modelsDir)
@@ -112,6 +113,16 @@ app.tools.readDir(app.cwd + app.locals.modelsDir)
   return app.tools.readDir(cwd + app.locals.modelsDir + "/modelstartups");
 }).then(modelStartupFiles => {
   return app.tools.processFiles(modelStartupFiles,app.tools.readModelStartup);
+}).then(() => {
+  // Collect menu elements
+  return app.tools.readDir(app.cwd + app.locals.navDir);
+}).then(menuFiles => {
+  return app.tools.processFiles(menuFiles,app.tools.readMenu);
+}).then(() => {
+  // app.menu = require("./" + app.locals.navDir + "/menu.json")["main"];
+  let mainMenu = require("./" + app.locals.navDir + "/menu.json")["main"];
+  app.menu = app.menu.concat(mainMenu);
+  console.log(app.menu);
 }).then(() => {
   // Parse headoptions file, if available
   fs.readFile(cwd + "/headoptions.json",(err,data) => {

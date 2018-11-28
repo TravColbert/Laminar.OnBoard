@@ -1,7 +1,7 @@
 module.exports = function(app) {
   //   /**
   //    * The app's menu.
-  //    * It is a JSON file object containing prperties representing menu 
+  //    * It is a JSON file object containing properties representing menu 
   //    * headings that contain an array 
   //    * For exmaple: "main":[]
   //    *
@@ -22,10 +22,11 @@ module.exports = function(app) {
   //     {link:"/login/",text:"Log In",icon:"verified_user",secured:false},
   //     {link:"/logout/",text:"Log Out",icon:"highlight_off",secured:true},
   //   ]
-  app.menu = require("./" + app.locals.navDir + "/menu.json")["main"];
+
   let obj = {};
+
   obj.getMenu = function(req,res,next) {
-    let myName = "getMenu()";
+    let myName = "getMenu";
     app.log("building menu object",myName,5);
     req.appData.menu = [];
     app.menu.forEach(function(v,i,a) {

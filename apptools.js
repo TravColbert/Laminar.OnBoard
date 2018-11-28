@@ -63,7 +63,6 @@ module.exports = function(app,sequelize) {
     let myName = "readModel";
     return new Promise((resolve,reject) => {
       if(app.tools.isFileType(file,"js")) {
-        // app.log(file,myName,6,"+");
         let modelDefintion = require("./" + app.locals.modelsDir + "/" + file)(Sequelize,app);
         app.modelDefinitions[modelDefintion.tablename] = modelDefintion;
         app.models[modelDefintion.tablename] = sequelize.define(modelDefintion.tablename,modelDefintion.schema,modelDefintion.options);
@@ -79,6 +78,17 @@ module.exports = function(app,sequelize) {
       let controllerName = fileNameParts[0].toLowerCase();
       app.log(controllerName,myName,6,"+");
       app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + file)(app,controllerName);
+      resolve(true);
+    });
+  };
+  obj.readMenu = function(file) {
+    let myName = "readMenu";
+    return new Promise((resolve,reject) => {
+      let fileNameParts = file.split(".");
+      if(fileNameParts[fileNameParts.length-1]=="json") {
+        app.log("Menu filename: " + file);
+        if(file!="menu.json") app.menu = app.menu.concat(require("./" + app.locals.navDir + "/" + file)["main"]);
+      }
       resolve(true);
     });
   };
