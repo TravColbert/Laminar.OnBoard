@@ -98,50 +98,51 @@ module.exports = function(app,model) {
       });
     },
     getAsBlog : function(req,res,next) {
-      // The maindifference here is that we assume that we aren't authentcated.
+      // The main difference here is that we assume that we aren't authenticated.
       // We also check to see if 1) the domain is marked public and 2) the note
       // is marked public
       let searchObj = {
         where:{
           id:req.params.id,
-          public: true
         },
+        order:[
+          ['updatedAt','DESC']
+        ],
         include: [
-          {
-            model: app.models["domains"],
-            where: {
-              public: true
-            },
-            as:"domain"
-          },
           {
             model: app.models["users"],
             as:"user"
           }
         ]
       }
+
+      if(!app.tools.isAuthenticated(req)) {
+        // User is not authenticated...
+        // The note must be 'public'
+        searchObj.where.public = true;
+        searchObj.include.push(
+          {
+            model: app.models["domains"],
+            where: {
+              public: true
+            },
+            as: "domain"
+          }
+        );
+      }
+
       app.controllers[model].__get(searchObj)
       .then(notes => {
         app.log("Found notes: " + JSON.stringify(notes),myName,6);
         if(!notes || notes.length==0) return res.redirect('/blog/');
         req.appData.note = notes[0];
         req.appData.view = "blogentry";
-        searchObj = {
-          attributes:['id','name','description','updatedAt'],
-          where:{
-            public: true
-          },
-          order:[
-            ['updatedAt','DESC']
-          ],
-          include: [
-            {
-              model: app.models["users"],
-              as:"user"
-            }
-          ]
+        // Now, get a list of notes...
+        if(app.tools.isAuthenticated(req)) {
+          return app.controllers[model].getNotesByUserId(req.session.user.id);
+        } else {
+          return app.controllers[model].getPublicNotes();
         }
-        return app.controllers[model].__get(searchObj);
       })
       .then(notes => {
         req.appData.notes = notes;
