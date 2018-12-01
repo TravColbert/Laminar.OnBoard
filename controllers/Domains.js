@@ -263,7 +263,7 @@ module.exports = function(app,model) {
       });
     },
     getDomain : function(req,res,next) {
-      let myName = "getDomain()";
+      let myName = "getDomain";
       let searchObj;
       app.log("Getting domain: " + req.params.id);
       if(Number.isInteger(parseInt(req.params.id))) {
