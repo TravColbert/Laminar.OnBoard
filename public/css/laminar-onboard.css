@@ -410,6 +410,38 @@ form#search {
   margin: 0;
 }
 
+input#verified:checked ~ .togglefalse {
+  display: none;
+}
+
+input#verified:not(:checked) ~ .togglefalse {
+  display: flex;
+}
+
+input#verified:checked ~ .toggletrue {
+  display: flex;
+}
+
+input#verified:not(:checked) ~ .toggletrue {
+  display: none;
+}
+
+input#disabled:checked ~ .togglefalse {
+  display: none;
+}
+
+input#disabled:not(:checked) ~ .togglefalse {
+  display: flex;
+}
+
+input#disabled:checked ~ .toggletrue {
+  display: flex;
+}
+
+input#disabled:not(:checked) ~ .toggletrue {
+  display: none;
+}
+
 input#public:checked ~ .togglepublicfalse {
   display: none;
 }
