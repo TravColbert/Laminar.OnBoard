@@ -226,9 +226,6 @@ i.big-icon {
 .pill > .pilllabel {
   padding: 0 0.25em;
 }
-.currencysign {
-
-}
 .currencyamount {
   text-align: right;
   margin: 0 0.5em;
@@ -407,7 +404,7 @@ form#search {
   color: #4577D4;
 }
 .itemdetail pre {
-  font-size: 1.2em;
+  font-size: 1em;
   font-family: 'Nunito', sans-serif;
   /* font-size: 0.9em; */
   margin: 0;

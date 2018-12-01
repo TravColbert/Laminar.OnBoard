@@ -16,9 +16,17 @@ block content
             .data
               input#description(type="text" name="description" value=note.description)
           .itemdetail.layout-col
-            label.label(for="public") Visibility:
+            label.label Public:
             .data
-              input#public(type="textarea" name="public" value=note.public)
+              input#public.hidden(type="checkbox" name="public" value="true" checked=!!(note.public))
+              label.togglepublicfalse(for="public")
+                i.material-icons.toggle.toggleoff toggle_off
+              label.togglepublictrue(for="public")
+                i.material-icons.toggle.toggleon toggle_on
+          //- .itemdetail.layout-col
+          //-   label.label(for="public") Visibility:
+          //-   .data
+          //-     input#public(type="textarea" name="public" value=note.public)
           .itemdetail.layout-col
             label.label(for="body") Body:
             .data

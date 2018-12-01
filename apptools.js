@@ -500,7 +500,7 @@ module.exports = function(app,sequelize) {
         return app.controllers["users"].compileDomainList(user);
       })
       .then(domainList => {
-        app.log("User data: " + JSON.stringify(req.session.user),myName,6);
+        // app.log("User data: " + JSON.stringify(req.session.user),myName,6);
         if(req.session.user.hasOwnProperty("switchDomain")) {
           app.log("Found a switch-domain request for: " + req.session.user.switchDomain,myName,6);
           targetDomainId = req.session.user.switchDomain;
@@ -509,7 +509,7 @@ module.exports = function(app,sequelize) {
           targetDomainId = req.session.user.defaultDomainId;
         } else {
           app.log("Might be this...",myName,6);
-          app.log(JSON.stringify(domainList),myName,6);
+          // app.log(JSON.stringify(domainList),myName,6);
           app.log("No default domain set. Chosing the first on the list: " + domainList[0].id,myName,6);
           targetDomainId = domainList[0].id;
         }

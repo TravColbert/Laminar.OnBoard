@@ -35,7 +35,7 @@ module.exports = function(Sequelize,app) {
       }
     },
     requiredFields: ["name","urn"],
-    optionalFields: ["description","settings","public"],
+    optionalFields: ["id","description","settings","public"],
     options:{
       getterMethods: {
         uniqueAppId: function() {
