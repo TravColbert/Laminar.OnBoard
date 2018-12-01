@@ -364,7 +364,7 @@ module.exports = function(app,model) {
       })
     },
     editUser : function(req,res,next) {
-      let myName = "userUser()";
+      let myName = "editUser";
       let userObj = app.tools.pullParams(req.body,["id","firstname","lastname","roleId","defaultDomainId"]);
       let requestedUser = req.params.id;
       app.log(userObj.id + " " + requestedUser);
@@ -389,19 +389,19 @@ module.exports = function(app,model) {
         return new Error("(" + myName + ") Could not create user: " + err.message);
       });
     },
-    getUserEnrollments : function(userId,cb) {
-      let myName = "getUserEnrollments()";
-      // users -> roles -> domains
-      app.models[model]
-      .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
-      .then(user => {
-        if(user===null) return cb();
-        cb(null,user);
-      })
-      .catch(err => {
-        cb(err);
-      });
-    },
+    // getUserEnrollments : function(userId,cb) {
+    //   let myName = "getUserEnrollments()";
+    //   // users -> roles -> domains
+    //   app.models[model]
+    //   .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+    //   .then(user => {
+    //     if(user===null) return cb();
+    //     cb(null,user);
+    //   })
+    //   .catch(err => {
+    //     cb(err);
+    //   });
+    // },
     getUserRoles : function(userId) {
       let myName = "getUserRoles()";
       return new Promise((resolve,reject) => {
@@ -428,19 +428,19 @@ module.exports = function(app,model) {
         return next();
       });
     },
-    fetchDomainsByUserId : function(userId,cb) {
-      let myName = "fetchDomainsByUserId()";
-      // users -> roles -> domains
-      app.models[model]
-      .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
-      .then(user => {
-        if(user===null) return cb();
-        cb(null,user);
-      })
-      .catch(err => {
-        cb(err);
-      });
-    },
+    // fetchDomainsByUserId : function(userId,cb) {
+    //   let myName = "fetchDomainsByUserId()";
+    //   // users -> roles -> domains
+    //   app.models[model]
+    //   .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+    //   .then(user => {
+    //     if(user===null) return cb();
+    //     cb(null,user);
+    //   })
+    //   .catch(err => {
+    //     cb(err);
+    //   });
+    // },
     setDefaultDomain : function(req,res,next) {
       let myName = "setDefaultDomain";
       return new Promise((resolve,reject) => {
@@ -485,19 +485,19 @@ module.exports = function(app,model) {
         return next();
       });
     },
-    fetchRolesByUserId : function(userId,cb) {
-      let myName = "fetchRolesByUserId()";
-      // users -> roles -> domains
-      app.models[model]
-      .findById(req.params.id,{include:[{model:app.models["roles"]}]})
-      .then(user => {
-        if(user===null) return cb();
-        cb(null,user);
-      })
-      .catch(err => {
-        cb(err);
-      });
-    },
+    // fetchRolesByUserId : function(userId,cb) {
+    //   let myName = "fetchRolesByUserId()";
+    //   // users -> roles -> domains
+    //   app.models[model]
+    //   .findById(req.params.id,{include:[{model:app.models["roles"]}]})
+    //   .then(user => {
+    //     if(user===null) return cb();
+    //     cb(null,user);
+    //   })
+    //   .catch(err => {
+    //     cb(err);
+    //   });
+    // },
     requestNewDomain : function(user,newDomainId) {
       let myName = "requestNewDomain()";
       app.log("Request to switch user " + user.id + " to domain: " + newDomainId,myName,6);
