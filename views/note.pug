@@ -12,7 +12,10 @@ block content
           label.label Description:
           .data #{note.description}
         .itemdetail.layout-col
-          label.label Visibility:
+          label.label Domain:
+          .data #{note.domain.name}
+        .itemdetail.layout-col
+          label.label Public:
           .data
             input#public.hidden(type="checkbox" name="public" value="true" disabled checked=!!(note.public))
             label.togglepublicfalse(for="public")

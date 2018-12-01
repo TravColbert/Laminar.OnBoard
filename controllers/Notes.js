@@ -77,7 +77,13 @@ module.exports = function(app,model) {
       let searchObj = {
         where : {
           "id" : req.params.id
-        }
+        },
+        include : [
+          {
+            model : app.models["domains"],
+            as : "domain"
+          }
+        ]
       }
       app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
       .then(response => {
@@ -235,12 +241,19 @@ module.exports = function(app,model) {
         where : {
           "id" : req.params.id,
           "userId" : req.session.user.id
-        }
+        },
+        include : [
+          {
+            model : app.models["domains"],
+            as : "domain"
+          }
+        ]
       };
       app.controllers[model].__get(searchObj)
       .then(notes => {
         if(!notes) return res.redirect("/notes/");
-        app.log("Note found: " + notes[0],myName,6);
+        // app.log("Note found: " + notes[0],myName,6);
+        app.log(JSON.stringify(notes[0]),myName,6);
         req.appData.note = notes[0];
         req.appData.view = "noteedit";
         return next();
@@ -284,8 +297,8 @@ module.exports = function(app,model) {
         return res.send(err.message);
       });
     },
-    countNotesByDomain : function(domainId) {
-      let myName = "countNotesByDomain";
+    countByDomain : function(domainId) {
+      let myName = "countByDomain";
       return new Promise((resolve,reject) => {
         let searchObj = {
           where:{"domainId" : domainId}
