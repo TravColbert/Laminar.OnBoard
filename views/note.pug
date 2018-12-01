@@ -12,11 +12,17 @@ block content
           label.label Description:
           .data #{note.description}
         .itemdetail.layout-col
-          label.label Public:
-          .data #{note.public}
+          label.label Visibility:
+          .data
+            input#public.hidden(type="checkbox" name="public" value="true" disabled checked=!!(note.public))
+            label.togglepublicfalse(for="public")
+              i.material-icons.toggle.toggleoff toggle_off
+            label.togglepublictrue(for="public")
+              i.material-icons.toggle.toggleon toggle_on
         .itemdetail.layout-col
           label.label Body:
-          .data #{note.body}
+          .data
+            pre #{note.body}
         #note_edit_button_container.editnote.layout-row.layout-justify-between.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
       .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
         .infotext.section-hdg.section-hdg-3 Note View
