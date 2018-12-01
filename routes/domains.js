@@ -3,13 +3,6 @@ var router = express.Router();
 const model = "domains";
 
 module.exports = function(app) {
-  /*
-  router.get('/',app.controllers[model].get);
-  router.get('/:id/',app.controllers[model].get);
-  router.post('/',app.controllers[model].create);
-  router.post('/:id/',app.controllers[model].update);
-  router.delete('/:id/',app.controllers[model].delete);
-  */
   router.get('/',app.tools.checkAuthentication,app.controllers["domains"].getMyDomains);
   router.get('/:id/',app.tools.checkAuthentication,app.controllers["domains"].getDomain);
   router.get('/:id/actions/edit/',app.tools.checkAuthentication,app.controllers["domains"].editDomainForm);

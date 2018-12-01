@@ -76,7 +76,7 @@ module.exports = function(app,model) {
       req.appData.models.push(model);
       app.log(req.body,myName,6);
       let obj = app.tools.makeObj(req.body,app.modelDefinitions[model].requiredFields.concat(app.modelDefinitions[model].optionalFields));
-      app.log("Update object: " + JSON.stringify(obj),myName,6);
+      // app.log("Update object: " + JSON.stringify(obj),myName,6);
       let updateObj = {
         "options":{
           "where":{"id":req.params.id}
@@ -131,20 +131,20 @@ module.exports = function(app,model) {
       obj.ownerId = req.session.user.id;
       return app.controllers[model].__create(obj)
       .then(result => {
-        app.log("Created domain: " + JSON.stringify(result),myName,5);
+        // app.log("Created domain: " + JSON.stringify(result),myName,5);
         createdDomain = result;
         // Create default roles
         return app.controllers["roles"].createDefaultRoles(result);
       })
       .then(roles => {
-        app.log("Roles created: " + JSON.stringify(roles),myName,5);
+        // app.log("Roles created: " + JSON.stringify(roles),myName,5);
         // Add ownerId to Admin role...
         let adminRole = roles.filter(role => {
           return (role.name.indexOf("Admin")>=0);
         })[0];
         if(!adminRole) return false;
-        app.log("Found admin role: " + JSON.stringify(adminRole),myName,6);
-        app.log("User: " + JSON.stringify(req.session.user),myName,6);
+        // app.log("Found admin role: " + JSON.stringify(adminRole),myName,6);
+        // app.log("User: " + JSON.stringify(req.session.user),myName,6);
         return app.controllers["users"].enrollUserInRoleById(req.session.user.id,adminRole.id);
       })
       .then(() => {
@@ -175,7 +175,7 @@ module.exports = function(app,model) {
         })[0];
         if(!adminRole) return false;
         app.log("Found admin role: " + JSON.stringify(adminRole));
-        app.log("User: " + JSON.stringify(owner));
+        app.log("User: " + owner.id);
         return app.controllers["users"].enrollUserInRoleById(owner.id,adminRole.id);
       })
       .then(result => {
@@ -446,12 +446,15 @@ module.exports = function(app,model) {
       app.controllers["users"].ifUserHasRole("Super Admin",req.session.user,prepareEditDomainForm);
     },
     editDomain : function(req,res,next) {
-      let myName = "editDomain()";
+      let myName = "editDomain";
       let domainObj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
       let requestedDomainId = req.params.id;
-      app.log(domainObj.id + " " + requestedDomainId);
+      // When a checkbox is NOT checked it send NOTHING back to the server so 
+      // we have to infer a state when nothing is checked
+      if(!domainObj.hasOwnProperty("public")) domainObj.public = false;
       if(domainObj.id!=requestedDomainId) return res.send("Didn't request the requested domain");
       delete domainObj.id;
+      console.log(domainObj);
       app.models[model]
       .update(domainObj,{where:{id:req.params.id}})
       .then((domains) => {

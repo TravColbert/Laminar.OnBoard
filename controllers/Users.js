@@ -236,7 +236,7 @@ module.exports = function(app,model) {
       app.models[model]
       .findById(userId)
       .then(user => {
-        app.log("Found user: " + JSON.stringify(user));
+        app.log("Found user: " + user.id);
         // if(user===null) return res.redirect('/');
         if(user===null) return false;
         app.log("Adding role: " + roleId);
@@ -302,8 +302,8 @@ module.exports = function(app,model) {
       });
     },
     getUserById : function(userId) {
-      let myName = "getUserById()";
-      app.log("Hello!!!: " + userId,myName,6);
+      let myName = "getUserById";
+      // app.log("Hello!!!: " + userId,myName,6);
       return new Promise((resolve,reject) => {
         app.log("Getting user by ID: " + userId,myName,6);
         app.models[model].findById(userId)
@@ -452,12 +452,11 @@ module.exports = function(app,model) {
         }
         app.log("Setting default domain for user: " + userId + " to domain: " + domainId,myName,6);
         app.log("Current user is a member of target domain: " + app.tools.currentUserHasDomain(req,domainId),myName,6,"-->");
-
         let searchObj = {
           values:{defaultDomainId:domainId},
           options:{where:{id:userId}}
         };
-        app.log(JSON.stringify(searchObj),myName,6);
+        // app.log(JSON.stringify(searchObj),myName,6);
         app.controllers[model].__update(searchObj)
         .then(items => {
           if(items!==null || items!==0) {
@@ -539,7 +538,7 @@ module.exports = function(app,model) {
         //     }
         //   }
         // }
-        app.log(JSON.stringify(domainList),myName,6);
+        // app.log(JSON.stringify(domainList),myName,6);
         resolve(domainList);
       });
     },
