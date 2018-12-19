@@ -274,8 +274,9 @@ module.exports = function(app,model) {
       let noteObj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
 
       let requestedNoteId = req.params.id;
-      app.log(noteObj.id + " " + requestedNoteId);
       if(noteObj.id!=requestedNoteId) return res.send("Didn't request the requested note");
+      if(!noteObj.hasOwnProperty("public")) noteObj.public = false;
+      app.log(noteObj.id + " " + requestedNoteId,myName,6);
       delete noteObj.id;
       app.log("Updating note: " + JSON.stringify(noteObj),myName,6);
       app.controllers[model].__update({values:noteObj,options:{where:{"id":requestedNoteId}}})
