@@ -1,17 +1,30 @@
 mixin list-notes(notes)
-    .section-hdg.section-hdg-2 Notes (#{notes.length})
-    .layout-col.layout-width-1-1
-      #note_add_button_container.addnote.layout-row.layout-justify-between.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
-      ul.itemlist
-        each note in notes
-          - let targetLoc = "/notes/" + note.id + "/";
-          //- li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
-          li.layout-col
-            .itemdetail.layout-col
-              .label Name:
-              .data #[a(href="/notes/" + note.id + "/") #{note.name}]
-            - let description = note.description || null
-            if description
-              .itemdetail.layout-col
-                .label Description:
-                .data #{note.description}
+  #note_add_button_container.addnote.layout-row.layout-justify-between.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
+  ul.itemlist
+    each note in notes
+      - let targetLoc = "/notes/" + note.id + "/";
+      //- li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
+      li.layout-col
+        .itemdetail.layout-col
+          .label Name:
+          .data #[a(href="/notes/" + note.id + "/") #{note.name}]
+        - let description = note.description || null
+        if description
+          .itemdetail.layout-col
+            .label Description:
+            .data #{note.description}
+
+mixin list-domains(domains)
+  #domain_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
+  ul.itemlist
+    each domain in domains
+      - let targetLoc = "/domains/" + domain.id + "/";
+      li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
+        .itemdetail.layout-col
+          label.label Name:
+          .data #{domain.name}
+        - let description = domain.description || null
+        if description
+          .itemdetail.layout-col
+            label.label Description:
+            .data #{domain.description}
