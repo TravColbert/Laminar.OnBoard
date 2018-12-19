@@ -40,7 +40,10 @@ module.exports = function(app,model) {
       let searchObj = {
         where : {
           "domainId" : domainId
-        }
+        },
+        order:[
+          ['updatedAt','DESC']
+        ]
       }
       app.log("Looking for notes in domain: " + domainId,myName,6);
       return app.controllers[model].__get(searchObj);
@@ -48,20 +51,13 @@ module.exports = function(app,model) {
 
     gets : function(req,res,next) {
       let myName = "gets (notes)";
-      // let searchObj = {
-      //   where : {
-      //     "userId" : req.session.user.id,
-      //     "domainId" : req.session.user.currentDomain.id
-      //   }
-      // }
-      app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
-      .then(response => {
-        if(!response) {
-          app.log("User failed authorization check",myName,6);
-          return next();
+      let getsPromise = Promise.resolve();
+      getsPromise = getsPromise.then(() => {
+        if(app.tools.isAuthenticated(req)) {
+          return app.controllers[model].getNotesByUserId(req.session.user.id);
+        } else {
+          return app.controllers[model].getPublicNotes();
         }
-        app.log("User is authorized to list notes.",myName,6);
-        return app.controllers[model].getByDomainId(req.session.user.currentDomain.id);
       })
       .then(notes => {
         req.appData.notes = notes;
@@ -70,7 +66,8 @@ module.exports = function(app,model) {
       })
       .catch(err => {
         return res.send("Err: " + err.message);
-      })
+      });
+      return getsPromise;
     },
     get : function(req,res,next) {
       let myName = "getNote()";
@@ -78,22 +75,32 @@ module.exports = function(app,model) {
         where : {
           "id" : req.params.id
         },
-        include : [
+        include : []
+      }
+      if(!app.tools.isAuthenticated(req)) {
+        // User is not authenticated...
+        // The note and domain must be 'public'
+        searchObj.where.public = true;
+        searchObj.include.push(
+          {
+            model: app.models["domains"],
+            where: {
+              public: true
+            },
+            as: "domain"
+          }
+        );
+      } else {
+        // Use is authenticated...
+        // Just include the domain
+        searchObj.include.push(
           {
             model : app.models["domains"],
             as : "domain"
           }
-        ]
+        )
       }
-      app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
-      .then(response => {
-        if(!response) {
-          app.log("User failed authorization check",myName,6);
-          return next();
-        }
-        app.log("User is authorized to list notes.",myName,6);
-        return app.controllers[model].__get(searchObj);
-      })
+      app.controllers[model].__get(searchObj)
       .then(notes => {
         req.appData.note = notes[0];
         req.appData.view = "note";

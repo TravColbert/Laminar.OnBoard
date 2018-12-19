@@ -577,6 +577,16 @@ module.exports = function(app,sequelize) {
     })
     .then((result) => {
       if(!result) app.log("No invites found");
+      app.log("Checking for notes",myName,6);
+      if(app.tools.isAuthenticated(req)) {
+        return app.controllers["notes"].getNotesByUserId(req.session.user.id);
+      } else {
+        return app.controllers["notes"].getPublicNotes();
+      }
+    })
+    .then(notes => {
+      req.appData.notes = notes;
+      app.log(JSON.stringify(notes),myName,6);
       app.log("Checking for custom 'home' module: " + app.locals.homeModule,myName,6);
       if(app.homeModule) {
         // app.log("Inserting custom 'home' module...",myName,6)

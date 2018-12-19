@@ -59,6 +59,8 @@ mixin link(options)
   else if (options.type=="script")
     script(src= options.src)
 
+include mixins.pug
+
 html
   include head.pug
   if(headoptions)

@@ -202,7 +202,7 @@ module.exports = function(app,model) {
           }
         ]
       }
-      return app.models["usersroles"].findAll(searchObj);
+        return app.models["usersroles"].findAll(searchObj);
     },
 
     gets : function(req,res,next) {
@@ -266,6 +266,7 @@ module.exports = function(app,model) {
       let myName = "getDomain";
       let searchObj;
       app.log("Getting domain: " + req.params.id);
+      //- how to tell the difference between IDs and nicknames
       if(Number.isInteger(parseInt(req.params.id))) {
         searchObj = {
           where: {
@@ -290,6 +291,31 @@ module.exports = function(app,model) {
         req.appData.models.push("domain");
         req.appData.domain = domain[0];
         req.appData.view = "domain";
+      })
+      .then(() => {
+        // loop through related objects
+        app.log("Collecting linked objects",myName,6);
+        let linkedObjectPromise = Promise.resolve();
+        req.appData.linkedObjects = {};
+        for(let link of app.domainlinks) {
+          app.log("Getting linked object: " + link,myName,6);
+          linkedObjectPromise = linkedObjectPromise.then(() => {
+            app.log("Linked object: " + link + " domain ID: " + req.appData.domain.id,myName,6);
+            if(app.controllers[link].hasOwnProperty("getByDomainId")) {
+              return app.controllers[link].getByDomainId(req.appData.domain.id);
+            } else {
+              return [];
+            }
+          })
+          .then(objs => {
+            req.appData.linkedObjects[link] = objs;
+            app.log(JSON.stringify(req.appData.linkedObjects),myName,6);
+            return;
+          });
+        }
+        return linkedObjectPromise;
+      })
+      .then(() => {
         return next();
       })
       .catch(err => {

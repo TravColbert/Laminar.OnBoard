@@ -14,6 +14,9 @@ app.locals = JSON.parse(fs.readFileSync(cwd + 'config.json'));
 app.secrets = JSON.parse(fs.readFileSync(cwd + 'secrets.json'));
 app.debug = require('debug')('laminar');
 
+// Define the objects that are linked to domains:
+app.domainlinks = JSON.parse(fs.readFileSync(cwd + 'domainlinks.json'));
+
 // Configure host:port
 app.locals.url = "https://" + app.locals.addr;
 if(app.locals.port!="443") app.locals.url += ":" + app.locals.port;
@@ -83,6 +86,7 @@ app.controllers = {};
 app.elements = {};
 app.routes = {};
 app.menu = [];
+app.linkedObjects = {};
 
 // Prepare navigation object
 const navigation = require('./navigation')(app);

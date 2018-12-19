@@ -54,5 +54,7 @@ block content
         +create-or-see-domains("Domain")
     if(!user)
       .layout-width-1-1.layout-col
+        if(notes)
+          include notes-list
         h2 Get Started!
         +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
