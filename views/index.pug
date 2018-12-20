@@ -24,7 +24,7 @@ mixin create-or-see-domains(domainName)
 
 mixin list-user-domains(domainText)
   .layout-width-1-1.layout-col
-    h2 #{domainText} List:
+    .section-hdg.section-hdg-1 #{domainText} (#{user.domains.length})
     .list-container.layout-width-1-1.layout-row.layout-md-col.layout-wrap
       if(user.domains)
         each domain in user.domains
