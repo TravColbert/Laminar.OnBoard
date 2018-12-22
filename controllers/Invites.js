@@ -78,14 +78,14 @@ module.exports = function(app,model) {
       app.controllers[model].__get(searchObj)
       .then(invites => {
         if(invites.length!=1) return res.redirect("/");
-        app.log(JSON.stringify(invites),myName,6);
+        // app.log(JSON.stringify(invites),myName,6);
         app.log("Invite accepted - setting things up",myName,5);
         invitation = invites[0];
         return app.controllers.roles.getRoleByAppId(invites[0].roleAppid.substring(0,12));
       })
       .then(role => {
         if(!role) return res.send("No role found.");
-        app.log(JSON.stringify(role),myName,6);
+        // app.log(JSON.stringify(role),myName,6);
         app.log("Role found: " + role,myName,6);
         targetRole = role;
         app.log("Now, let's find the user: " + invitation.userEmail,myName,6);
@@ -93,14 +93,14 @@ module.exports = function(app,model) {
       })
       .then(users => {
         if(users.length!=1) return res.send("Wrong number of users returned! That's a pretty big big");
-        app.log("Found user: " + users[0],myName,6);
+        app.log("Found user: " + users[0].id,myName,6);
         app.log("Adding role: " + targetRole,myName,6);
         let standardComment = "Invitation to role accepted by user";
         let comment = standardComment + ": " + invitation.comment || standardComment;
         return users[0].addRole(targetRole,{through:{"comment":comment}});
       })
       .then(result => {
-        app.log(result,myName,6);
+        // app.log(result,myName,6);
         app.log("Time to update the invitation: " + invitation,myName,6);
         return invitation.update({"accepted":true});
       })

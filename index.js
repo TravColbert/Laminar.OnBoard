@@ -8,20 +8,26 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
-
-let myName = "setup";
+const myName = "setup";
 
 app.locals = JSON.parse(fs.readFileSync(cwd + 'config.json'));
 app.secrets = JSON.parse(fs.readFileSync(cwd + 'secrets.json'));
+app.debug = require('debug')('laminar');
+
+// Define the objects that are linked to domains:
+app.domainlinks = JSON.parse(fs.readFileSync(cwd + 'domainlinks.json'));
+
+// Configure host:port
 app.locals.url = "https://" + app.locals.addr;
 if(app.locals.port!="443") app.locals.url += ":" + app.locals.port;
+
 const options = {
   key: fs.readFileSync(cwd + app.locals.keyFile),
   cert: fs.readFileSync(cwd + app.locals.certFile)
 };
 
+// Setup our ORM (Sequelize)
 const Sequelize = require('sequelize');
-
 var sequelize = new Sequelize(
   app.locals.dbConnection[app.locals.activeDbConnection].database,
   app.locals.dbConnection[app.locals.activeDbConnection].user,
@@ -36,7 +42,10 @@ var sequelize = new Sequelize(
   }
 );
 
-console.log("Keys: " + app.secrets["mail-api-key"] + ":" + app.secrets["mail-api-secret"]);
+// Incorporate our tools file
+app.tools = require('./apptools')(app,sequelize);
+
+app.debug("Keys: %s : %s",app.secrets["mail-api-key"],app.secrets["mail-api-secret"]);
 
 app.mailjet = require('node-mailjet').connect(app.secrets["mail-api-key"], app.secrets["mail-api-secret"], {
   url: app.locals.smtpServer, // default is the API url
@@ -50,7 +59,7 @@ let sessionConfig = {
   saveUninitialized:false
 };
 
-app.tools = require('./apputils')(app,sequelize);
+// Setup default Home module
 app.homeModule = false; 
 if(app.locals.hasOwnProperty("homeModule")) {
   if(app.locals.homeModule!==false && app.locals.homeModule!==null) {
@@ -58,11 +67,8 @@ if(app.locals.hasOwnProperty("homeModule")) {
     app.homeModule = require("./" + app.locals.modulesDir + "/" + app.locals.homeModule + ".js")(app);  
   }
 }
-const navigation = require('./navigation')(app);
 
-/**
- * Configuration
- */
+// Basic Express setup: templater, query-parsing, ...
 app.set('views',cwd + app.locals.viewsDir);
 app.set('view engine','pug');
 app.set('query parser',true);
@@ -72,113 +78,25 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(session(sessionConfig));
 app.disable('x-powered-by');
 
-app.paths = {};
+// Main app in-memory structures...
+app.cwd = cwd;
 app.models = {};
 app.modelDefinitions = {};
 app.controllers = {};
 app.elements = {};
 app.routes = {};
-app.socketSessions = [];
+app.menu = [];
+app.linkedObjects = {};
 
-let associateModels = function() {
-  let myName = "associateModels";
-  let associationPromises = Promise.resolve();
-  associationPromises = associationPromises.then(() => {
-    app.log("Building model associations",myName,6,"::>");
-    app.models["domains"].belongsToMany(app.models["roles"],{through:app.models["domainsroles"]});
-    app.models["roles"].belongsToMany(app.models["domains"],{through:app.models["domainsroles"]});
-    app.models["users"].belongsToMany(app.models["roles"],{through:app.models["usersroles"]});
-    app.models["roles"].belongsToMany(app.models["users"],{through:app.models["usersroles"]});
-    app.models["users"].belongsTo(app.models["domains"],{as:'defaultDomain'});  // makes users.defaultDomainId field
-    app.models["users"].hasOne(app.models["domains"],{as:'owner'});             // makes domains.ownerId field
-    app.models["notes"].belongsTo(app.models["domains"],{as:'domain'});         // makes notes.domainId
-    app.models["notes"].belongsTo(app.models["users"],{as:"user"});             // makes notes.userId
-    return (app.models);
-  }).then(() => {
-    return app.tools.readDir(cwd + app.locals.modelsDir + "/associations");
-  }).then(associations => {
-    return app.tools.processFiles(associations,app.tools.readAssociation);
-  }).catch(err => {
-    app.log("Error: " + err.message,myName,4);
-  });
-  return associationPromises;
-}
+// Prepare navigation object
+const navigation = require('./navigation')(app);
 
-let setupBasePermissions = function() {
-  let myName = "setupBasePermissions";
-  app.log("Setting up admin user...",myName,6);
-
-  let adminUser, adminRole;
-  let setupPromises = Promise.resolve();
-  setupPromises = setupPromises.then(() => {
-    app.log("Looking for user: " + 'admin@' + app.locals.smtpDomain,myName,6);
-    return app.controllers.users.getUserByObj({email:'admin@' + app.locals.smtpDomain});
-  }).then(user => {
-    // The 'get' methods return an array of users
-    if(user.length!=1) {
-      app.log("No admin user found - creating",myName,6);
-      let adminUserDef = {
-        "firstname":"Administrative",
-        "lastname":"User",
-        "email":"admin@" + app.locals.smtpDomain,
-        "verified":true,
-        "disabled":false,
-        "password":app.secrets["admin@" + app.locals.smtpDomain]
-      };
-      // The 'create' method returns an object, not an array! 
-      return app.controllers.users.createUser(adminUserDef);
-    } else {
-      // If the "user.length" check (above) passes then we're looking at an array here!
-      return user[0];
-    };
-  }).then(user => {
-    app.log("Admin user: " + user.fullname,myName,6);
-    adminUser = user;
-    return app.controllers.roles.getRoleByName("Super Admin");
-  }).then(role => {
-    if(role===null) {
-      app.log("No super-admin role found... creating",myName,6,"+");
-      let adminRoleDef = {
-        name:"Super Admin",
-        description:"Role can manage all models in all domains (super-admin users)",
-        capabilities:{'edit':'all','create':'all','list':'all','delete':'all'}
-      };
-      return app.controllers.roles.createRole(adminRoleDef);
-    } else {
-      app.log("Super-admin role found. Good.",myName,6);
-      return role;
-    }
-  }).then(role => {
-    adminRole = role;
-    return adminUser.addRoles(role,{through:{comment:"Initial creation phase"}});
-  }).then(() => {
-    app.log("Admin user connected to admin role",myName,6,"-");
-  }).then(() => {
-    app.log("Making default domains",myName,6,"+");
-    let defaultDomain = {
-      name:"Default Domain",
-      description:"The default domain",
-      ownerId:adminUser.id
-    };
-    let trashDomain = {
-      name:"Trash Domain",
-      description:"The trashcan of domains",
-      ownerId:adminUser.id
-    };
-    return app.controllers.domains.createDomain(defaultDomain,adminUser.id)
-    .then(() => {
-      return app.controllers.domains.createDomain(trashDomain,adminUser.id);
-    });
-  }).catch(err => {
-    app.log(err.message,myName,3,"!");
-  });
-  return setupPromises;
-}
-
-app.tools.readDir(cwd + app.locals.modelsDir)
+// Build app starting with model-hydration
+app.tools.readDir(app.cwd + app.locals.modelsDir)
 .then(modelFiles => {
   return app.tools.processFiles(modelFiles,app.tools.readModel);
 }).then(() => {
+  // Hydrate controllers
   return app.tools.readDir(cwd + app.locals.controllersDir);
 }).then(controllerFiles => {
   return app.tools.processFiles(controllerFiles,app.tools.readController);
@@ -187,15 +105,25 @@ app.tools.readDir(cwd + app.locals.modelsDir)
 }).then(elementFiles => {
   return app.tools.processFiles(elementFiles,app.tools.readElement);
 }).then(() => {
-  return associateModels();
+  // Bind associations and start the models
+  return app.tools.associateModels();
 }).then(() => {
   return app.tools.startModels(app.models);
 }).then(() => {
-  return setupBasePermissions();
+  return app.tools.setupBasePermissions();
 }).then(() => {
+  // Run and post-startup model tasks (e.g. creating records)
   return app.tools.readDir(cwd + app.locals.modelsDir + "/modelstartups");
 }).then(modelStartupFiles => {
   return app.tools.processFiles(modelStartupFiles,app.tools.readModelStartup);
+}).then(() => {
+  // Collect menu elements
+  return app.tools.readDir(app.cwd + app.locals.navDir);
+}).then(menuFiles => {
+  return app.tools.processFiles(menuFiles,app.tools.readMenu);
+}).then(() => {
+  // Include the main menu
+  app.menu = app.menu.concat(require("./" + app.locals.navDir + "/menu.json")["main"]);
 }).then(() => {
   // Parse headoptions file, if available
   fs.readFile(cwd + "/headoptions.json",(err,data) => {
@@ -264,54 +192,19 @@ app.tools.readDir(cwd + app.locals.modelsDir)
   app.get('/profile/',app.tools.checkAuthentication,app.controllers["users"].getProfile);
   app.post('/authorizedelements/:element',app.tools.checkAuthentication,app.tools.getElement);
   app.get('/',app.tools.homePage);
-  return true;
 }).then(() => {
   app.use(
     app.tools.timeEnd,
     app.tools.render
   );
-  /**
-   * Handle IO
-   */
-  io.on('connection',(socket) => {
-    app.log("A user connected with id: " + socket.id,myName,6);
-    let socketSession = {
-      socketId:socket.id
-    };
-
-    socket.emit('howareyou',socketSession);
-
-    socket.on('iamfine.howareyou',(data) => {
-      app.log(JSON.stringify(data),myName,6," >>> ");
-      if(data.hasOwnProperty("socketId") && data.hasOwnProperty("sessionId")) {
-        data.socket = socket;
-        app.socketSessions.push(data);
-        app.log("Pushed a new socket to the list of socket sessions",myName,6);
-        socket.emit('iamfine.thankyou',"We're ready to communicate!");
-      } else {
-        app.log("socket session object is incomplete. Can't add to socket session list",myName,5);
-      }
-    });
-  });
-
-  console.log("Done!");
 }).catch(err => {
   app.log(err.message);
-})
-
-/**
- * HANDLE ERRORS
- */
-// app.use(
-//  app.tools.errorHandler
-// );
+});
 
 /**
  * START THE SERVER
  */
 let server = https.createServer(options,app);
-let io = require('socket.io').listen(server);
 server.listen(app.locals.port,app.locals.host,function() {
-  app.log(app.locals.appName + " server listening on port " + app.locals.port,myName,4);
-  app.log("logLevel: " + app.locals.logLevel,myName,4);
+  console.log(app.locals.appName + " server listening on port " + app.locals.port);
 });

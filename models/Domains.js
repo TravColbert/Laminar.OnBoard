@@ -10,6 +10,11 @@ module.exports = function(Sequelize,app) {
         lm_description: "Name",
         lm_placeholder: "name of domain"
       },
+      "urn":{
+        type: Sequelize.STRING,
+        unique: true,
+        allowNull: false
+      },
       "description":{
         type: Sequelize.STRING,
         allowNull: true,
@@ -18,10 +23,19 @@ module.exports = function(Sequelize,app) {
         lm_placeholder:"description of the domain",
         lm_classlist:["lm_textarea","layout-width-1-2"]
       },
+      "public":{
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      "settings":{
+        type: Sequelize.JSON
+      },
       "appid":{
         type: Sequelize.STRING
       }
     },
+    requiredFields: ["name","urn"],
+    optionalFields: ["id","description","settings","public"],
     options:{
       getterMethods: {
         uniqueAppId: function() {

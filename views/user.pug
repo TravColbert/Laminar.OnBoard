@@ -16,11 +16,21 @@ block content
           label.label(for="partnum") Last Name:
           .data #{user.lastname}
         .itemdetail.layout-col
-          label.label(for="partnum") Verified:
-          .data #{user.verified}
+          label.label Verified:
+          .data
+            input#verified.hidden(type="checkbox" name="public" value="true" disabled checked=!!(user.verified))
+            label.togglefalse(for="verified")
+              i.material-icons.toggle.toggleoff toggle_off
+            label.toggletrue(for="verified")
+              i.material-icons.toggle.toggleon toggle_on
         .itemdetail.layout-col
-          label.label(for="partnum") Disabled:
-          .data #{user.disabled}
+          label.label Disabled:
+          .data
+            input#disabled.hidden(type="checkbox" name="public" value="true" disabled checked=!!(user.disabled))
+            label.togglefalse(for="disabled")
+              i.material-icons.toggle.toggleoff toggle_off
+            label.toggletrue(for="disabled")
+              i.material-icons.toggle.toggleon toggle_on
         .itemdetail.layout-col
           label.label(for="partnum") Domains:
             each role in user.roles

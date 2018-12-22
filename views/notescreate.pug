@@ -16,11 +16,17 @@ block content
             label.label(for="description") Description:
             input#description(type="text" name="description" placeholder="Description of the note")
           .inputnotepublic.itemdetail.layout-col
-            label.label(for="public") Visibility:
-            input#public(type="text" name="public" placeholder="Note is public?")
+            label.label Visibility:
+            .data
+              input#public.hidden(type="checkbox" name="public" value="true")
+              label.togglepublicfalse(for="public")
+                i.material-icons.toggle.toggleoff toggle_off
+              label.togglepublictrue(for="public")
+                i.material-icons.toggle.toggleon toggle_on
           .inputnotebody.itemdetail.layout-col
-            label.label(for="body") Text:
-            textarea#body(cols="30" rows="10" name="body")
+            label.label(for="body") Body:
+            .data
+              textarea#body(cols="30" rows="10" name="body")
           .notesubmit.itemdetail.layout-col
             .label Actions:
             .data

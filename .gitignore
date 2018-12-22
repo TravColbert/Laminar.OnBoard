@@ -1,4 +1,6 @@
+package-lock.json
 config.json
+secrets.json
 node_modules/
 #public/js/*.zip
 tls/*.pfx
@@ -7,3 +9,4 @@ tls/*.crt
 tls/*.key
 db/
 test/
+*.code-workspace

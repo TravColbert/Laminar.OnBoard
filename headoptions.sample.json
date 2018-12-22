@@ -1,5 +1,6 @@
 [
   {"type":"link","rel":"stylesheet","media":"all","href":"/css/your_special_css.css"},
-  {"type":"link","rel":"stylesheet","media":"screen","href":"https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"},
-  {"type":"script","src":"https://cdn.jsdelivr.net/npm/flatpickr"}
+  {"type":"link","rel":"stylesheet","media":"screen","href":"https://some.other.css"},
+  {"type":"link","rel":"stylesheet","media":"print","href":"/css/my_print_only.css"},
+  {"type":"script","src":"https://some.special.script.js"}
 ]

@@ -20,7 +20,8 @@ module.exports = function(app,sequelize) {
       debugLevel = debugLevel || 0;
       prefix = prefix || ":";
       if(debugLevel <= app.locals.logLevel) {
-        return console.log(caller,prefix,string);
+        // return console.log(caller,prefix,string);
+        return app.debug("(%s) %s",caller,string);
       }
       return false;
     },
@@ -44,13 +45,17 @@ module.exports = function(app,sequelize) {
     return new Promise((resolve,reject) => {
       app.log("Reading dir: " + dir,myName,6,"##>");
       fs.readdir(dir,(err,files) => {
-        if(err) reject(new Error("(" + myName + ") : " + err.message));
-        if(files==undefined || files===null || files.length<1) {
-          app.log("Didn't find any files. Sending an empty list",myName,5);
-          resolve([]);
+        if(err) {
+          reject(new Error("(" + myName + ") : " + err.message));
+        } else {
+          if(files==undefined || files===null || files.length<1) {
+            app.log("Didn't find any files. Sending an empty list",myName,5);
+            resolve([]);
+          } else {
+            app.log("Found files: " + files,myName,6);
+            resolve(files);
+          }
         }
-        app.log("Found files: " + files,myName,6);
-        resolve(files);
       })
     });
   };
@@ -58,8 +63,8 @@ module.exports = function(app,sequelize) {
     let myName = "readModel";
     return new Promise((resolve,reject) => {
       if(app.tools.isFileType(file,"js")) {
-        app.log(file,myName,6,"+");
         let modelDefintion = require("./" + app.locals.modelsDir + "/" + file)(Sequelize,app);
+        app.modelDefinitions[modelDefintion.tablename] = modelDefintion;
         app.models[modelDefintion.tablename] = sequelize.define(modelDefintion.tablename,modelDefintion.schema,modelDefintion.options);
       }
       resolve(true);
@@ -73,6 +78,17 @@ module.exports = function(app,sequelize) {
       let controllerName = fileNameParts[0].toLowerCase();
       app.log(controllerName,myName,6,"+");
       app.controllers[controllerName] = require("./" + app.locals.controllersDir + "/" + file)(app,controllerName);
+      resolve(true);
+    });
+  };
+  obj.readMenu = function(file) {
+    let myName = "readMenu";
+    return new Promise((resolve,reject) => {
+      let fileNameParts = file.split(".");
+      if(fileNameParts[fileNameParts.length-1]=="json") {
+        app.log("Menu filename: " + file);
+        if(file!="menu.json") app.menu = app.menu.concat(require("./" + app.locals.navDir + "/" + file)["main"]);
+      }
       resolve(true);
     });
   };
@@ -131,12 +147,139 @@ module.exports = function(app,sequelize) {
     });
     return routeReadPromises;
   };
+  obj.associateModels = function() {
+    let myName = "associateModels";
+    let associationPromises = Promise.resolve();
+    associationPromises = associationPromises.then(() => {
+      app.log("Building model associations",myName,6,"::>");
+      return app.tools.readDir(app.cwd + app.locals.modelsDir + "/associations");
+    }).then(associations => {
+      return app.tools.processFiles(associations,app.tools.readAssociation);
+    }).catch(err => {
+      app.log("Error: " + err.message,myName,4);
+    });
+    return associationPromises;
+  };
+  obj.setupBasePermissions = function() {
+    let myName = "setupBasePermissions";
+    app.log("Setting up admin user...",myName,6);
+  
+    let adminUser;
+    let defaultDomain, trashDomain;
+    let superAdminRole;
+    let setupPromises = Promise.resolve();
+    setupPromises = setupPromises.then(() => {
+      app.log("Looking for user: admin@" + app.locals.smtpDomain,myName,6);
+      return app.controllers.users.getUserByObj({email:'admin@' + app.locals.smtpDomain});
+    }).then(user => {
+      // The 'get' methods return an array of users
+      if(user.length<1) {
+        app.log("No admin user found - creating",myName,6);
+        let adminUserDef = {
+          "firstname":"Administrative",
+          "lastname":"User",
+          "email":"admin@" + app.locals.smtpDomain,
+          "verified":true,
+          "disabled":false,
+          "password":app.secrets["admin@" + app.locals.smtpDomain]
+        };
+        // The 'create' method returns an object, not an array! 
+        return app.controllers.users.createUser(adminUserDef);
+      } else {
+        // If the "user.length" check (above) passes then we're looking at an array here!
+        return user[0];
+      };
+    }).then(user => {
+      adminUser = user;
+      // app.log("Admin user: " + adminUser.fullname,myName,6);
+      return app.controllers.roles.getRoleByName("Super Admin");
+    }).then(role => {
+      if(role===null) {
+        app.log("No super-admin role found... creating",myName,6,"+");
+        let adminRoleDef = {
+          name:"Super Admin",
+          description:"Role can manage all models in all domains (super-admin users)",
+          capabilities:{'edit':'all','create':'all','list':'all','delete':'all'}
+        };
+        return app.controllers.roles.createRole(adminRoleDef);
+      } else {
+        app.log("Super-admin role found. Good.",myName,6);
+        return role;
+      }
+    }).then(role => {
+      superAdminRole = role;
+      return adminUser.addRole(role,{through:{comment:"Initial creation phase"}});
+    }).then(() => {
+      app.log("Admin user connected to admin role",myName,6);
+      return app.controllers.domains.__get({where:{name:"Default"}});
+    })
+    .then(domain => {
+      if(domain.length==0) {
+        app.log("Creating default domain",myName,6);
+        defaultDomain = {
+          name:"Default",
+          urn:"default",
+          description:"The default domain",
+          public:true,
+          settings:{
+            visible: ["notes"]
+          },
+          ownerId:adminUser.id
+        };  
+        return app.controllers.domains.createDomainAndRoles(defaultDomain,adminUser);
+      } else {
+        return domain;
+      }
+    })
+    .then(domain => {
+      defaultDomain = domain;
+      return defaultDomain;
+    })
+    .then(() => {
+      return app.controllers.domains.__get({where:{name:"Trash"}});
+    })
+    .then(domain => {
+      if(domain==0) {
+        app.log("Creating trash domain",myName,6);
+        trashDomain = {
+          name:"Trash",
+          urn:"trash",
+          description:"The trashcan of domains",
+          public:false,
+          settings:{
+            visible: false
+          },
+          ownerId:adminUser.id
+        };
+        return app.controllers.domains.createDomainAndRoles(trashDomain,adminUser);
+      } else {
+        return domain;
+      }
+    })
+    .then(domain => {
+      trashDomain = domain;
+      return trashDomain;
+    })
+    .then((domain) => {
+      trashDomain = domain;
+      app.log("Time to attach Super-Admin role to default domain...");
+      return superAdminRole.addDomains(defaultDomain);
+    })
+    .then(() => {
+      app.log("Time to attach Super-Admin role to trash domain...");
+      return superAdminRole.addDomains(trashDomain);
+    })
+    .catch(err => {
+      app.log(err.message,myName,3,"!");
+    });
+    return setupPromises;  
+  };
   obj.startModels = function(models) {
     let myName = "startModels";
     app.log("Starting models...",myName,6);
     let syncPromises = Promise.resolve();
     Object.keys(models).forEach(modelName => {
-      app.log(modelName,myName,6);
+      // app.log(modelName,myName,6);
       syncPromises = syncPromises.then(() => {
         return models[modelName].sync()
         .then((model) => {
@@ -182,15 +325,16 @@ module.exports = function(app,sequelize) {
   };
   obj.setAppData = function(req,res,next) {
     let myName = "setAppData()";
-    app.log("original request: " + req.session.originalReq,myName,4);
+    // app.log("original request: " + req.session.originalReq,myName,4);
     app.log("clearing appData",myName,5);
     req.appData = {};
     app.log("setting app name",myName,5);
     req.appData.title = app.locals.appName;
     app.log("PATHS: " + JSON.stringify(app.paths),myName,5);
-    req.appData.modelName = obj.getModelName(req);
+    // req.appData.modelName = obj.getModelName(req);
     req.appData.models = [];
-    app.log("setting MODEL name: " + req.appData.modelName,myName,5);
+    req.appData.errors = [];
+    // app.log("setting MODEL name: " + req.appData.modelName,myName,5);
     obj.clearMessageQueue(req);
     return next();
   };
@@ -205,22 +349,23 @@ module.exports = function(app,sequelize) {
         let returnObj = {};
         req.appData.models.forEach(model => {
           app.log(`Loading model ${model} in JSON return data`,myName,6);
-          console.log(req.appData[model]);
-          // returnObj[model] = req.appData[model];
-        })
+          // console.log(req.appData[model]);
+          returnObj[model] = req.appData[model];
+          returnObj["errors"] = req.appData.errors;
+        });
         return res.json(returnObj);
       default:
         app.log("Rendering template: " + templateFile,myName,6);
         if(app.headOptions) {
           req.appData.headoptions = app.headOptions;
-          app.log(req.appData.headoptions);
+          // app.log(req.appData.headoptions);
         }
         return res.render(templateFile,req.appData);
     }
   },
   obj.makeMessage = function(obj) {
     let myName = "makeMessage";
-    logThis(myName + ": Making a message for: " + JSON.stringify(obj));
+    app.log(myName + ": Making a message for: " + JSON.stringify(obj));
     obj.msgId = Date.now();
     return obj;
   };
@@ -235,7 +380,7 @@ module.exports = function(app,sequelize) {
     app.log("setting up messages",myName,5);
     if(req.session.hasOwnProperty("messages")) {
       if(req.session.messages.length>0) {
-        app.log(JSON.stringify(req.session.messages),myName,6);
+        // app.log(JSON.stringify(req.session.messages),myName,6);
         req.appData.messages = req.session.messages;
       }
     } else {
@@ -257,13 +402,13 @@ module.exports = function(app,sequelize) {
   obj.socketSend = function(sessionId,type,message) {
     let myName = "socketSend";
     app.log("Looking for socket of session ID: " + sessionId,myName,6);
-    app.log(app.socketSessions,myName,6,"| | | | >");
+    // app.log(app.socketSessions,myName,6,"| | | | >");
     let targetSockets = app.socketSessions.filter((v) => {
       return v.sessionId = sessionId;
     });
     targetSockets.forEach((targetSocket) => {
       app.log("Found a socket. Sending message: " + message + " of type: " + type,myName,6);
-      app.log(targetSocket.socket.id,myName,6,": : : >");
+      // app.log(targetSocket.socket.id,myName,6,": : : >");
       targetSocket.socket.emit(type,message);
     });
   };
@@ -282,14 +427,6 @@ module.exports = function(app,sequelize) {
   };
   obj.checkAuthentication = function(req,res,next) {
     let myName = "checkAuthentication()";
-    // app.log("checking authentication...",myName,5);
-    // if(!req.session.cookie) return res.redirect("/login");
-    // app.log("session cookie exists...",myName,5);
-    // if(!req.session.user) return res.redirect("/login");
-    // app.log("session user object exists...",myName,5);
-    // if(!req.session.user.email) return res.redirect("/login");
-    // app.log("session user email exists...",myName,5);
-    // if(!req.session.user.id) return res.redirect("/login");
     if(!obj.isAuthenticated(req)) return res.redirect("/login");
     app.log("session user id is set...",myName,5);
     app.log("found all session info: " + req.session.user.email,myName,5);
@@ -356,46 +493,42 @@ module.exports = function(app,sequelize) {
   obj.setCurrentDomain = function(req,res,next) {
     let myName = "setCurrentDomain()";
     app.log("Setting current domain",myName,6);
-    // Is there a user?
     if(req.session.user) {
-      // Get user's enrollments
       app.controllers["users"].getUserRoles(req.session.user.id)
       .then((user) => {
         if(user===null) return res.send("Couldn't find this user (even though session data is set)");
         return app.controllers["users"].compileDomainList(user);
       })
       .then(domainList => {
+        // app.log("User data: " + JSON.stringify(req.session.user),myName,6);
         if(req.session.user.hasOwnProperty("switchDomain")) {
-          app.log("Found a switch-domain request for: " + req.session.user.switchDomain,myName,6," - - - ");
+          app.log("Found a switch-domain request for: " + req.session.user.switchDomain,myName,6);
           targetDomainId = req.session.user.switchDomain;
         } else if(req.session.user.defaultDomainId!==null) {
-          app.log("No switch-domain request found. Looking for a defaultDomain: " + req.session.user.defaultDomainId,myName,6," - - - ")
+          app.log("No switch-domain request found. Looking for a defaultDomain: " + req.session.user.defaultDomainId,myName,6);
           targetDomainId = req.session.user.defaultDomainId;
         } else {
+          app.log("Might be this...",myName,6);
+          // app.log(JSON.stringify(domainList),myName,6);
           app.log("No default domain set. Chosing the first on the list: " + domainList[0].id,myName,6);
           targetDomainId = domainList[0].id;
         }
-        //app.log("Domain List: " + domainList,myName,6);
         app.log("Target domain is: " + targetDomainId,myName,6);
         let switchTo = domainList.filter(v => {
-          //app.log("Domain ID: " + v.id,myName,6);
           return (v.id==targetDomainId);
         });
-        app.log("Switching to this: " + switchTo,myName,6,":::>");
-        // app.log("Switchto: " + switchTo[0].id);
+        app.log("Switching to this: " + switchTo[0].name + " (" + switchTo[0].id + ")",myName,6);
         if(switchTo && switchTo[0].id) {
-          app.log("Setting");
           req.session.user.currentDomain=switchTo[0];
         }
         req.session.user.domains = domainList;
         app.log("Session's current domain is ==> " + req.session.user.currentDomain.name,myName,6);
         req.appData.user = req.session.user;
         return next();
-        // let domainList = app.controllers["users"].compileDomainList(user);
       })
       .catch((err) => {
         // some error
-        app.log("There was an error!: " + err.message);
+        app.log("There was an error!: " + JSON.stringify(err) + " " + err.message,myName,2);
         return res.send("This is the reason why we can't continue: " + err.message);
       })
     } else {
@@ -408,7 +541,7 @@ module.exports = function(app,sequelize) {
     let myName = "switchToDomain()";
     app.log("Request to set current domain to: " + req.params.domainId,myName,6);
     domainId = app.controllers["users"].requestNewDomain(req.session.user,req.params.domainId);
-    app.log(domainId + ":" + req.params.domainId,myName,6);
+    // app.log(domainId + ":" + req.params.domainId,myName,6);
     if(domainId==req.params.domainId) {
       req.session.user.switchDomain = domainId;
       app.log("Domain-switch request granted for domain " + req.session.user.switchDomain,myName,4);
@@ -428,6 +561,48 @@ module.exports = function(app,sequelize) {
     req.appData.sessionId = req.session.id;
     req.appData.view = app.locals.homeView;
 
+    let homePagePromises = Promise.resolve();
+    homePagePromises = homePagePromises.then(() => {
+      if(app.tools.isAuthenticated(req)) {
+        return app.controllers.invites.checkInvites(req.session.user.email)
+        .then(invites => {
+          let numInvites = (invites) ? invites.length : 0;
+          app.log("Invites found: " + numInvites,myName,6);
+          req.appData.invites = invites;
+          return true;
+        });
+      } else {
+        return false;
+      }
+    })
+    .then((result) => {
+      if(!result) app.log("No invites found");
+      app.log("Checking for notes",myName,6);
+      if(app.tools.isAuthenticated(req)) {
+        return app.controllers["notes"].getNotesByUserId(req.session.user.id);
+      } else {
+        return app.controllers["notes"].getPublicNotes();
+      }
+    })
+    .then(notes => {
+      req.appData.notes = notes;
+      app.log(JSON.stringify(notes),myName,6);
+      app.log("Checking for custom 'home' module: " + app.locals.homeModule,myName,6);
+      if(app.homeModule) {
+        // app.log("Inserting custom 'home' module...",myName,6)
+        return app.homeModule.home(req,res,next);
+      } else {
+        return;
+      }
+    })
+    .then(() => {
+      return next();
+    })
+    .catch((err) => {
+      app.log(err.message);
+      return res.send(err.message);
+    });
+    /*
     if(req.session.user) {
       app.log("Session detected",myName,6);
       app.controllers.invites.checkInvites(req.session.user.email)
@@ -438,7 +613,7 @@ module.exports = function(app,sequelize) {
         return true;
       })
       .then(() => {
-        app.log("Invoking custom 'home' module = " + app.locals.homeModule,myName,6);
+        app.log("Checking for custom 'home' module: " + app.locals.homeModule,myName,6);
         if(app.homeModule) {
           app.log("Inserting custom 'home' module...",myName,6)
           return app.homeModule.home(req,res,next);
@@ -457,6 +632,7 @@ module.exports = function(app,sequelize) {
       app.log("No session detected",myName,6);
       return next();
     }
+    */
   };
   obj.loginPage = function(req,res,next) {
     let myName = "loginPage()";
@@ -553,12 +729,13 @@ module.exports = function(app,sequelize) {
     app.log("got a request of type: " + req.protocol + " :" + req.method + " TO: " + req.originalUrl + " URL: " + req.url,myName,4);
     if(req.session) {
       req.session.originalReq = (req.originalUrl!="/login") ? req.originalUrl : req.session.originalReq;
+      // app.log("original request: " + req.session.originalReq,myName,4);
     }
     return next();
   };
   obj.redirectToOriginalReq = function(req,res) {
     let myName = "redirectToOriginalReq()";
-    app.log("Original request: " + req.session.originalReq,myName,5);
+    // app.log("Original request: " + req.session.originalReq,myName,5);
     let redirectTo = req.session.originalReq || '/';
     if(redirectTo=="/login" || redirectTo=="/login/") {
       app.log("original request was " + redirectTo + " but redirecting to /",myName,6);
@@ -599,16 +776,31 @@ module.exports = function(app,sequelize) {
     req.appData.view = "secure";
     return next();
   };
-  obj.pullParams = function(obj,arr) {
+  obj.pullParams = function(sourceObj,arr,optArr) {
     let myName = "pullParams";
     let returnObj = {};
-    arr.forEach(function(v,i,a) {
-      if(obj.hasOwnProperty(v)) {
-        returnObj[v] = obj[v];
-      } else {
-        return false;
+    arr = arr || [];
+    optArr = optArr || [];
+    for(let requiredValue of arr) {
+      if(!sourceObj.hasOwnProperty(requiredValue)) return false;
+      returnObj[requiredValue] = sourceObj[requiredValue];
+    }
+    for(let optionalValue of optArr) {
+      if(sourceObj.hasOwnProperty(optionalValue)) returnObj[optionalValue] = sourceObj[optionalValue];
+    }
+    return returnObj;
+  };
+  obj.makeObj = function(sourceObj,arr) {
+    let myName = "makeObj";
+    // app.log(sourceObj,myName,6);
+    let returnObj = {};
+    for(let value of arr) {
+      app.log("Checking for valid param: " + value,myName,6);
+      if(sourceObj[value]) {
+        if(sourceObj[value]=='null') sourceObj[value] = null;
+        returnObj[value] = sourceObj[value];
       }
-    });
+    }
     return returnObj;
   };
   obj.addProperties = function(inObj,propertyArray,outObj) {

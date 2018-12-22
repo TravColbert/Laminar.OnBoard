@@ -5,20 +5,7 @@ block content
     .section-hdg.section-hdg-1 Notes (#{notes.length})
     .layout-row.layout-width-1-1
       .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-        ul.itemlist
-          each note in notes
-            - let targetLoc = "/notes/" + note.id + "/";
-            //- li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
-            li.layout-col
-              .itemdetail.layout-col
-                .label Name:
-                .data #[a(href="/notes/" + note.id + "/") #{note.name}]
-              - let description = note.description || null
-              if description
-                .itemdetail.layout-col
-                  .label Description:
-                  .data #{note.description}
-        #note_add_button_container.addnote.layout-row.layout-justify-between.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
+        +list-notes(notes)
       .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
         .infotext.section-hdg.section-hdg-3 Note List View
         .infotext This is a list of notes.

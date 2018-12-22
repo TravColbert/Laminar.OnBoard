@@ -22,6 +22,8 @@ module.exports = function(Sequelize,app) {
         type: Sequelize.STRING
       }
     },
+    requiredFields: ["name"],
+    optionalFields: ["id","description","body","public","appid"],
     options:{
       hooks:{
         afterCreate:(note) => {

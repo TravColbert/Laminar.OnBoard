@@ -6,6 +6,13 @@ body {
   font-size: 17px;
   /*background: #eee;*/
 }
+.list-container > div:not(:first-child) {
+  padding-left: 8px;
+  margin-bottom: 8px;
+}
+.item-container {
+  padding: 4px;
+}
 /* Link and Button styles */
 a {
   text-decoration: none;
@@ -194,6 +201,12 @@ i.big-icon {
   /* justify-content: flex-end; */
   /* padding-right: 0.5em; */
 }
+.toggle {
+  font-size: 3em;
+}
+.toggleon {
+  color: #4577D4;
+}
 .data {
   font-size: 1.2em;
 }
@@ -212,9 +225,6 @@ i.big-icon {
 }
 .pill > .pilllabel {
   padding: 0 0.25em;
-}
-.currencysign {
-
 }
 .currencyamount {
   text-align: right;
@@ -394,11 +404,60 @@ form#search {
   color: #4577D4;
 }
 .itemdetail pre {
-  font-size: 1.2em;
+  font-size: 1em;
   font-family: 'Nunito', sans-serif;
   /* font-size: 0.9em; */
   margin: 0;
 }
+
+input#verified:checked ~ .togglefalse {
+  display: none;
+}
+
+input#verified:not(:checked) ~ .togglefalse {
+  display: flex;
+}
+
+input#verified:checked ~ .toggletrue {
+  display: flex;
+}
+
+input#verified:not(:checked) ~ .toggletrue {
+  display: none;
+}
+
+input#disabled:checked ~ .togglefalse {
+  display: none;
+}
+
+input#disabled:not(:checked) ~ .togglefalse {
+  display: flex;
+}
+
+input#disabled:checked ~ .toggletrue {
+  display: flex;
+}
+
+input#disabled:not(:checked) ~ .toggletrue {
+  display: none;
+}
+
+input#public:checked ~ .togglepublicfalse {
+  display: none;
+}
+
+input#public:not(:checked) ~ .togglepublicfalse {
+  display: flex;
+}
+
+input#public:checked ~ .togglepublictrue {
+  display: flex;
+}
+
+input#public:not(:checked) ~ .togglepublictrue {
+  display: none;
+}
+
 input#inwarranty:checked ~ .warrantyno {
   display: none;
 }

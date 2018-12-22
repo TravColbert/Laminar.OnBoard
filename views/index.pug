@@ -22,39 +22,44 @@ mixin create-or-see-domains(domainName)
         i.material-icons check_circle_outline
         span Create #{domainName}
 
-mixin list-domains(domainText)
+mixin list-user-domains(domainText)
   .layout-width-1-1.layout-col
-    h2 #{domainText} List:
-    .layout-width-1-1.layout-row.layout-md-col.layout-wrap
+    .section-hdg.section-hdg-1 #{domainText} (#{user.domains.length})
+    .list-container.layout-width-1-1.layout-row.layout-md-col.layout-wrap
       if(user.domains)
         each domain in user.domains
-          if domain.name!="Trash Domain" && domain.name!="Default Domain"
-            .item-listing.layout-width-1-2.layout-md-width-1-1.layout-col
-              .layout-col
-                .itemhead.layout-row #[a(href="/domains/" + domain.id + "/") #{domain.name}] #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") stars]
+          if domain.name!="Trash" && domain.name!="Default"
+            .item-container.layout-width-1-2.layout-md-width-1-1
+              .item-listing.layout-width-1-1.layout-height-1-1.layout-col
                 .layout-col
-                  .itemdetail #{domain.description}
-                  - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
-                  if(user.defaultDomainId!=domain.id)
-                    a#domain_make_default_button.btn.tertiary.layout-size-x1.buttondomaindefault(href= defaultToDomain)
-                      i.material-icons stars
-                      span Make Default
-                .layout-width-1-1.layout-col
-                  if(domain.notes)
-                    .layout-row.layout-width-1-1 Notes:
-                    each note in domain.notes
-                      .item-listing.layout-row
-                        .layout-row.layout-align-center
-                          i.material-icons.text-grow-x3 receipt
-                        .layout-col
-                          .nobreak #{note.name}
-                          .layout-row #{note.description}
+                  .itemhead.layout-row #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
+                    if(user.defaultDomainId==domain.id)
+                      | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") stars]
+                  .layout-col
+                    .itemdetail #{domain.description}
+                    - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
+                    if(user.defaultDomainId!=domain.id)
+                      a#domain_make_default_button.btn.tertiary.layout-size-x1.buttondomaindefault(href= defaultToDomain)
+                        i.material-icons stars
+                        span Make Default
+                  .layout-width-1-1.layout-col
+                    if(domain.notes)
+                      .layout-row.layout-width-1-1 Notes:
+                      each note in domain.notes
+                        .item-listing.layout-row
+                          .layout-row.layout-align-center
+                            i.material-icons.text-grow-x3 receipt
+                          .layout-col
+                            .nobreak #{note.name}
+                            .layout-row #{note.description}
 
 mixin link(options)
   if(options.type=="link")
     link(rel= options.rel media= options.media href= options.href)
   else if (options.type=="script")
     script(src= options.src)
+
+include mixins.pug
 
 html
   include head.pug

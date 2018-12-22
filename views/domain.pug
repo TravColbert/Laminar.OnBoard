@@ -2,9 +2,15 @@ extends index.pug
 
 block content
   section.layout-width-sd.layout-col
-    .section-hdg.section-hdg-1 Domain #{domain.name}
+    .section-hdg.section-hdg-1 "#{domain.name}" Domain 
     .layout-row.layout-width-1-1
-      .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
+      .item-container.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-5-8
+        - objectTypes = Object.keys(linkedObjects);
+        each objectType in objectTypes
+          - objectTypeList = "list-" + objectType;
+          +#{objectTypeList}(linkedObjects[objectType])          
+      .item-container.description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-3-8
+        .section-hdg.section-hdg-3 Domain Actions:
         .itembanner.layout-col
           .itemdetail.layout-col
             label.label(for="domainname") Name:
@@ -30,7 +36,6 @@ block content
             label.label Actions:
               //- input.btnprimary.buttonconfirm(type="submit" id="submit" value="Confirm")
             #domain_invite_button_container.authUI(data-fetch="domain_invite" data-href="/domains/" + domain.id + "/invite/")
-      .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
         .infotext.section-hdg.section-hdg-3 Edit Role View
         .infotext You can edit a domain with this view.
         .infotext Modify the details for the domain.

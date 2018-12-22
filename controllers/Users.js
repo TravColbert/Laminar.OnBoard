@@ -129,9 +129,19 @@ module.exports = function(app,model) {
       // That the email address has not been used already...
       // lowercase the email...
       userRegistrationObj.email = userRegistrationObj.email.toLowerCase();
-      app.models[model].count({where:{email:userRegistrationObj.email}})
+      searchObj = {where:{}};
+      if(req.body.nickname) {
+        searchObj.where = {
+          $or:[{"email":userRegistrationObj.email},{"nickname":req.body.nickname}]
+        };
+      } else {
+        searchObj.where = {
+          "email":userRegistrationObj.email
+        }
+      }
+      app.models[model].count(searchObj)
       .then((count) => {
-        if(count>0) return res.send("An account with this email already exists... try again");
+        if(count>0) return res.send("An account with this email or nickname already exists... try again");
         app.log("Email address is free to use. Continuing with registration...",myName,5);
         delete userRegistrationObj.passwordverify;
         app.models[model]
@@ -161,38 +171,62 @@ module.exports = function(app,model) {
         })
       });
     },
+    nicknameIsUnique : function(nickname) {
+      let myName = "nicknameIsUnique";
+      return new Promise((resolve,reject) => {
+        let searchObj = {
+          where : {
+            "nickname" : nickname
+          }
+        }
+        app.controllers[model].__get(searchObj)
+        .then(result => {
+          if(result.length>0) {
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        })
+        .catch(err => {
+          app.log(err.message,myName,4);
+          resolve(false);
+        })
+      })
+    },
     verifyUser : function(req,res,next) {
-      let myName = "verifyUser()";
+      let myName = "verifyUser";
+      let verifiedUser;
+      let defaultRole;
       app.models[model]
       .findOne({where:{'appid':req.params.id,verified:false}})
       .then(user => {
-        user.update({verified:true,disabled:false})
-        .then(user => {
-          let cb = function(err,domain) {
-            if(err) return res.send(err.message);
-            if(!domain) res.send("No domain found with default role");
-            // app.log("Default Role: " + JSON.stringify(domain.roles[0]),myName,6,">>>>>");
-            user.addRoles(domain.roles[0].id)
-            .then(() => {
-              // app.log("User: " + JSON.stringify(user),myName,6,"!!!!!!");
-              user.update({defaultDomainId:domain.id})
-              .then(function() {
-                req.appData.user = user;
-                req.appData.view = "verificationcomplete";
-                return next();
-              })
-            })
-            .catch(err => {
-              return res.send("Something went wrong when we tried to add the default role to the user: " + err.message);
-            });
-          };
-          app.controllers["domains"].fetchRoleByName("Default Domain","Default Role",cb);
-        })
-        .catch(err => {
-          return res.send("Could not set verified to true or disabled to false: " + err.message);
-        });
+        return user.update({verified:true,disabled:false});
+      })
+      .then(user => {
+        app.log(JSON.stringify(user),myName,6);
+        verifiedUser = user;
+        return app.controllers["domains"].fetchRoleByName("Default","Default Role");
+      })
+      .then(domain => {
+        app.log("I found this as my default domain: " + JSON.stringify(domain),myName,6);
+        if(domain[0].roles) {
+          app.log("Got these for roles: " + JSON.stringify(domain[0].roles),myName,6);
+          defaultRole = domain[0].roles[0];
+        }
+        if(!domain) res.send("No domain found with default role");
+        return verifiedUser.update({defaultDomainId:domain[0].id});
+      })
+      .then(() => {
+        app.log("Adding user to default Role...",myName,6);
+        return app.controllers["roles"].addUserToRole(verifiedUser,defaultRole);
+      })
+      .then(() => {
+        req.appData.user = verifiedUser;
+        req.appData.view = "verificationcomplete";
+        return next();
       })
       .catch(err => {
+        app.log("Could not verify user: " + err.message,myName,4);
         // return res.send("Could not find a user that needs to be verified. " + err.message);
         return res.redirect("/");
       });
@@ -202,7 +236,10 @@ module.exports = function(app,model) {
       app.models[model]
       .findById(userId)
       .then(user => {
-        if(user===null) return res.redirect('/');
+        app.log("Found user: " + user.id);
+        // if(user===null) return res.redirect('/');
+        if(user===null) return false;
+        app.log("Adding role: " + roleId);
         user.addRole(roleId)
         .then(function() {
           return true;
@@ -265,8 +302,8 @@ module.exports = function(app,model) {
       });
     },
     getUserById : function(userId) {
-      let myName = "getUserById()";
-      app.log("Hello!!!: " + userId,myName,6);
+      let myName = "getUserById";
+      // app.log("Hello!!!: " + userId,myName,6);
       return new Promise((resolve,reject) => {
         app.log("Getting user by ID: " + userId,myName,6);
         app.models[model].findById(userId)
@@ -327,7 +364,7 @@ module.exports = function(app,model) {
       })
     },
     editUser : function(req,res,next) {
-      let myName = "userUser()";
+      let myName = "editUser";
       let userObj = app.tools.pullParams(req.body,["id","firstname","lastname","roleId","defaultDomainId"]);
       let requestedUser = req.params.id;
       app.log(userObj.id + " " + requestedUser);
@@ -352,19 +389,19 @@ module.exports = function(app,model) {
         return new Error("(" + myName + ") Could not create user: " + err.message);
       });
     },
-    getUserEnrollments : function(userId,cb) {
-      let myName = "getUserEnrollments()";
-      // users -> roles -> domains
-      app.models[model]
-      .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
-      .then(user => {
-        if(user===null) return cb();
-        cb(null,user);
-      })
-      .catch(err => {
-        cb(err);
-      });
-    },
+    // getUserEnrollments : function(userId,cb) {
+    //   let myName = "getUserEnrollments()";
+    //   // users -> roles -> domains
+    //   app.models[model]
+    //   .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+    //   .then(user => {
+    //     if(user===null) return cb();
+    //     cb(null,user);
+    //   })
+    //   .catch(err => {
+    //     cb(err);
+    //   });
+    // },
     getUserRoles : function(userId) {
       let myName = "getUserRoles()";
       return new Promise((resolve,reject) => {
@@ -391,19 +428,19 @@ module.exports = function(app,model) {
         return next();
       });
     },
-    fetchDomainsByUserId : function(userId,cb) {
-      let myName = "fetchDomainsByUserId()";
-      // users -> roles -> domains
-      app.models[model]
-      .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
-      .then(user => {
-        if(user===null) return cb();
-        cb(null,user);
-      })
-      .catch(err => {
-        cb(err);
-      });
-    },
+    // fetchDomainsByUserId : function(userId,cb) {
+    //   let myName = "fetchDomainsByUserId()";
+    //   // users -> roles -> domains
+    //   app.models[model]
+    //   .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+    //   .then(user => {
+    //     if(user===null) return cb();
+    //     cb(null,user);
+    //   })
+    //   .catch(err => {
+    //     cb(err);
+    //   });
+    // },
     setDefaultDomain : function(req,res,next) {
       let myName = "setDefaultDomain";
       return new Promise((resolve,reject) => {
@@ -415,12 +452,11 @@ module.exports = function(app,model) {
         }
         app.log("Setting default domain for user: " + userId + " to domain: " + domainId,myName,6);
         app.log("Current user is a member of target domain: " + app.tools.currentUserHasDomain(req,domainId),myName,6,"-->");
-
         let searchObj = {
           values:{defaultDomainId:domainId},
           options:{where:{id:userId}}
         };
-        app.log(JSON.stringify(searchObj),myName,6);
+        // app.log(JSON.stringify(searchObj),myName,6);
         app.controllers[model].__update(searchObj)
         .then(items => {
           if(items!==null || items!==0) {
@@ -449,23 +485,22 @@ module.exports = function(app,model) {
         return next();
       });
     },
-    fetchRolesByUserId : function(userId,cb) {
-      let myName = "fetchRolesByUserId()";
-      // users -> roles -> domains
-      app.models[model]
-      .findById(req.params.id,{include:[{model:app.models["roles"]}]})
-      .then(user => {
-        if(user===null) return cb();
-        cb(null,user);
-      })
-      .catch(err => {
-        cb(err);
-      });
-    },
+    // fetchRolesByUserId : function(userId,cb) {
+    //   let myName = "fetchRolesByUserId()";
+    //   // users -> roles -> domains
+    //   app.models[model]
+    //   .findById(req.params.id,{include:[{model:app.models["roles"]}]})
+    //   .then(user => {
+    //     if(user===null) return cb();
+    //     cb(null,user);
+    //   })
+    //   .catch(err => {
+    //     cb(err);
+    //   });
+    // },
     requestNewDomain : function(user,newDomainId) {
       let myName = "requestNewDomain()";
       app.log("Request to switch user " + user.id + " to domain: " + newDomainId,myName,6);
-      // let domainList = app.controllers["users"].compileDomainList(user);
       app.log(user.domains.length + " domains found",myName,6,"+ + + ");
       let targetDomain = user.domains.filter((v) => {
         return v.id == newDomainId;
@@ -479,20 +514,31 @@ module.exports = function(app,model) {
       return new Promise((resolve,reject) => {
         app.log("Compiling domain list",myName,6,"---");
         let domainList = [];
-        for(let c=0;c<user.roles.length;c++) {
-          for(let i=0;i<user.roles[c].domains.length;i++) {
+        for(let role of user.roles) {
+          for(let domain of role.domains) {
+            // Checks to see if domain is already in domainList
             let domainFound = domainList.filter(v => {
-              app.log(v.id + " : " + user.roles[c].domains[i].id,myName,6);
-              return v.id == user.roles[c].domains[i].id;
+              return v.id == domain.id;
             });
             if(domainFound.length<1) {
-              app.log("Adding domain: " + user.roles[c].domains[i].id + " to user's domain list",myName,6," - - - ");
-              domainList.push(user.roles[c].domains[i]);
-            } else {
-              app.log("Skipping domain: " + user.roles[c].domains[i].id + " already in user's domain list",myName,6," # # # ");
+              domainList.push(domain);
             }
           }
         }
+        // for(let c=0;c<user.roles.length;c++) {
+        //   for(let i=0;i<user.roles[c].domains.length;i++) {
+        //     let domainFound = domainList.filter(v => {
+        //       return v.id == user.roles[c].domains[i].id;
+        //     });
+        //     if(domainFound.length<1) {
+        //       app.log("Adding domain: " + user.roles[c].domains[i].id + " to user's domain list",myName,6," - - - ");
+        //       domainList.push(user.roles[c].domains[i]);
+        //     } else {
+        //       app.log("Skipping domain: " + user.roles[c].domains[i].id + " already in user's domain list",myName,6," # # # ");
+        //     }
+        //   }
+        // }
+        // app.log(JSON.stringify(domainList),myName,6);
         resolve(domainList);
       });
     },
