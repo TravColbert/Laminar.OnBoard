@@ -1,10 +1,11 @@
 extends index.pug
 
 block content
-  section.layout-width-sd.layout-col
-    .section-hdg.section-hdg-1 Congratulations #{user.firstname}
-    .layout-row.layout-width-1-1
-      .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-        .layout-width-1-1 You've been verified. Time to get started!
-        .layout-width-1-1
-          a.btn.primary(href="/login/") Log In!
+  section.verificationcomplete
+    article.main
+      .hdg.hdg-1 Congratulations #{user.firstname}
+      div
+        div
+          div You've been verified. Time to get started!
+          div
+            a.btn.primary(href="/login/") Log In!

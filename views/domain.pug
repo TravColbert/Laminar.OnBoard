@@ -1,47 +1,45 @@
 extends index.pug
 
 block content
-  section.layout-width-sd.layout-col
-    .section-hdg.section-hdg-1 "#{domain.name}" Domain 
-    .layout-row.layout-width-1-1
-      .item-container.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-5-8
-        - objectTypes = Object.keys(linkedObjects);
-        each objectType in objectTypes
-          - objectTypeList = "list-" + objectType;
-          +#{objectTypeList}(linkedObjects[objectType])          
-      .item-container.description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-3-8
-        .section-hdg.section-hdg-3 Domain Actions:
-        .itembanner.layout-col
-          .itemdetail.layout-col
-            label.label(for="domainname") Name:
-            .data #{domain.name}
-          .itemdetail.layout-col
-            label.label(for="domaindescription") Description:
-            .data #{domain.description}
-          - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
-          if(user.defaultDomainId!=domain.id)
-            a#domain_make_default_button.btn.tertiary.layout-size-x1.buttondomaindefault(href= defaultToDomain)
-              i.material-icons stars
-              span Make Default
-          #domain_edit_button_container.authUI(data-fetch="domain_edit" data-href="/domains/" + domain.id + "/actions/edit/")
-        .item-listing.layout-col
-          .itemdetail.layout-col
-            label.label(for="domainroles") Roles:
-            each role in domain.roles
-              - let targetLoc = "/roles/" + role.id + "/";
-              .subitem-listing.layout-col.layout-width-1-1.clickable(onclick="goTo('" + targetLoc + "')")
-                .data #{role.name}
-                .subdata #{role.description}
-          .itemdetail.layout-col
-            label.label Actions:
-              //- input.btnprimary.buttonconfirm(type="submit" id="submit" value="Confirm")
-            #domain_invite_button_container.authUI(data-fetch="domain_invite" data-href="/domains/" + domain.id + "/invite/")
-        .infotext.section-hdg.section-hdg-3 Edit Role View
-        .infotext You can edit a domain with this view.
-        .infotext Modify the details for the domain.
-        .infotext.section-hdg.section-hdg-3 Name
-        .infotext Enter the user's email address here. This should be a valid email address
-        .infotext.example.layout-col
-          .infotext.heading Examples:
-          .infotext tommy@test.com
-        .infotext.important This is a required field.
+  section.domain
+    article.main
+      .hdg.hdg-1 "#{domain.name}" Domain 
+      div
+        .item-container
+          - objectTypes = Object.keys(linkedObjects);
+          each objectType in objectTypes
+            - objectTypeList = "list-" + objectType;
+            +#{objectTypeList}(linkedObjects[objectType])          
+    article.secondary
+      .hdg.hdg-1 Domain Actions
+      .itembanner
+        .itemdetail
+          label.label(for="domainname") Name:
+          .data #{domain.name}
+        .itemdetail
+          label.label(for="domaindescription") Description:
+          .data #{domain.description}
+        - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
+        if(user.defaultDomainId!=domain.id)
+          a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
+            i.material-icons stars
+            span Make Default
+        #domain_edit_button_container.authUI(data-fetch="domain_edit" data-href="/domains/" + domain.id + "/actions/edit/")
+      .item-listing
+        .itemdetail
+          label.label(for="domainroles") Roles:
+          each role in domain.roles
+            - let targetLoc = "/roles/" + role.id + "/";
+            .subitem-listing.clickable(onclick="goTo('" + targetLoc + "')")
+              .data #{role.name}
+              .subdata #{role.description}
+      #domain_invite_button_container.authUI(data-fetch="domain_invite" data-href="/domains/" + domain.id + "/invite/")
+      .infotext.hdg.hdg-3 Edit Role View
+      .infotext You can edit a domain with this view.
+      .infotext Modify the details for the domain.
+      .infotext.hdg.hdg-3 Name
+      .infotext Enter the user's email address here. This should be a valid email address
+      .infotext.example
+        .infotext.heading Examples:
+        .infotext tommy@test.com
+      .infotext.important This is a required field.

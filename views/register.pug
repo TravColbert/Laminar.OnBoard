@@ -1,21 +1,22 @@
 extends index.pug
 
 block content
-  section#main.layout-col.layout-align-center
-    form#login-form(action="/register/" method="post")
-      .section-hdg.section-hdg-1 Register User
-      div
-        input#email(type="text" name="email" placeholder="email address" autofocus)
-      div
-        input#firstname(type="text" name="firstname" placeholder="first name")
-      div
-        input#lastname(type="text" name="lastname" placeholder="last name")
-      div
-        input#password(type="password" name="password" placeholder="Passphrase")
-      div
-        input#passwordverify(type="password" name="passwordverify" placeholder="Verify Passphrase")
-      div.layout-row.layout-justify-between
-        input#submit.btn.normal.layout-width-1-1(type="submit" value="Register")
+  section.register
+    article.main
+      form#login-form(action="/register/" method="post")
+        .hdg.hdg-1 Register User
+        div
+          input#email(type="text" name="email" placeholder="email address" autofocus)
+        div
+          input#firstname(type="text" name="firstname" placeholder="first name")
+        div
+          input#lastname(type="text" name="lastname" placeholder="last name")
+        div
+          input#password(type="password" name="password" placeholder="Passphrase")
+        div
+          input#passwordverify(type="password" name="passwordverify" placeholder="Verify Passphrase")
+        div.layout-row.layout-justify-between
+          input#submit.btn.normal(type="submit" value="Register")
 
 block scripts
   script(src='/js/bcrypt.min.js')

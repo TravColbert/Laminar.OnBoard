@@ -1,5 +1,4 @@
-section.layout-width-sd.layout-col
-  .section-hdg.section-hdg-1 Notes (#{notes.length})
-  .layout-row.layout-width-1-1
-    .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-      +list-notes(notes)
+- let notesCount = (notes) ? notes.length : 0; 
+if(notesCount)
+  .hdg.hdg-1 Notes (#{notesCount})
+  +list-notes(notes)

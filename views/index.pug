@@ -1,31 +1,37 @@
 doctype html
 
 mixin login-or-register(loginText,registerText)
-  .layout-width-1-1.layout-row.layout-md-col.layout-wrap
-    .app-features.layout-width-1-2.layout-md-width-1-1.layout-sm-width-1-1.layout-xs-width-1-1.clickable(onclick="goTo('/login/')")
-      .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
+  div
+    .app-features.clickable(onclick="goTo('/login/')")
+      div
         i.material-icons.big-icon verified_user
-      .layout-width-3-4.text-align-justify= loginText
-    .app-features.layout-width-1-2.layout-md-width-1-1.layout-sm-width-1-1.layout-xs-width-1-1.clickable(onclick="goTo('/register/')")
-      .layout-width-1-4.layout-col.text-align-center.layout-justify-center.layout-align-center.textshadow
+      div= loginText
+    .app-features.clickable(onclick="goTo('/register/')")
+      div
         i.material-icons.big-icon fingerprint
-      .layout-width-3-4.text-align-justify= registerText
+      div= registerText
 
 mixin create-or-see-domains(domainName)
-  .item-listing.layout-width-1-1.layout-row
-    .layout-width-1-2
+  div
+    div
       a.btn.secondary(href="/domains/")
         i.material-icons list_alt
         span #{domainName} List
-    .layout-width-1-2
+    div
       a.btn.primary(href="/actions/create/domains/")
         i.material-icons check_circle_outline
         span Create #{domainName}
 
+mixin list-user-invites
+  if(invites && invites.length>0)
+    article#invites
+      .hdg.hdg-1 Invites (#{user.domains.length})
+      include invites
+
 mixin list-user-domains(domainText)
-  .layout-width-1-1.layout-col
-    .section-hdg.section-hdg-1 #{domainText} (#{user.domains.length})
-    .list-container.layout-width-1-1.layout-row.layout-md-col.layout-wrap
+  article#domains
+    .hdg.hdg-1 #{domainText} (#{user.domains.length})
+    .list-container
       if(user.domains)
         each domain in user.domains
           if domain.name!="Trash" && domain.name!="Default"
@@ -42,7 +48,7 @@ mixin list-user-domains(domainText)
                       a#domain_make_default_button.btn.tertiary.layout-size-x1.buttondomaindefault(href= defaultToDomain)
                         i.material-icons stars
                         span Make Default
-                  .layout-width-1-1.layout-col
+                  div
                     if(domain.notes)
                       .layout-row.layout-width-1-1 Notes:
                       each note in domain.notes
@@ -66,9 +72,9 @@ html
   if(headoptions)
     for headoption in headoptions
       +link(headoption)
-  body.header-static.footer-static.layout-align-center
+  body
     include navigation.pug
-    #main.content.layout-height-1-1.layout-width-1-1.layout-col.layout-align-center
+    .content
       include messages.pug
       block content
     block scripts

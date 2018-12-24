@@ -1,25 +1,24 @@
 mixin list-notes(notes)
-  #note_add_button_container.addnote.layout-row.layout-justify-between.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
-  ul.itemlist
+  //- #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
+  .itemlist
     each note in notes
       - let targetLoc = "/notes/" + note.id + "/";
-      //- li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
-      li.layout-col
-        .itemdetail.layout-col
+      .item.clickable(onclick="goTo('" + targetLoc + "')")
+        .itemdetail
           .label Name:
           .data #[a(href="/notes/" + note.id + "/") #{note.name}]
         - let description = note.description || null
         if description
-          .itemdetail.layout-col
+          .itemdetail
             .label Description:
             .data #{note.description}
 
 mixin list-domains(domains)
-  #domain_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
-  ul.itemlist
+  //- #domain_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
+  .itemlist
     each domain in domains
       - let targetLoc = "/domains/" + domain.id + "/";
-      li.layout-col.clickable(onclick="goTo('" + targetLoc + "')")
+      .item.clickable(onclick="goTo('" + targetLoc + "')")
         .itemdetail.layout-col
           label.label Name:
           .data #{domain.name}
