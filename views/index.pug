@@ -31,31 +31,31 @@ mixin list-user-invites
 mixin list-user-domains(domainText)
   article#domains
     .hdg.hdg-1 #{domainText} (#{user.domains.length})
-    .list-container
+    .item-listing
       if(user.domains)
         each domain in user.domains
           if domain.name!="Trash" && domain.name!="Default"
-            .item-container.layout-width-1-2.layout-md-width-1-1
-              .item-listing.layout-width-1-1.layout-height-1-1.layout-col
-                .layout-col
-                  .itemhead.layout-row #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
+            .item-container
+              .item-listing
+                div
+                  .itemhead #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
                     if(user.defaultDomainId==domain.id)
                       | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") stars]
-                  .layout-col
+                  div
                     .itemdetail #{domain.description}
                     - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
                     if(user.defaultDomainId!=domain.id)
-                      a#domain_make_default_button.btn.tertiary.layout-size-x1.buttondomaindefault(href= defaultToDomain)
+                      a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
                         i.material-icons stars
                         span Make Default
                   div
                     if(domain.notes)
-                      .layout-row.layout-width-1-1 Notes:
+                      div Notes:
                       each note in domain.notes
-                        .item-listing.layout-row
-                          .layout-row.layout-align-center
-                            i.material-icons.text-grow-x3 receipt
-                          .layout-col
+                        .item-listing
+                          div
+                            i.material-icons receipt
+                          div
                             .nobreak #{note.name}
                             .layout-row #{note.description}
 
@@ -74,7 +74,8 @@ html
       +link(headoption)
   body
     include navigation.pug
-    .content
+    main
+      block aside
       include messages.pug
       block content
     block scripts

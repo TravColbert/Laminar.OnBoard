@@ -1,12 +1,22 @@
 extends index.pug
 
+block aside
+  aside.sidebar
+    .title Domain List Actions
+    .nav
+      .navitem One item
+      .navitem Two 
+      .navitem Three
+    .actions.secondary
+      #domain_add_button_container.addrole.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
+
 block content
   section.domain
     article.main
       include domains-list
-    article.secondary
-      .hdg.hdg-1 Domain List Actions
-      #domain_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
+    //- article.secondary
+    //-   .hdg.hdg-1 Domain List Actions
+    //-   #domain_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
 
     //- .section-hdg.section-hdg-1 Domains (#{domains.length})
     //- .layout-row.layout-width-1-1

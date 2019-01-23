@@ -1,7 +1,7 @@
 extends index.pug
 
 block content
-  section#login
+  section.login
     form#login-form(action="/login" method="post")
       input#secretsauce(type="hidden" name="secretsauce" value=secretSauce)
       .hdg.hdg-1 Log In

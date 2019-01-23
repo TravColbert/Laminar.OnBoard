@@ -1,5 +1,16 @@
 extends index.pug
 
+block aside
+  aside.sidebar
+    .title Note Actions
+    .nav
+      .navitem One item
+      .navitem Two 
+      .navitem Three
+    .actions.secondary
+      #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
+      #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
+
 block content
   section.note
     article.main
@@ -25,13 +36,12 @@ block content
                 i.material-icons.toggle.toggleon toggle_on
           .itemdetail
             label.label Body:
-            .data
-              pre #{note.body}
-    article.secondary
-      .hdg.hdg-1 Note Actions
-      #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
-      .description
-        .infotext.hdg.hdg-3 Note View
-        .infotext This is a list of users. You may edit the user's details by clicking on a user entry.
-        .infotext Click the "Add User" button to create a new user.
-        .infotext Each user is given a user ID that is used by stockr to keep track of the user and the user's cases.
+            .notebody !{note.html}
+    //- article.secondary
+    //-   .hdg.hdg-1 Note Actions
+    //-   #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
+    //-   .description
+    //-     .infotext.hdg.hdg-3 Note View
+    //-     .infotext This is a list of users. You may edit the user's details by clicking on a user entry.
+    //-     .infotext Click the "Add User" button to create a new user.
+    //-     .infotext Each user is given a user ID that is used by stockr to keep track of the user and the user's cases.

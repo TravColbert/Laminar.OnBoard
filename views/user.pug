@@ -1,11 +1,20 @@
 extends index.pug
 
+block aside
+  aside.sidebar
+    .title User Actions
+    .nav
+      .navitem One item
+      .navitem Two 
+      .navitem Three
+    .actions.secondary
+      #user_edit_button_container.edituser.layout-row.layout-justify-between.authUI(data-fetch="user_edit" data-href="/users/edit")
+      #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/users/add")
+
 block content
-  section.layout-width-sd.layout-col
+  section
     .section-hdg.section-hdg-1 User #{user.fullname}
-    .layout-row.layout-width-1-1
-      //- .layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
-      .user-listing.layout-col.layout-width-1-1.layout-sd-width-5-8.layout-lg-width-5-8.layout-xl-width-4-8
+    .item-listing
         .itemdetail.layout-col
           label.label(for="email") Email:
           .data #{user.email}
@@ -41,10 +50,5 @@ block content
           label.label Roles:
             each role in user.roles
               .data #[a(href="/roles/" + role.id + "/") #{role.name}]
-        #user_edit_button_container.edituser.layout-row.layout-justify-between.authUI(data-fetch="user_edit" data-href="/users/edit")
-        #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/users/add")
-      .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
-        .infotext.section-hdg.section-hdg-3 User List View
-        .infotext This is a list of users. You may edit the user's details by clicking on a user entry.
-        .infotext Click the "Add User" button to create a new user.
-        .infotext Each user is given a user ID that is used by stockr to keep track of the user and the user's cases.
+        //- #user_edit_button_container.edituser.layout-row.layout-justify-between.authUI(data-fetch="user_edit" data-href="/users/edit")
+        //- #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/users/add")

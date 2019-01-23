@@ -1,5 +1,27 @@
 extends index.pug
 
+block aside
+  aside.sidebar
+    .title Sidebar?
+    .nav
+      .navitem One item
+      .navitem Two 
+      .navitem Three
+    .nav
+      if(user)
+        +list-user-invites()
+        article#notes
+          include notes-list
+        +list-user-domains("Domain")
+        +create-or-see-domains("Domain")
+      if(!user)
+        if(notes && notes.length>0)
+          article
+            include notes-list
+        article#getstarted
+          .hdg.hdg-2 Get Started!
+          +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
+
 block content
   section.home
     article#welcome
@@ -53,5 +75,5 @@ block content
         article
           include notes-list
       article#getstarted
-        h2 Get Started!
+        .hdg.hdg-2 Get Started!
         +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")

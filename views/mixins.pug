@@ -1,6 +1,6 @@
 mixin list-notes(notes)
   //- #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
-  .itemlist
+  .item-listing
     each note in notes
       - let targetLoc = "/notes/" + note.id + "/";
       .item.clickable(onclick="goTo('" + targetLoc + "')")
@@ -15,7 +15,7 @@ mixin list-notes(notes)
 
 mixin list-domains(domains)
   //- #domain_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
-  .itemlist
+  .item-listing
     each domain in domains
       - let targetLoc = "/domains/" + domain.id + "/";
       .item.clickable(onclick="goTo('" + targetLoc + "')")
