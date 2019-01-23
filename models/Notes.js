@@ -1,3 +1,4 @@
+const showdown = require('showdown')
 module.exports = function(Sequelize,app) {
   return {
     tablename:"notes",
@@ -23,8 +24,14 @@ module.exports = function(Sequelize,app) {
       }
     },
     requiredFields: ["name"],
-    optionalFields: ["id","description","body","public","appid"],
+    optionalFields: ["id","description","body","html","public","appid"],
     options:{
+      getterMethods: {
+        html() {
+          let converter = new showdown.Converter()
+          return converter.makeHtml(this.body)
+        }
+      },
       hooks:{
         afterCreate:(note) => {
           let myName = "note_model:afterCreate()";
