@@ -1,0 +1,110 @@
+.flexy {
+  display: flex;
+}
+
+.flexy-column {
+  @extend .flexy;
+  flex-direction: column;
+}
+
+.flexy-row {
+  @extend .flexy;
+  flex-direction: row;
+}
+
+html,
+body {
+  @extend .flexy-column;
+  margin: 0;
+  height: 100vh;
+}
+
+header, nav {
+  @extend .flexy-column;
+  width: 100%;
+}
+
+main {
+  @extend .flexy-row;
+  width: 100%;
+}
+
+header {
+  position: sticky;
+  top: 0;
+}
+
+header {
+  nav {
+    @extend .flexy-row;
+  }
+}
+
+nav {
+  ul {
+    @extend .flexy-row;
+  }
+}
+
+footer {
+  @extend .flexy-row;
+  justify-content: space-between;
+  position: sticky;
+  bottom: 0;
+}
+
+section > *,
+aside > * {
+  padding: 8px;
+} 
+
+main {
+  flex-wrap: wrap;
+  flex: 1 0 auto;
+  aside {
+    @extend .flexy-column;
+    order: 2;
+    width: 100%;
+    @media only screen and (min-width: 601px) {
+      width: 30%;
+    }
+  }
+
+  section.main, 
+  section.home, 
+  section.note {
+    @extend .flexy-column;
+    order: 1;
+    width: 100%;
+    @media only screen and (min-width: 601px) {
+      width: 70%
+    }
+  }
+
+  section.secondary, section.messages {
+    @extend .flexy-column;
+    order: 3;
+    width: 100%;
+  }
+}
+
+.hidden {
+  visibility: hidden;
+  display: none;
+}
+
+input#public:checked ~ .togglepublicfalse {
+  display: none;
+}
+
+input#public:not(:checked) ~ .togglepublicfalse {
+  display: flex;
+}
+
+input#public:checked ~ .togglepublictrue {
+  display: flex;
+}
+
+input#public:not(:checked) ~ .togglepublictrue {
+  display: none;
+}

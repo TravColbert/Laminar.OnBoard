@@ -1,0 +1,101 @@
+.flexy, .flexy-row, footer, nav ul, header nav, main, .flexy-column, main section.secondary, main section.messages, main section.main,
+main section.home,
+main section.note, main aside, header, nav, html,
+body {
+  display: flex;
+}
+
+.flexy-column, main section.secondary, main section.messages, main section.main,
+main section.home,
+main section.note, main aside, header, nav, html,
+body {
+  flex-direction: column;
+}
+
+.flexy-row, footer, nav ul, header nav, main {
+  flex-direction: row;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100vh;
+}
+
+header, nav {
+  width: 100%;
+}
+
+main {
+  width: 100%;
+}
+
+header {
+  position: sticky;
+  top: 0;
+}
+
+footer {
+  justify-content: space-between;
+  position: sticky;
+  bottom: 0;
+}
+
+section > *,
+aside > * {
+  padding: 8px;
+}
+
+main {
+  flex-wrap: wrap;
+  flex: 1 0 auto;
+}
+main aside {
+  order: 2;
+  width: 100%;
+}
+@media only screen and (min-width: 601px) {
+  main aside {
+    width: 30%;
+  }
+}
+main section.main,
+main section.home,
+main section.note {
+  order: 1;
+  width: 100%;
+}
+@media only screen and (min-width: 601px) {
+  main section.main,
+main section.home,
+main section.note {
+    width: 70%;
+  }
+}
+main section.secondary, main section.messages {
+  order: 3;
+  width: 100%;
+}
+
+.hidden {
+  visibility: hidden;
+  display: none;
+}
+
+input#public:checked ~ .togglepublicfalse {
+  display: none;
+}
+
+input#public:not(:checked) ~ .togglepublicfalse {
+  display: flex;
+}
+
+input#public:checked ~ .togglepublictrue {
+  display: flex;
+}
+
+input#public:not(:checked) ~ .togglepublictrue {
+  display: none;
+}
+
+/*# sourceMappingURL=laminar.css.map */
