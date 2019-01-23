@@ -4,9 +4,8 @@ header
       div#app-title
         a(href="/")= title
       label#menu-hamburger(for="show-menu") &#9776;
-    input#show-menu(type="checkbox" role="button")
+    input#show-menu.hidden(type="checkbox" role="button")
     ul
-      li
       each item in menu
         - var link = item.link;
         - var text = item.text;
