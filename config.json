@@ -11,7 +11,7 @@
   "smtpFromName":"OnBoard",
   "smtpFromAddr":"us@yourdomain.net",
   "smtpDomain":"yourdomain.net",
-  "homeView":"home",
+  "homeView":"home-default",
   "homeModule":false,
   "loginPage":"/login",
   "logLevel":6,
