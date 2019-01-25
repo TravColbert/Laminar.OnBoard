@@ -12,11 +12,22 @@
   flex-direction: row;
 }
 
+.sticky-top {
+  position: sticky;
+  top: 0;
+}
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+}
+
 html,
 body {
   @extend .flexy-column;
   margin: 0;
   height: 100vh;
+  font-size: 16px;
 }
 
 header, nav {
@@ -30,8 +41,7 @@ main {
 }
 
 header {
-  position: sticky;
-  top: 0;
+  @extend .sticky-top;
 }
 
 header {
@@ -41,16 +51,39 @@ header {
 }
 
 nav {
+  margin: 8px 0 0;
+  a {
+    text-decoration: none;
+  }
   ul {
     @extend .flexy-row;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    li {
+      display: flex;
+      flex-direction: row;
+      margin: 0 8px 0 0;
+      a {
+        flex-direction: row;
+        display: flex;
+        align-items: center;
+      }
+    }
   }
+}
+
+#menu-title {
+  display: flex;
+  flex-direction: row;
+  flex: 1 0 auto;
+  font-size: 1.5em;
 }
 
 footer {
   @extend .flexy-row;
   justify-content: space-between;
-  position: sticky;
-  bottom: 0;
+  @extend .sticky-bottom;
 }
 
 section > *,

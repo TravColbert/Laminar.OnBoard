@@ -61,8 +61,18 @@ footer {
   flex-shrink: 0;
   /* flex-basis: 0%; */
 }
-article,
 section {
+  flex-direction: row;
+}
+section.login,
+section.register {
+  justify-content: center;
+}
+
+section.home {
+  flex-direction: column;
+}
+article {
   flex-direction: column;
 }
 .content {
@@ -76,4 +86,19 @@ div {
 header,
 footer {
   align-items: baseline;
+}
+.main {
+  width: 75%;
+}
+.secondary {
+  width: 25%;
+}
+.item-listing {
+  flex-direction: column;
+}
+.item {
+  flex-direction: column;
+}
+.description {
+  flex-direction: column;
 }

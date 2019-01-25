@@ -586,7 +586,7 @@ module.exports = function(app,sequelize) {
     })
     .then(notes => {
       req.appData.notes = notes;
-      app.log(JSON.stringify(notes),myName,6);
+      // app.log(JSON.stringify(notes),myName,6);
       app.log("Checking for custom 'home' module: " + app.locals.homeModule,myName,6);
       if(app.homeModule) {
         // app.log("Inserting custom 'home' module...",myName,6)

@@ -16,10 +16,21 @@ body {
   flex-direction: row;
 }
 
+.sticky-top, header {
+  position: sticky;
+  top: 0;
+}
+
+.sticky-bottom, footer {
+  position: sticky;
+  bottom: 0;
+}
+
 html,
 body {
   margin: 0;
   height: 100vh;
+  font-size: 16px;
 }
 
 header, nav {
@@ -30,15 +41,37 @@ main {
   width: 100%;
 }
 
-header {
-  position: sticky;
-  top: 0;
+nav {
+  margin: 8px 0 0;
+}
+nav a {
+  text-decoration: none;
+}
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+nav ul li {
+  display: flex;
+  flex-direction: row;
+  margin: 0 8px 0 0;
+}
+nav ul li a {
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+}
+
+#menu-title {
+  display: flex;
+  flex-direction: row;
+  flex: 1 0 auto;
+  font-size: 1.5em;
 }
 
 footer {
   justify-content: space-between;
-  position: sticky;
-  bottom: 0;
 }
 
 section > *,
