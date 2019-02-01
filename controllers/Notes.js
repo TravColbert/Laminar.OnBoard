@@ -75,7 +75,12 @@ module.exports = function (app, model) {
         where: {
           'id': req.params.id
         },
-        include: []
+        include: [
+          {
+            model: app.models['users'],
+            as: 'user'
+          }
+        ]
       }
       if (!app.tools.isAuthenticated(req)) {
         // User is not authenticated...
