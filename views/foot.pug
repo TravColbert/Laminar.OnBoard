@@ -1,13 +1,14 @@
 footer
-  div
-    .copyright &copy;2017 Travis Colbert
-    .madewith Made with Laminar
-  div
-    - userName = account || null;
-    //- - if(userName) userName = userName[0].toUpperCase() + userName.slice(1);
-    div Hi &nbsp;#[a(href='/profile/') #{userName}]
-  div
-    - let totalTime = stopTime - startTime;
-    div Generated in #{totalTime}ms
+  nav
+    div
+      .copyright &copy;2017 Travis Colbert
+      .madewith Made with Laminar
+    div
+      - userName = account || null;
+      //- - if(userName) userName = userName[0].toUpperCase() + userName.slice(1);
+      div Hi &nbsp;#[a(href='/profile/') #{userName}]
+    div
+      - let totalTime = stopTime - startTime;
+      div Generated in #{totalTime}ms
 script(src='/js/authUI.js')
 script(src='/js/onboard.js')
