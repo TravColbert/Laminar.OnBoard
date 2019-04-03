@@ -12,52 +12,51 @@ mixin login-or-register(loginText,registerText)
       div= registerText
 
 mixin create-or-see-domains(domainName)
-  div
-    div
-      a.btn.secondary(href="/domains/")
-        i.material-icons list_alt
-        span #{domainName} List
-    div
-      a.btn.primary(href="/actions/create/domains/")
-        i.material-icons check_circle_outline
-        span Create #{domainName}
+  article#createorseedomains
+    .hdg.hdg-2 Domain Actions
+    .item-listing
+      .item-container
+        a.btn.secondary(href="/domains/")
+          i.material-icons list_alt
+          span #{domainName} List
+      .item-container
+        a.btn.primary(href="/actions/create/domains/")
+          i.material-icons check_circle_outline
+          span Create #{domainName}
 
 mixin list-user-invites
   if(invites && invites.length>0)
     article#invites
-      .hdg.hdg-1 Invites (#{user.domains.length})
+      .hdg.hdg-2 Invites (#{user.domains.length})
       include invites
 
 mixin list-user-domains(domainText)
   article#domains
-    .hdg.hdg-1 #{domainText} (#{user.domains.length})
+    .hdg.hdg-2 #{domainText}
     .item-listing
       if(user.domains)
         each domain in user.domains
           if domain.name!="Trash" && domain.name!="Default"
             .item-container
               .item-listing
-                div
-                  .itemhead #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
-                    if(user.defaultDomainId==domain.id)
-                      | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") stars]
-                  div
-                    .itemdetail #{domain.description}
-                    - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
-                    if(user.defaultDomainId!=domain.id)
-                      a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
-                        i.material-icons stars
-                        span Make Default
-                  div
-                    if(domain.notes)
-                      div Notes:
-                      each note in domain.notes
-                        .item-listing
-                          div
-                            i.material-icons receipt
-                          div
-                            .nobreak #{note.name}
-                            .layout-row #{note.description}
+                .itemhead #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
+                  if(user.defaultDomainId==domain.id)
+                    | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") stars]
+                .itemdetail #{domain.description}
+                  - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
+                  if(user.defaultDomainId!=domain.id)
+                    a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
+                      i.material-icons stars
+                      span Make Default
+                if(domain.notes)
+                  div Notes:
+                  each note in domain.notes
+                    .item-listing
+                      div
+                        i.material-icons receipt
+                      div
+                        .nobreak #{note.name}
+                        .layout-row #{note.description}
 
 mixin link(options)
   if(options.type=="link")
@@ -73,10 +72,12 @@ html
     for headoption in headoptions
       +link(headoption)
   body
+    //- canvas#bgcanvas
     include navigation.pug
     main
-      block aside
-      include messages.pug
+      //- block aside
+      //- include messages.pug
       block content
+      block aside
     block scripts
   include foot.pug

@@ -2,51 +2,53 @@ extends index.pug
 
 block aside
   aside.sidebar
-    .title User Actions
-    .nav
-      .navitem One item
-      .navitem Two 
-      .navitem Three
-    .actions.secondary
-      #user_edit_button_container.edituser.layout-row.layout-justify-between.authUI(data-fetch="user_edit" data-href="/users/edit")
-      #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/users/add")
+    article.useractions
+      .hdg.hdg-2 User Actions
+      //- .nav
+      //-   .navitem One item
+      //-   .navitem Two 
+      //-   .navitem Three
+      .actions.secondary
+        #user_edit_button_container.edituser.layout-row.layout-justify-between.authUI(data-fetch="user_edit" data-href="/users/edit")
+        #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/users/add")
 
 block content
-  section
-    .section-hdg.section-hdg-1 User #{user.fullname}
-    .item-listing
-        .itemdetail.layout-col
+  section.user
+    article.main
+      .hdg.hdg-2 User: #{user.fullname}
+      .item-listing
+        .itemdetail
           label.label(for="email") Email:
           .data #{user.email}
-        .itemdetail.layout-col
+        .itemdetail
           label.label(for="partnum") First Name:
           .data #{user.firstname}
-        .itemdetail.layout-col
+        .itemdetail
           label.label(for="partnum") Last Name:
           .data #{user.lastname}
-        .itemdetail.layout-col
+        .itemdetail
           label.label Verified:
           .data
-            input#verified.hidden(type="checkbox" name="public" value="true" disabled checked=!!(user.verified))
-            label.togglefalse(for="verified")
+            input#verified.hidden(type="checkbox" name="verified" value="true" disabled checked=!!(user.verified))
+            label.toggleverifiedfalse(for="verified")
               i.material-icons.toggle.toggleoff toggle_off
-            label.toggletrue(for="verified")
+            label.toggleverifiedtrue(for="verified")
               i.material-icons.toggle.toggleon toggle_on
-        .itemdetail.layout-col
+        .itemdetail
           label.label Disabled:
           .data
-            input#disabled.hidden(type="checkbox" name="public" value="true" disabled checked=!!(user.disabled))
-            label.togglefalse(for="disabled")
+            input#disabled.hidden(type="checkbox" name="disabled" value="true" disabled checked=!!(user.disabled))
+            label.toggledisabledfalse(for="disabled")
               i.material-icons.toggle.toggleoff toggle_off
-            label.toggletrue(for="disabled")
+            label.toggledisabledtrue(for="disabled")
               i.material-icons.toggle.toggleon toggle_on
-        .itemdetail.layout-col
+        .itemdetail
           label.label(for="partnum") Domains:
             each role in user.roles
               each domain in role.domains
                 - let starred = (domain.id==user.defaultDomainId) ? "<- (default)" : null;
                 .data #[a(href="/domains/" + domain.id + "/") #{domain.name} #{starred}]
-        .itemdetail.layout-col
+        .itemdetail
           label.label Roles:
             each role in user.roles
               .data #[a(href="/roles/" + role.id + "/") #{role.name}]

@@ -2,18 +2,12 @@ extends index.pug
 
 block aside
   aside.sidebar
-    .title Note List Actions
-    .nav
-      .navitem One item
-      .navitem Two 
-      .navitem Three
-    .actions.secondary
-      #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
+    article.noteactions
+      .hdg.hdg-2 Note Actions
+      .actions.secondary
+        #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
 
 block content
   section.notes
     article.main
       include notes-list
-    //- article.secondary
-    //-   .hdg.hdg-1 Note List Actions
-    //-   #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")

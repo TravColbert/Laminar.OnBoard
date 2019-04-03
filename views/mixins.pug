@@ -1,12 +1,11 @@
 mixin list-notes(notes)
-  //- #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
-  .item-listing
+  .item-listing.notes
     each note in notes
       - let targetLoc = "/notes/" + note.id + "/";
       .item.clickable(onclick="goTo('" + targetLoc + "')")
         .itemdetail
           .label Name:
-          .data #[a(href="/notes/" + note.id + "/") #{note.name}]
+          .data #{note.name}
         - let description = note.description || null
         if description
           .itemdetail
@@ -14,13 +13,13 @@ mixin list-notes(notes)
             .data #{note.description}
 
 mixin list-blogs(notes)
-  .item-listing
+  .item-listing.blogs
     each note in notes
       - let targetLoc = "/blog/" + note.id + "/";
       .item.clickable(onclick="goTo('" + targetLoc + "')")
         .itemdetail
           .label Name:
-          .data #[a(href="/blog/" + note.id + "/") #{note.name}]
+          .data #{note.name}
         - let description = note.description || null
         if description
           .itemdetail
@@ -28,15 +27,10 @@ mixin list-blogs(notes)
             .data #{note.description}
 
 mixin list-articles(notes)
-  //- #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
-  .item-listing
+  .item-listing.articles
     each note in notes
-      //- - console.log(note.domain);
-      //- - console.log(note.user);
-      - let targetLoc = "/notes/" + note.id + "/";
+      - let targetLoc = "/blog/" + note.id + "/";
       .item.clickable(onclick="goTo('" + targetLoc + "')")
-        .itemdetail.articledomain.articlemeta
-          .data #{note.domain.name}
         .itemdetail.articletitle
           .data #{note.name}
         - let description = note.description || null
@@ -44,22 +38,34 @@ mixin list-articles(notes)
           .itemdetail.articledescription
             .data #{note.description}
         .itemdetail.articleauthor.articlemeta
-          .data By: #{note.user.firstname} #{note.user.lastname}
+          .data by: #{note.user.firstname} #{note.user.lastname}
         .itemdetail.articledate.articlemeta
           - let date = new Date(Date.parse(note.updatedAt))
-          .data On: #{date.toLocaleDateString()}
+          .data on: #{date.toLocaleDateString()}
+        .itemdetail.articledomain.articlemeta
+          .data category: #{note.domain.name}
+    //- - }
 
 mixin list-domains(domains)
   //- #domain_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
-  .item-listing
+  .item-listing.domains
     each domain in domains
       - let targetLoc = "/domains/" + domain.id + "/";
       .item.clickable(onclick="goTo('" + targetLoc + "')")
-        .itemdetail.layout-col
+        .itemdetail
           label.label Name:
           .data #{domain.name}
         - let description = domain.description || null
         if description
-          .itemdetail.layout-col
+          .itemdetail
             label.label Description:
             .data #{domain.description}
+
+mixin select-domains(domains,defaultId)
+  .item-listing.domains
+    select#domain(name="domainId")
+      each domain in domains
+        if defaultId == domain.id
+          option(value=domain.id selected=true) #{domain.name}
+        else 
+          option(value=domain.id selected=false) #{domain.name}

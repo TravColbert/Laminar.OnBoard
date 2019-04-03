@@ -1,14 +1,24 @@
 footer
-  nav
-    div
+  nav(role=navigation)
+    div.navleft
       .copyright &copy;2017 Travis Colbert
       .madewith Made with Laminar
-    div
+    div.navcenter
       - userName = account || null;
       //- - if(userName) userName = userName[0].toUpperCase() + userName.slice(1);
       div Hi &nbsp;#[a(href='/profile/') #{userName}]
-    div
-      - let totalTime = stopTime - startTime;
-      div Generated in #{totalTime}ms
+    div.navlinks
+      ul
+        li
+          a(href="mailto:trav.colbert@gmail.com")
+            i.material-icons.menu-icon mail_outline
+        //- each item in menu
+        //-   - var link = item.link;
+        //-   - var text = item.text;
+        //-   li
+        //-     a(href=link)
+        //-       i.material-icons.menu-icon #{item.icon}
+        //-       .nobreak #{text}
+
 script(src='/js/authUI.js')
 script(src='/js/onboard.js')

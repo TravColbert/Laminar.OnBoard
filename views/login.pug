@@ -1,18 +1,19 @@
 extends index.pug
 
 block content
-  section.login
-    form#login-form(action="/login" method="post")
-      input#secretsauce(type="hidden" name="secretsauce" value=secretSauce)
-      .hdg.hdg-1 Log In
-      div
-        input#email(type="text" name="email" placeholder="email address" autofocus)
-      div
-        input#password(type="password" name="password" placeholder="Passphrase")
-      div
-        input#submit.btn.normal(type="submit" value="Login")
-      div Not a user?&nbsp;
-        a(href="/register/") Register here.
+  section.home
+    article#login
+      form#login-form(action="/login" method="post")
+        input#secretsauce(type="hidden" name="secretsauce" value=secretSauce)
+        .hdg.hdg-1 Sign In
+        div.forminput
+          input#email(type="text" name="email" placeholder="email address" autofocus)
+        div.forminput
+          input#password(type="password" name="password" placeholder="passphrase")
+        div.forminput
+          input#submit.btn.normal(type="submit" value="Go")
+        div Not a user?&nbsp;
+          a(href="/register/") Register here.
 
 block scripts
   script(src='/js/bcrypt.min.js')

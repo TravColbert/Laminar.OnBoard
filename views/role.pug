@@ -11,24 +11,28 @@ mixin userpill(title,link,icon)
 
 block aside
   aside.sidebar
-    .title Role Actions
-    .nav
-      .navitem One item
-      .navitem Two 
-      .navitem Three
-    .actions.role-actions.secondary
-      #role_edit_button_container.authUI(data-fetch="role_edit" data-href="/roles/" + role.id + "/actions/edit/")
-      //- #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
-    .actions.user-actions.secondary
-      #role_add_user_button_container.authUI(data-fetch="role_add_user" data-href="/roles/" + role.id + "/actions/adduser/")
+    article.roleactions
+      .hdg.hdg-2 Role Actions
+      //- .nav
+      //-   .navitem One item
+      //-   .navitem Two 
+      //-   .navitem Three
+      .actions.role-actions.secondary
+        #role_edit_button_container.authUI(data-fetch="role_edit" data-href="/roles/" + role.id + "/actions/edit/")
+        //- #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
+      .actions.user-actions.secondary
+        #role_add_user_button_container.authUI(data-fetch="role_add_user" data-href="/roles/" + role.id + "/actions/adduser/")
 
 block content
-  section
-    .section-hdg.section-hdg-1 Role Detail
-    div
+  section.role
+    article.main
+      .hdg.hdg-2 Role Detail
       .itempanel
         .itembanner
-          .itemhead Role: #{role.name}
+          //- .itemhead Role: #{role.name}
+          .itemdetail
+            label.label Name:
+            .data #{role.name}
           .itemdetail
             label.label(for="roledescription") Description:
             #roledescription.data #{role.description}
@@ -45,14 +49,11 @@ block content
           //- #role_edit_button_container.authUI(data-fetch="role_edit" data-href="/roles/" + role.id + "/actions/edit/")
         .item-listing
           .itemdetail
-            label.label Users In This Role
+            .hdg.hdg-3 Users In This Role:
             div
               each user in role.users
                 +userpill(user.fullname,`/users/${user.id}/`,"face")
               //- +userpill("add user",`/roles/${role.id}/actions/adduser/`,"check_circle_outline")
-          .itemdetail
-            label.label Actions:
-            .data
               //- input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")
               //- #role_add_user_button_container.authUI(data-fetch="role_add_user" data-href="/roles/" + role.id + "/actions/adduser/")
               //- a.btn.submit(href="/roles/" + role.id + "/adduser/") Add User

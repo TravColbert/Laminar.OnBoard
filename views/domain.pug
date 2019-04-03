@@ -2,28 +2,29 @@ extends index.pug
 
 block aside
   aside.sidebar
-    .title Domain Actions
-    .nav
-      .navitem One item
-      .navitem Two 
-      .navitem Three
-    .actions.secondary
-      .itembanner
-        .itemdetail
-          label.label(for="domainname") Name:
-          .data #{domain.name}
-        .itemdetail
-          label.label(for="domaindescription") Description:
-          .data #{domain.description}
-        - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
-        if(user.defaultDomainId!=domain.id)
-          a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
-            i.material-icons stars
-            span Make Default
-        #domain_edit_button_container.authUI(data-fetch="domain_edit" data-href="/domains/" + domain.id + "/actions/edit/")
-      .item
-        .itemdetail
-          label.label(for="domainroles") Roles:
+    article.domainactions
+      .hdg.hdg-2 Domain Actions
+      //- .nav
+      //-   .navitem One item
+      //-   .navitem Two 
+      //-   .navitem Three
+      .actions.primary
+        .item-listing
+          .itemdetail
+            label.label(for="domainname") Name:
+            .data #{domain.name}
+          .itemdetail
+            label.label(for="domaindescription") Description:
+            .data #{domain.description}
+          - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
+          if(user.defaultDomainId!=domain.id)
+            a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
+              i.material-icons stars
+              span Make Default
+          #domain_edit_button_container.authUI(data-fetch="domain_edit" data-href="/domains/" + domain.id + "/actions/edit/")
+      .actions.secondary
+        .hdg.hdg-2 Roles
+        .item-listing
           each role in domain.roles
             - let targetLoc = "/roles/" + role.id + "/";
             .subitem-listing.clickable(onclick="goTo('" + targetLoc + "')")
@@ -33,7 +34,8 @@ block aside
 block content
   section.domain
     article.main
-      .hdg.hdg-1 "#{domain.name}" Domain 
+      .hdg.hdg-2 Domain: #{domain.name} 
+      .hdg.hdg-3 Items
       div
         .item-container
           - objectTypes = Object.keys(linkedObjects);

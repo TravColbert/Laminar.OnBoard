@@ -2,20 +2,21 @@ extends index.pug
 
 block aside
   aside.sidebar
-    .title Note Actions
-    .nav
-      .navitem One item
-      .navitem Two 
-      .navitem Three
-    .actions.secondary
-      input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm" form="note-edit")
-      a.btn.cancel(href="/users/" + user.id) Cancel
-      #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
+    article.noteactions
+      .hdg.hdg-2 Note Actions
+      //- .nav
+      //-   .navitem One item
+      //-   .navitem Two 
+      //-   .navitem Three
+      .actions.secondary
+        input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm" form="note-edit")
+        a.btn.cancel(href="/users/" + user.id) Cancel
+        #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
 
 block content
   section
-    .section-hdg.section-hdg-1 Edit Note: #{note.id}
-    .item-listing
+    article.main
+      .hdg.hdg-2 Edit Note: #{note.id}
       form#note-edit(action="/notes/" + note.id + "/" method="post")
         input(id="id" type="hidden" name="id" value= note.id)
         .itemdetail
@@ -30,8 +31,12 @@ block content
           label.label(for="description") Domain:
           .data
             input#domain(type="text" name="domain" disabled value=note.domain.name)
+        //- .inputnotedomain.itemdetail
+        //-   label.label Domain:
+        //-   .data
+        //-     +select-domains(domains,user.currentDomain.id)
         .itemdetail
-          label.label Public:
+          label.label Visibility:
           .data
             input#public.hidden(type="checkbox" name="public" value="true" checked=!!(note.public))
             label.togglepublicfalse(for="public")

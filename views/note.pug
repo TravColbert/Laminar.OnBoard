@@ -3,36 +3,41 @@ extends index.pug
 block aside
   aside.sidebar
     if(user)
-      article#actions
-        .hdg.hdg-1 Actions
+      article.noteactions
+        .hdg.hdg-2 Actions
         #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
         #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
       +list-user-invites()
-      article#articles
+      #articles
         include articles-list
       +list-user-domains("Domain")
       +create-or-see-domains("Domain")
     if(!user)
-      if(notes && notes.length>0)
-        article#articles
-          include articles-list
-      article#getstarted
-        //- .hdg.hdg-2 Get Started!
-        +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
+      article.actions
+        if(notes && notes.length>0)
+          #articles
+            include articles-list
+        #getstarted
+          //- .hdg.hdg-2 Get Started!
+          +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
 
 block content
   section.note
     article.main
-      .hdg.hdg-1 #{note.name}
-      .item-listing
-        .itemdetail.articleauthor
-          .data #{note.user.firstname} #{note.user.lastname}
-        .itemdetail.articledate
-          .data #{note.updatedAt}
-        .itemdetail.articledomain
-          .data #{note.domain.name}
-        .itemdetail.articledescription
-          .data #{note.description}
+      .hdg.hdg-2.articletitle #{note.name}
+      .article-listing
+        .itemdetail
+          .articledescription #{note.description}
+          .articlemetadata
+            .articlemeta.user
+              .label author:
+              .data #{note.user.firstname} #{note.user.lastname}
+            .articlemeta.updated
+              .label updated on:
+              .data #{note.updatedAt.toLocaleDateString()}
+            .articlemeta.domain
+              .label category:
+              .data #{note.domain.name}
         if(user)
           .itemdetail.articlevisibility
             label.label Public:
@@ -43,7 +48,8 @@ block content
               label.togglepublictrue(for="public")
                 i.material-icons.toggle.toggleon radio_button_checked
         .itemdetail
-          .notebody !{note.html}
+          .articlebody !{note.html}
+          //- .notebody !{note.html}
     //- article.secondary
     //-   .hdg.hdg-1 Note Actions
     //-   #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")

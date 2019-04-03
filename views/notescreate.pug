@@ -2,31 +2,27 @@ extends index.pug
 
 block aside
   aside.sidebar
-    .title Note Actions
-    .nav
-      .navitem One item
-      .navitem Two 
-      .navitem Three
-    .actions.secondary
-      label.label(for="submit") Submit:
-      .data
-        input#submit.btn.normal.buttonconfirm(type="submit" value="Confirm" form="note-create")
+    article.noteactions
+      .hdg.hdg-2 Note Actions
+      .actions.secondary
+        #note_create_button_container.addnote.authUI(data-fetch="note_create")
+        input#submit.btn.normal.buttonconfirm(type="submit" value="Create" form="note-create")
         a.btn.cancel.buttoncancel(href="/notes/") Cancel
 
 block content
-  section
+  section.notes
     article.main
-      .hdg.hdg-1 Create Note
+      .hdg.hdg-2 Create Note
       form#note-create.create-note-form(action="/notes/" method="post")
         input(id="user" type="hidden" name="userId" value=user.id)
-        input(id="domain" type="hidden" name="domainId" value=user.currentDomain.id)
-        .inputnotename.itemdetail.layout-col
+        //- input(id="domain" type="hidden" name="domainId" value=user.currentDomain.id)
+        .inputnotename.itemdetail
           label.label(for="name") Name/Title:
           input#name(type="text" name="name" placeholder="Name or Title" autofocus)
-        .inputnotedescription.itemdetail.layout-col
+        .inputnotedescription.itemdetail
           label.label(for="description") Description:
           input#description(type="text" name="description" placeholder="Description of the note")
-        .inputnotepublic.itemdetail.layout-col
+        .inputnotepublic.itemdetail
           label.label Visibility:
           .data
             input#public.hidden(type="checkbox" name="public" value="true")
@@ -34,7 +30,11 @@ block content
               i.material-icons.toggle.toggleoff toggle_off
             label.togglepublictrue(for="public")
               i.material-icons.toggle.toggleon toggle_on
-        .inputnotebody.itemdetail.layout-col
+        .inputnotedomain.itemdetail
+          label.label Domain:
+          .data
+            +select-domains(domains,user.currentDomain.id)
+        .inputnotebody.itemdetail
           label.label(for="body") Body:
           .data
             textarea#body(cols="30" rows="10" name="body")

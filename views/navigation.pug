@@ -4,12 +4,14 @@ header
       div#app-title
         a(href="/")= title
       //- label#menu-hamburger(for="show-menu") &#9776;
-    input#show-menu.hidden(type="checkbox" role="button")
-    ul
-      each item in menu
-        - var link = item.link;
-        - var text = item.text;
-        li
-          a(href=link)
-            i.material-icons.menu-icon #{item.icon}
-            .nobreak #{text}
+    //- block aside
+    .navlinks
+      input#show-menu.hidden(type="checkbox" role="button")
+      ul
+        each item in menu
+          - var link = item.link;
+          - var text = item.text;
+          li
+            a(href=link)
+              i.material-icons.menu-icon #{item.icon}
+              .nobreak #{text}

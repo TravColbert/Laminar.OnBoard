@@ -2,43 +2,40 @@ extends index.pug
 
 block aside
   aside.sidebar
-    .title Note Actions
-    .nav
-      .navitem One item
-      .navitem Two 
-      .navitem Three
-    .actions.secondary
-      .domainsubmit.itemdetail
-        label.label(for="submit") Submit:
-        .data
-          input#submit.btn.normal.buttonconfirm(form="create-domain-form" type="submit" value="Confirm")
-          a.btn.cancel.buttoncancel(href="/domain/") Cancel
+    article.domainactions
+      .hdg.hdg-2 Domain List Actions
+      .actions.secondary
+        .domainsubmit.itemdetail
+          label.label(for="submit") Submit:
+          .data
+            input#submit.btn.normal.buttonconfirm(form="create-domain-form" type="submit" value="Confirm")
+            a.btn.cancel.buttoncancel(href="/domain/") Cancel
 
 block content
   section.createdomain
     article.main
-      .hdg.hdg-1 Create Domain
-        form#create-domain-form.create-domain-form(action="/domains/" method="post")
-          .inputdomainname.itemdetail
-            label.label(for="name") Domain Name:
-            .data
-              input#name(type="text" name="name" placeholder="name of domain" autofocus pattern="[A-Za-z- ]{6,}")
-          .inputdomaindescription.itemdetail
-            label.label(for="description") Description:
-            .data
-              input#description(type="text" name="description" placeholder="description of domain")
-          .inputdomainurn.itemdetail
-            label.label(for="urn") Short Name:
-            .data
-              input#urn(type="text" name="urn" placeholder="short name for domain" pattern="[^! %/\*]{6,}")
-          .inputdomainpublic.itemdetail
-            label.label Public:
-            .data
-              input#public.hidden(type="checkbox" name="public" value="true")
-              label.togglepublicfalse(for="public")
-                i.material-icons.toggle.toggleoff toggle_off
-              label.togglepublictrue(for="public")
-                i.material-icons.toggle.toggleon toggle_on
+      .hdg.hdg-2 Create Domain
+      form#create-domain-form.create-domain-form(action="/domains/" method="post")
+        .inputdomainname.itemdetail
+          label.label(for="name") Domain Name:
+          .data
+            input#name(type="text" name="name" placeholder="name of domain" autofocus pattern="[A-Za-z- ]{6,}")
+        .inputdomaindescription.itemdetail
+          label.label(for="description") Description:
+          .data
+            input#description(type="text" name="description" placeholder="description of domain")
+        .inputdomainurn.itemdetail
+          label.label(for="urn") Short Name:
+          .data
+            input#urn(type="text" name="urn" placeholder="short name for domain" pattern="[^! %/\*]{6,}")
+        .inputdomainpublic.itemdetail
+          label.label Public:
+          .data
+            input#public.hidden(type="checkbox" name="public" value="true")
+            label.togglepublicfalse(for="public")
+              i.material-icons.toggle.toggleoff toggle_off
+            label.togglepublictrue(for="public")
+              i.material-icons.toggle.toggleon toggle_on
     //- article.secondary
     //-   .hdg.hdg-1 Actions
     //-   .domainsubmit.itemdetail
