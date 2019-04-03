@@ -9,37 +9,37 @@ let authUI = function(list) {
   }
 }
 
-let requestElement = function(parentElement) {
+let requestElement = function (parentElement) {
   // .dataset.fetch
   let requestObj = {
-    method:'POST',
-    credentials:'include'
-  };
+    method: 'POST',
+    credentials: 'include'
+  }
+
   if(parentElement.dataset.hasOwnProperty('params')) requestObj.body = JSON.stringify({params:parentElement.dataset.params});
-  fetch('/authorizedelements/' + parentElement.dataset.fetch, requestObj)
-  .then(function(response) {
-    return response.json();
-  })
-  .then(function(elementJson) {
-    if(elementJson.hasOwnProperty('error')) {
-      console.log(elementJson.error);
-    } else {
-      
-      elementJson.element.parent = parentElement;
-      console.log("Retrieved element:\n" + JSON.stringify(elementJson.element));
-      let user_button = new Laminar.Widget(elementJson.element);
-      var attributes = Object.keys(parentElement.dataset);
-      for(c in attributes) {
-        if(attributes[c]!="fetch") {
-          console.log("Setting attribute on child: " + attributes[c]);
-          user_button.set(attributes[c],parentElement.dataset[attributes[c]]);
+  return fetch('/authorizedelements/' + parentElement.dataset.fetch, requestObj)
+    .then(function (response) {
+      return response.json()
+    })
+    .then(function (elementJson) {
+      if(elementJson.hasOwnProperty('error')) {
+        console.log(elementJson.error)
+      } else {
+        elementJson.element.parent = parentElement
+        console.log("Retrieved element:\n" + JSON.stringify(elementJson.element));
+        let user_button = new Laminar.Widget(elementJson.element);
+        var attributes = Object.keys(parentElement.dataset);
+        for(c in attributes) {
+          if(attributes[c]!="fetch") {
+            console.log("Setting attribute on child: " + attributes[c]);
+            user_button.set(attributes[c],parentElement.dataset[attributes[c]]);
+          }
         }
       }
-    }
-  })
-  .catch(function(err){
-    console.log("Caught requested element error: " + err.message);
-  });
+    })
+    .catch(function(err){
+      console.log("Caught requested element error: " + err.message);
+    });
 }
 function ready(fn) {
   if (document.readyState != 'loading'){

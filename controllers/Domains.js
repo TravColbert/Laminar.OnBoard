@@ -202,7 +202,7 @@ module.exports = function(app,model) {
           }
         ]
       }
-        return app.models["usersroles"].findAll(searchObj);
+      return app.models["usersroles"].findAll(searchObj);
     },
 
     gets : function(req,res,next) {
@@ -309,7 +309,7 @@ module.exports = function(app,model) {
           })
           .then(objs => {
             req.appData.linkedObjects[link] = objs;
-            app.log(JSON.stringify(req.appData.linkedObjects),myName,6);
+            // app.log(JSON.stringify(req.appData.linkedObjects),myName,6);
             return;
           });
         }

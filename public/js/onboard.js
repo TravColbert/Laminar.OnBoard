@@ -1,33 +1,33 @@
-function ackMessage(messageNum) {
-  fetch('/messages/ack/' + messageNum,{
-    method:'GET',
-    credentials:'include'
-  }).
-    then(function(response) {
-      return response.json();
-    }).
-    then(function(json){
-      console.log(JSON.stringify(json));
-      doMessage(json);
-    });
+function ackMessage (messageNum) {
+  fetch('/messages/ack/' + messageNum, {
+    method: 'GET',
+    credentials: 'include'
+  })
+    .then(function (response) {
+      return response.json()
+    })
+    .then(function (json) {
+      console.log(JSON.stringify(json))
+      doMessage(json)
+    })
 }
 
-function doMessage(json) {
-  document.getElementById("msg" + json.msgId).remove();
+function doMessage (json) {
+  document.getElementById('msg' + json.msgId).remove()
 }
 
-function goTo(target) {
-  window.location = target;
+function goTo (target) {
+  window.location = target
 }
 
-function dateInputExists() {
-  console.log("Checking for date picker input boxes...");
-  let box = document.getElementById("datetimeselect");
-  if(box!=null) {
-    console.log("...found one");
-    return box;
+function dateInputExists () {
+  console.log('Checking for date picker input boxes...')
+  let box = document.getElementById('datetimeselect')
+  if (box != null) {
+    console.log('...found one')
+    return box
   }
-  return false;
+  return false
 }
 
 function makeDatePicker(element,dateTime) {
@@ -38,7 +38,7 @@ function makeDatePicker(element,dateTime) {
     altFormat: "F j, Y, h:i K",
     defaultDate: dateTime
   });
-  return;
+  
 }
 
 function calculatedatetimestring(dateTimeString) {
@@ -46,41 +46,69 @@ function calculatedatetimestring(dateTimeString) {
   // window.alert(dateTimeString);
   // let datetimestring = document.getElementById("datetimeselect").value;
   datetime.value = Date.parse(dateTimeString);
-  return;
+  
 }
 
-function preLoadDateTimeSelectors() {
-  console.log("Setting up date-time picker(s)");
-  let dateTimePickers = document.getElementsByClassName("datetimepicker");
-  let dateTime = new Date();
-  console.log("Current dateTime: " + dateTime + " hour: " + dateTime.getHours() + " Minutes: " + dateTime.getMinutes());
-  Array.prototype.filter.call(dateTimePickers,(dateTimePicker) => {
-    makeDatePicker(dateTimePicker,dateTime);
-  });
+function wordSwap (id, time) {
+  let words = [
+    'delight',
+    'use',
+    'wonder',
+    'beauti',
+    'help'
+  ]
+  let e = document.getElementById(id)
+  let timeout = setInterval(() => {
+    words.push(words.shift())
+    e.innerHTML = words[0]
+  }, time)
 }
 
-function fetchIt(url,cb) {
-  console.log("Fetching " + url);
+function preLoadDateTimeSelectors () {
+  console.log('Setting up date-time picker(s)')
+  let dateTimePickers = document.getElementsByClassName('datetimepicker')
+  let dateTime = new Date()
+  console.log('Current dateTime: ' + dateTime + ' hour: ' + dateTime.getHours() + ' Minutes: ' + dateTime.getMinutes())
+  Array.prototype.filter.call(dateTimePickers, (dateTimePicker) => {
+    makeDatePicker(dateTimePicker, dateTime)
+  })
+}
+
+function preLoadClosers () {
+  let closers = document.querySelectorAll('.closer')
+  closers.forEach((v) => {
+    let e = document.getElementById(v.dataset.closer)
+    console.log('Found closer for ' + v.dataset.closer)
+    v.addEventListener('click', () => {
+      e.checked = false
+    })
+  })
+}
+
+function fetchIt (url, cb) {
+  console.log('Fetching ' + url)
   fetch(url)
-  .then((response) => {
-    return response.json();
-  })
-  .then((response) => {
-    return cb(response);
-  })
-  .catch(err => {
-    return err;
-  })
+    .then((response) => {
+      return response.json()
+    })
+    .then((response) => {
+      return cb(response)
+    })
+    .catch(err => {
+      return err
+    })
 }
 
-function ready(fn) {
-  if (document.readyState != 'loading'){
-    fn();
+function ready (fn) {
+  if (document.readyState != 'loading') {
+    fn()
   } else {
-    document.addEventListener('DOMContentLoaded', fn);
+    document.addEventListener('DOMContentLoaded', fn)
   }
 }
 
 ready(() => {
-  preLoadDateTimeSelectors();
-});
+  preLoadDateTimeSelectors()
+  preLoadClosers()
+  // wordSwap('fulwords', 3000)
+})

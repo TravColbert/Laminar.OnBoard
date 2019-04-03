@@ -448,9 +448,9 @@ module.exports = function(app,sequelize) {
       let cap = {};
       cap[capability[0]] = {[Op.eq]:capability[1]};
       // The above is a way to query from within a JSON obj
-      // The capability looks like this when you call it: ["create","all"]
-      // So, this just makes it look like this: {"create":{[Op.eq]:"all"}}
-      // [Op.eq] is a Sequelize operator
+      // When we call this method we pass capability as, e.g: ["create":"all"]
+      // So, the above just makes it look like this: {"create":{[Op.eq]:"all"}}
+      // [Op.eq] is a Sequelize operator meaning equal-to
       let query = {};
       query.roles = {capabilities:cap};
       query.users = {id:userId};
@@ -487,6 +487,27 @@ module.exports = function(app,sequelize) {
       app.log("user: " + req.session.user.email + " id: " + req.session.user.id,myName,5);
       req.appData.account = req.session.user.email;
       req.appData.accountNum = req.session.user.id;
+    }
+    return next();
+  };
+  obj.getUserDomains = function(req,res,next) {
+    var myName = "getUserDomains()";
+    app.log("getting all user domains...",myName,5);
+    if(req.session.user) {
+      app.controllers["users"].getUserById(req.session.user.id)
+      .then((user) => {
+        app.log(JSON.stringify(user),myName,6);
+        return app.controllers["users"].compileDomainList(user)
+      })
+      .then((domains) => {
+        app.log("Domain List:");
+        app.log(domains,myName,6);
+        req.session.user.domainList = domains;
+      })
+      .catch((err) => {
+        app.log("Error finding list of domains for this user: " + err.message,myName,2);
+        return res.send("This is the reason we can't continue: " + err.message);
+      })
     }
     return next();
   };
@@ -662,10 +683,9 @@ module.exports = function(app,sequelize) {
     };
   };
   obj.showForm = function(req,res,next) {
-    let myName = "showForm";
+    let myName = 'showForm()'
     let model = req.params.model || null;
     if(!model) return res.redirect("/");
-    // let model = req.params.model;
     let action = req.params.action || 'create';
     app.log("Requesting form: " + model + action);
     app.tools.checkAuthorization([action,"all"],req.session.user.id,req.session.user.currentDomain.id)
@@ -696,6 +716,8 @@ module.exports = function(app,sequelize) {
       })
       .then((data) => {
         if(data) req.appData[model + action] = data;
+        req.appData.domains = req.session.user.domains;
+        app.log(JSON.stringify(req.appData.domains),myName,6);
         return next();
       });
     })

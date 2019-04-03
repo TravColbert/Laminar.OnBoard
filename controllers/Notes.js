@@ -243,9 +243,13 @@ module.exports = function (app, model) {
       app.controllers[model].__get(searchObj)
         .then(notes => {
           req.appData.notes = notes
-          req.appData.view = 'bloghome'
+          req.appData.view = 'home-blog'
           return next()
         })
+    },
+    showBlog: function (req, res, next) {
+      req.appData.view = 'home-blog'
+      return next()
     },
     editNoteForm: function (req, res, next) {
       let myName = 'editNoteForm()'
@@ -299,7 +303,7 @@ module.exports = function (app, model) {
       let newNote = app.tools.pullParams(req.body, app.modelDefinitions[model].requiredFields, app.modelDefinitions[model].optionalFields)
       if (!newNote) return res.send('Required field missing... try again')
       newNote.userId = req.session.user.id
-      newNote.domainId = req.session.user.currentDomain.id
+      newNote.domainId = req.body.domainId || req.session.user.currentDomain.id
       app.log('New note: ' + JSON.stringify(newNote), myName, 6, '::::>')
       app.controllers[model].__create(newNote)
         .then(note => {

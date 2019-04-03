@@ -306,7 +306,17 @@ module.exports = function(app,model) {
       // app.log("Hello!!!: " + userId,myName,6);
       return new Promise((resolve,reject) => {
         app.log("Getting user by ID: " + userId,myName,6);
-        app.models[model].findById(userId)
+        app.models[model].findById(
+          userId,{
+            include:[
+              {
+                model:app.models["roles"],
+                include:[
+                  app.models["domains"]
+                ]
+              }
+            ]
+          })
         .then(user => {
           app.log("Found user: " + user.fullname,myName,6);
           resolve(user);
