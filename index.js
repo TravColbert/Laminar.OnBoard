@@ -7,6 +7,7 @@ const https = require('https')
 const express = require('express')
 const session = require('express-session')
 const bodyParser = require('body-parser')
+const fileUpload = require('express-fileupload')
 const app = express()
 const myName = 'setup'
 
@@ -76,6 +77,7 @@ app.use(express.static(cwd + app.locals.staticDir))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(session(sessionConfig))
+app.use(fileUpload())
 app.disable('x-powered-by')
 
 // Main app in-memory structures...

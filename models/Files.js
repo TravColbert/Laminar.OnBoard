@@ -14,12 +14,15 @@ module.exports = function (Sequelize, app) {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
+      'mimetype': {
+        type: Sequelize.BOOLEAN
+      },
       'appid': {
         type: Sequelize.STRING
       }
     },
     requiredFields: ['name'],
-    optionalFields: ['id', 'description', 'public', 'appid', 'domainId', 'userId'],
+    optionalFields: ['id', 'description', 'public', 'mimetype', 'appid', 'domainId', 'userId'],
     options: {
       hooks: {
         afterCreate: (file) => {

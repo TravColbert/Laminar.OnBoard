@@ -24,6 +24,7 @@
   "routesDir":"routes",
   "modulesDir":"modules",
   "elementsDir":"elements",
+  "uploadsDir":"files",
   "activeDbConnection":"sqlite",
   "dbConnection":{
     "sqlite":{

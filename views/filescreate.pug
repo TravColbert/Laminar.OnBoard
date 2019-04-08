@@ -12,11 +12,11 @@ block content
   section.files
     article.main
       .hdg.hdg-2 Upload File
-      form#file-create.create-file-form(action="/files/" method="post")
+      form#file-create.create-file-form(action="/files/" method="post" encType="multipart/form-data")
         input(id="user" type="hidden" name="userId" value=user.id)
         .inputfile.itemdetail
           label.label(for="file") File:
-          input#file(type="file" name="name")
+          input#file(type="file" name="uploadfile")
         .inputfiledescription.itemdetail
           label.label(for="description") Description:
           input#description(type="text" name="description" placeholder="Description of the note")

@@ -93,20 +93,44 @@ module.exports = function (app, model) {
 
     uploadFile: function (req, res, next) {
       let myName = 'uploadFile()'
+      if (Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.')
+      }
 
-      let newFile = app.tools.pullParams(req.body, app.modelDefinitions[model].requiredFields, app.modelDefinitions[model].optionalFields)
-      if (!newFile) return res.send('Required field missing... try again')
-      newFile.userId = req.session.user.id
-      newFile.domainId = req.body.domainId || req.session.user.currentDomain.id
-      app.log('New file: ' + JSON.stringify(newFile), myName, 6, '::::>')
+      // let newFile = app.tools.pullParams(req.body, app.modelDefinitions[model].requiredFields, app.modelDefinitions[model].optionalFields)
+      // if (!newFile) return res.send('Required field missing... try again')
+      // newFile.userId = req.session.user.id
+      // newFile.domainId = req.body.domainId || req.session.user.currentDomain.id
+      // app.log('New file: ' + JSON.stringify(newFile), myName, 6, '::::>')
 
-      // app.log('Upload owner is: ' + req.body['userId'], myName, 6)
+      app.log('Upload name is: ' + req.files.uploadfile.name, myName, 6)
+      app.log('Upload type is: ' + req.files.uploadfile.mimetype, myName, 6)
+      app.log('Upload size is: ' + req.files.uploadfile.size, myName, 6)
+      app.log('Upload owner is: ' + req.body['userId'], myName, 6)
       // app.log('Upload wants to save file: ' + req.body['name'], myName, 6)
-      // app.log('Upload description: ' + req.body['description'], myName, 6)
-      // app.log('Upload visibility: ' + req.body['public'], myName, 6)
-      // app.log('Upload domain: ' + req.body['domainId'], myName, 6)
+      app.log('Upload description: ' + req.body['description'], myName, 6)
+      app.log('Upload visibility: ' + req.body['public'], myName, 6)
+      app.log('Upload domain: ' + req.body['domainId'], myName, 6)
 
-      return res.send('Got the file')
+      let newFile = {
+        'name': req.files.uploadfile.name,
+        'description': req.body['description'],
+        'public': req.body['public'] || false,
+        'domainId': req.body['domainId'],
+        'userId': req.body['userId'],
+        'mimetype': req.files.uploadfile.mimetype
+      }
+
+      return app.controllers[model].__create(newFile)
+        .then(file => {
+          app.log('Upload file saving to: ' + app.cwd + app.locals.staticDir + '/' + app.locals.uploadsDir + '/' + file.appid)
+          req.files.uploadfile.mv(app.cwd + app.locals.staticDir + '/' + app.locals.uploadsDir + '/' + file.appid)
+          return res.send('Got the file')
+        })
+        .catch(err => {
+          app.log('Error: ' + err.message, myName, 4)
+          return res.status(400).send(err.message)
+        })
     }
   }
 }
