@@ -1,0 +1,34 @@
+extends index.pug
+
+block aside
+  aside.sidebar
+    article.fileactions
+      .hdg.hdg-2 File Actions
+      .actions.secondary
+        input#upload.btn.normal.buttonconfirm(type="submit" value="Upload" form="file-create")
+        a.btn.cancel.buttoncancel(href="/files/") Cancel
+
+block content
+  section.files
+    article.main
+      .hdg.hdg-2 Upload File
+      form#file-create.create-file-form(action="/files/" method="post")
+        input(id="user" type="hidden" name="userId" value=user.id)
+        .inputfile.itemdetail
+          label.label(for="file") File:
+          input#file(type="file" name="name")
+        .inputfiledescription.itemdetail
+          label.label(for="description") Description:
+          input#description(type="text" name="description" placeholder="Description of the note")
+        .inputfilepublic.itemdetail
+          label.label Visibility:
+          .data
+            input#public.hidden(type="checkbox" name="public" value="true")
+            label.togglepublicfalse(for="public")
+              i.material-icons.toggle.toggleoff toggle_off
+            label.togglepublictrue(for="public")
+              i.material-icons.toggle.toggleon toggle_on
+        .inputfiledomain.itemdetail
+          label.label Domain:
+          .data
+            +select-domains(domains,user.currentDomain.id)
