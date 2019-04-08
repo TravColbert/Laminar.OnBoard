@@ -10,12 +10,16 @@ module.exports = function (Sequelize, app) {
         type: Sequelize.STRING,
         allowNull: true
       },
+      'public': {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       'appid': {
         type: Sequelize.STRING
       }
     },
     requiredFields: ['name'],
-    optionalFields: ['id', 'description', 'appid', 'domainId', 'userId'],
+    optionalFields: ['id', 'description', 'public', 'appid', 'domainId', 'userId'],
     options: {
       hooks: {
         afterCreate: (file) => {
