@@ -69,6 +69,27 @@ module.exports = function (app, model) {
       return app.controllers[model].__get(searchObj)
     },
 
+    getByDomainId: function (id) {
+      let myName = 'getByDomainId()'
+      let searchObj = {
+        where: {
+          'domainId': id
+        },
+        include: [
+          {
+            model: app.models['domains'],
+            as: 'domain'
+          },
+          {
+            model: app.models['users'],
+            as: 'user'
+          }
+        ]
+      }
+      app.log('Looking for files by domain ID: ' + id, myName, 6)
+      return app.controllers[model].__get(searchObj)
+    },
+
     getPublic: function () {
       let myName = 'getPublic()'
       let searchObj = {
