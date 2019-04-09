@@ -25,6 +25,8 @@
   "modulesDir":"modules",
   "elementsDir":"elements",
   "uploadsDir":"files",
+  "makeThumbnails":true,
+  "thumbnailsDir":"thumbs",
   "activeDbConnection":"sqlite",
   "dbConnection":{
     "sqlite":{

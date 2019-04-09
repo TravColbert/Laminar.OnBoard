@@ -1,3 +1,5 @@
+const sharp = require('sharp')
+
 module.exports = function (app, model) {
   if (!model) return false
   let myName = model + 'Controller'
@@ -87,6 +89,18 @@ module.exports = function (app, model) {
       return app.controllers[model].__get(searchObj)
     },
 
+    makeThumbnail: function (fileName, buffer) {
+      let myName = 'makeThumbnail()'
+      app.log('Saving thumbnail to: ' + app.cwd + app.locals.staticDir + '/' + app.locals.thumbnailsDir + '/' + fileName, myName, 6)
+      return sharp(buffer)
+        .resize(300, 200)
+        .toFile(app.cwd + app.locals.staticDir + '/' + app.locals.thumbnailsDir + '/' + fileName)
+    },
+
+    isImage: function (mimetype) {
+      return (mimetype.indexOf('image') < 0) ? false : true
+    },
+
     gets: function (req, res, next) {
       let myName = 'gets(files)'
       let getPromise = Promise.resolve()
@@ -162,6 +176,18 @@ module.exports = function (app, model) {
         .then(file => {
           app.log('Upload file saving to: ' + app.cwd + app.locals.staticDir + '/' + app.locals.uploadsDir + '/' + file.appid)
           req.files.uploadfile.mv(app.cwd + app.locals.staticDir + '/' + app.locals.uploadsDir + '/' + file.appid)
+          if (app.controllers[model].isImage(newFile.mimetype)) {
+            app.log('Uploaded file is an image - let\'s scale it', myName, 6)
+            return app.controllers[model].makeThumbnail(file.appid, req.files.uploadfile.data)
+              .then(info => {
+                app.log('Saved thumbnail: format: ' + info.format + ' size: ' + info.size + ' width: ' + info.width + ' height: ' + info.height, myName, 6)
+                return file
+              })
+          } else {
+            return file
+          }
+        })
+        .then(file => {
           return res.redirect('/files/' + file.id + '/')
         })
         .catch(err => {
