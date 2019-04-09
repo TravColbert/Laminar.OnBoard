@@ -50,15 +50,22 @@ mixin list-files(files)
   .item-listing.files
     each file in files
       - let targetLoc = "/files/" + file.id + "/";
-      .item.clickable(onclick="goTo('" + targetLoc + "')")
-        .itemdetail
-          label.label Name:
-          .data #{file.name}
-        - let description = file.description || null
-        if description
+      .mediaitem.clickable(onclick="goTo('" + targetLoc + "')")
+        .thumbnail
+          img(src="/thumbs/" + file.appid)
+        .itemdetails
           .itemdetail
-            label.label Description:
-            .data #{file.description}
+            label.label Name:
+            .data #{file.name}
+          - let description = file.description || null
+          if description
+            .itemdetail
+              label.label Description:
+              .data #{file.description}
+          if file.domain.name
+            .itemdetail
+              label.label Domain:
+              .data #{file.domain.name}
 
 mixin list-domains(domains)
   //- #domain_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")

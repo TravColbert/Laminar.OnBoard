@@ -93,7 +93,7 @@ module.exports = function (app, model) {
       let myName = 'makeThumbnail()'
       app.log('Saving thumbnail to: ' + app.cwd + app.locals.staticDir + '/' + app.locals.thumbnailsDir + '/' + fileName, myName, 6)
       return sharp(buffer)
-        .resize(300, 200)
+        .resize(200)
         .toFile(app.cwd + app.locals.staticDir + '/' + app.locals.thumbnailsDir + '/' + fileName)
     },
 
