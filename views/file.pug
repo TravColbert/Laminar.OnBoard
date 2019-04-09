@@ -1,0 +1,55 @@
+extends index.pug
+
+block aside
+  aside.sidebar
+    if(user)
+      article.fileactions
+        .hdg.hdg-2 Actions
+        #file_add_button_container.addfile.authUI(data-fetch="file_add" data-href="/actions/create/file/")
+        #file_edit_button_container.editfile.authUI(data-fetch="file_edit" data-href="/files/" + file.id + "/actions/edit/")
+      +list-user-invites()
+      //- #articles
+      //-   include articles-list
+      +list-user-domains("Domain")
+      +create-or-see-domains("Domain")
+    //- if(!user)
+    //-   article.actions
+    //-     if(notes && notes.length>0)
+    //-       #articles
+    //-         include articles-list
+    //-     #getstarted
+    //-       //- .hdg.hdg-2 Get Started!
+    //-       +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
+
+block content
+  section.file
+    article.main
+      .hdg.hdg-2.articletitle File: #{file.name}
+      .item-listing
+        .itemdetail
+          label.label Description:
+          .data #{file.description}
+        .itemdetail
+          label.label Type:
+          .data #{file.mimetype}
+        .itemdetail
+          label.label Domain
+          .data #{file.domain.name}
+        .itemdetail
+          label.label User
+          .data #{file.user.fullname}
+        if(file)
+          .itemdetail.filevisibility
+            label.label Public:
+            .data
+              input#public.hidden(type="checkbox" name="public" value="true" disabled checked=!!(file.public))
+              label.togglepublicfalse(for="public")
+                i.material-icons.toggle.toggleoff visibility_off
+              label.togglepublictrue(for="public")
+                i.material-icons.toggle.toggleon visibility
+        .itemdetail
+          label.label View
+          .data
+            picture
+              source(srcset='/files/' + file.appid)
+              img.preview(src='/files/' + file.appid)
