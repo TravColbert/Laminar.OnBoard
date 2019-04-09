@@ -1,5 +1,6 @@
 {
   "main":[
+    {"link":"/files/","text":"Files","icon":"cloud_circle","secured":true},
     {"link":"/notes/","text":"Notes","icon":"content_paste","secured":true},
     {"link":"/login/","text":"Sign In","icon":"verified_user","secured":false},
     {"link":"/logout/","text":"Log Out","icon":"highlight_off","secured":true},

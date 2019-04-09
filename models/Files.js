@@ -28,14 +28,14 @@ module.exports = function (Sequelize, app) {
         afterCreate: (file) => {
           let myName = 'file_model:afterCreate()'
           app.log('creating unique app ID for file: ' + file.name, myName, 6)
-          file.appId = app.tools.generateString() + file.id
-          file.update({ 'appid': file.appId })
-            .then((file) => {
-              app.log('unique app ID generated for file: ' + file.id, myName, 6)
-            })
-            .catch((err) => {
-              app.log(err.message, myName, 4, '===>')
-            })
+          file.appid = app.tools.generateString() + file.id
+          return file.save().then(file => {
+            app.log('unique app ID generated for file ' + file.id + ': ' + file.appid, myName, 6)
+            return file.appid
+          }).catch((err) => {
+            app.log(err.message, myName, 4, '===>')
+            return false
+          })
         }
       }
     }

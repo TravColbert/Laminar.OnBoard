@@ -24,6 +24,27 @@ module.exports = function (app, model) {
       return app.controllers['default'].delete(model, obj)
     },
 
+    getById: function (id) {
+      let myName = 'getById()'
+      let searchObj = {
+        where: {
+          'id': id
+        },
+        include: [
+          {
+            model: app.models['domains'],
+            as: 'domain'
+          },
+          {
+            model: app.models['users'],
+            as: 'user'
+          }
+        ]
+      }
+      app.log('Looking for file with ID: ' + id, myName, 6)
+      return app.controllers[model].__get(searchObj)
+    },
+
     getByUserId: function (userId, pub) {
       let myName = 'getByUserId()'
       let searchObj = {
@@ -37,12 +58,12 @@ module.exports = function (app, model) {
           }
         ]
       }
-      if(pub) { 
+      if (pub) {
         searchObj.include[0].where = {
           'public': true
         }
       }
-      app.log('Looking for files by user ID: ' + userId)
+      app.log('Looking for files by user ID: ' + userId, myName, 6)
       return app.controllers[model].__get(searchObj)
     },
 
@@ -62,13 +83,14 @@ module.exports = function (app, model) {
           }
         ]
       }
-      app.log('Looking for public files')
+      app.log('Looking for public files', myName, 6)
       return app.controllers[model].__get(searchObj)
     },
 
     gets: function (req, res, next) {
       let myName = 'gets(files)'
       let getPromise = Promise.resolve()
+      app.log('Getting files', myName, 5)
       getPromise
         .then(() => {
           if (app.tools.isAuthenticated(req)) {
@@ -91,23 +113,38 @@ module.exports = function (app, model) {
         })
     },
 
+    get: function (req, res, next) {
+      let myName = 'get(files)'
+      if (!req.params.id) {
+        return res.status(400).send('No file ID given')
+      }
+      app.log('Getting file with ID: ' + req.params.id)
+      return app.controllers[model].getById(req.params.id)
+        .then(file => {
+          if (!file) {
+            req.appData.file = []
+          } else {
+            app.log('Got: ' + JSON.stringify(file), myName, 6)
+            req.appData.file = file[0]
+          }
+          req.appData.view = 'file'
+          return next()
+        })
+        .catch(err => {
+          return res.send('Err: ' + err.message)
+        })
+    },
+
     uploadFile: function (req, res, next) {
       let myName = 'uploadFile()'
       if (Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.')
       }
 
-      // let newFile = app.tools.pullParams(req.body, app.modelDefinitions[model].requiredFields, app.modelDefinitions[model].optionalFields)
-      // if (!newFile) return res.send('Required field missing... try again')
-      // newFile.userId = req.session.user.id
-      // newFile.domainId = req.body.domainId || req.session.user.currentDomain.id
-      // app.log('New file: ' + JSON.stringify(newFile), myName, 6, '::::>')
-
       app.log('Upload name is: ' + req.files.uploadfile.name, myName, 6)
       app.log('Upload type is: ' + req.files.uploadfile.mimetype, myName, 6)
       app.log('Upload size is: ' + req.files.uploadfile.size, myName, 6)
       app.log('Upload owner is: ' + req.body['userId'], myName, 6)
-      // app.log('Upload wants to save file: ' + req.body['name'], myName, 6)
       app.log('Upload description: ' + req.body['description'], myName, 6)
       app.log('Upload visibility: ' + req.body['public'], myName, 6)
       app.log('Upload domain: ' + req.body['domainId'], myName, 6)
@@ -125,7 +162,7 @@ module.exports = function (app, model) {
         .then(file => {
           app.log('Upload file saving to: ' + app.cwd + app.locals.staticDir + '/' + app.locals.uploadsDir + '/' + file.appid)
           req.files.uploadfile.mv(app.cwd + app.locals.staticDir + '/' + app.locals.uploadsDir + '/' + file.appid)
-          return res.send('Got the file')
+          return res.redirect('/files/' + file.id + '/')
         })
         .catch(err => {
           app.log('Error: ' + err.message, myName, 4)
