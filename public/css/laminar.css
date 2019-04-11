@@ -1,18 +1,20 @@
-.flexy, .flexy-row, .content-titlebar, .btn,
+.flexy, .flexy-row, .content-titlebar, .app-features .feature, .btn,
 .button, .mediaitem, .itemhead, .articlemetadata, #articlelist .body, article#cta,
 article#skills, article#about > div div, .forminput, main, nav .navlinks ul, header nav, footer nav, .flexy-column, .item, .itembanner, .itemdetail, .item-container, .subitem-listing, .item-listing, article > .subhead, article#about #login-form,
-article#login #login-form, article, aside, main section.secondary, main section.messages, main section, header, footer, html,
+article#login #login-form, article, aside, main section.secondary,
+main section.messages, main section, header, footer, html,
 body {
   display: flex;
 }
 
 .flexy-column, .item, .itembanner, .itemdetail, .item-container, .subitem-listing, .item-listing, article > .subhead, article#about #login-form,
-article#login #login-form, article, aside, main section.secondary, main section.messages, main section, header, footer, html,
+article#login #login-form, article, aside, main section.secondary,
+main section.messages, main section, header, footer, html,
 body {
   flex-direction: column;
 }
 
-.flexy-row, .content-titlebar, .btn,
+.flexy-row, .content-titlebar, .app-features .feature, .btn,
 .button, .mediaitem, .itemhead, .articlemetadata, #articlelist .body, article#cta,
 article#skills, article#about > div div, .forminput, main, nav .navlinks ul, header nav, footer nav {
   flex-direction: row;
@@ -62,6 +64,16 @@ article#skills, article#about > div div, .forminput, main, nav .navlinks ul, hea
 .button,
 .hdg-2 {
   white-space: nowrap;
+}
+
+.wrap {
+  white-space: normal;
+  flex-wrap: wrap;
+}
+
+.wrap-reverse {
+  white-space: normal;
+  flex-wrap: wrap-reverse;
 }
 
 .buttonstyle, .app-features {
@@ -208,6 +220,9 @@ main {
 main section {
   order: 1;
   flex: 1 0 auto;
+  padding-top: 53px;
+  padding-bottom: 48px;
+  width: 60%;
 }
 main section article {
   margin-bottom: 48px;
@@ -215,16 +230,12 @@ main section article {
 main section article:last-child {
   margin-bottom: 0;
 }
-main section:not(.home) {
-  padding-top: 53px;
-  padding-bottom: 48px;
-  width: 60%;
-}
 main section.note {
   font-size: 1.3em;
   font-weight: 600;
 }
-main section.secondary, main section.messages {
+main section.secondary,
+main section.messages {
   order: 3;
   width: 100%;
 }
@@ -433,7 +444,7 @@ article.main .articlemetadata {
   font-size: 0.8em;
   font-weight: normal;
   color: #a2a0ad;
-  font-family: "Titillium Web", sans-serif;
+  font-family: "Titillium Web", Arial, Helvetica, sans-serif;
   font-style: italic;
 }
 
@@ -571,7 +582,7 @@ article > .subhead {
 
 .itemdetail:not(:first-child) .label {
   color: #a2a0ad;
-  font-family: "Titillium Web", sans-serif;
+  font-family: "Titillium Web", Arial, Helvetica, sans-serif;
   font-style: italic;
 }
 

@@ -5,19 +5,29 @@ $sidebarwidth: 30%;
 // $sidebarmaxwidthpx: 307px;
 $titlefont: 'KoHo', Arial, Helvetica, sans-serif;
 $generalfont: 'Rajdhani', Arial, Helvetica, sans-serif;
-$detailfont: 'Titillium Web', sans-serif;
+$detailfont: 'Titillium Web', Arial, Helvetica, sans-serif;
 
-$textcolor: rgb(77, 75, 85);
+$basecolor: rgba(79,67,125,1);
+$primarycolor: rgba(77,157,224,1);
+$secondarycolor: rgb(48,191,149,1);
+$tertiarycolor: rgba(187,54,240,1);
+
+$successcolor: rgba(121,241,205,1);
+$warncolor: rgba(250,169,22,1);
+$dangercolor: rgba(225,85,84,1);
+$disabledcolor: rgba(132,130,143,1);
+
+$textcolor: rgba(77,75,85,1);
 $textshadow: 0 2px 3px;
-$textshadowcolor: rgb(77, 75, 85, 0.3);
-$highlighttextcolor: rgba(79,67,125,1);
+$textshadowcolor: rgba(77, 75, 85, 0.3);
+$highlighttextcolor: $basecolor;
 $secondaryhighlighttextcolor: rgba(79,67,125,0.5);
-$linktextcolor: rgb(48, 191, 149);
-$minortextcolor: rgb(162, 160, 173);
-$codetextcolor: rgb(205, 204, 211);
+$linktextcolor: $secondarycolor;
+$minortextcolor: rgba(162,160,173);
+$codetextcolor: rgba(205,204,211);
 $codebackgroundcolor: $textcolor; 
 
-$primarybuttoncolor: rgba(121, 241, 205, 1);
+$primarybuttoncolor: $successcolor;
 
 // $bordercolor: rgb(77, 75, 85);
 $bordercolor: rgba(235,233,243,1);
@@ -25,13 +35,6 @@ $borderradius: 4px;
 $navbackgroundcolor: rgba(255,255,255,0.8);
 $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 
-$primarycolor: rgba(77,157,224,1);
-// $secondarycolor: rgba(35,100,170,1);
-$secondarycolor: rgb(187, 54, 240);
-$successcolor: rgba(121, 241, 205, 1);
-$warncolor: rgba(250,169,22,1);
-$dangercolor: rgba(225,85,84,1);
-$disabledcolor: rgba(132,130,143);
 
 .flexy {
   display: flex;
@@ -182,7 +185,7 @@ nav {
     color: $highlighttextcolor;
     text-shadow:
       0 3px 5px $textshadowcolor,
-      2px -1px 1px $secondarycolor,
+      2px -1px 1px $tertiarycolor,
       -2px 1px 1px $successcolor
     ;
     @media only screen and (min-width: 601px) {
@@ -708,7 +711,7 @@ article > .subhead {
   color: $highlighttextcolor;
   text-shadow:
     $textshadow $textshadowcolor,
-    2px -1px 1px $secondarycolor,
+    2px -1px 1px $tertiarycolor,
     -2px 1px 1px $successcolor
   ;
 }
@@ -722,7 +725,7 @@ article > .subhead {
   color: $secondaryhighlighttextcolor;
   text-shadow:
     $textshadow $textshadowcolor,
-    1px -1px 1px $secondarycolor,
+    1px -1px 1px $tertiarycolor,
     -1px 1px 1px $successcolor
   ;
 }
@@ -808,6 +811,10 @@ h1 {
 
 .app-features:last-child {
   margin-bottom: 0;
+}
+
+.app-features .feature {
+  @extend .flexy-row;
 }
 
 .read-more {
