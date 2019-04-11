@@ -243,12 +243,12 @@ module.exports = function (app, model) {
       app.controllers[model].__get(searchObj)
         .then(notes => {
           req.appData.notes = notes
-          req.appData.view = 'home-blog'
+          req.appData.view = 'notes-list'
           return next()
         })
     },
     showBlog: function (req, res, next) {
-      req.appData.view = 'home-blog'
+      req.appData.view = 'notes-list'
       return next()
     },
     editNoteForm: function (req, res, next) {

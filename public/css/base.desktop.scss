@@ -94,6 +94,16 @@ $disabledcolor: rgba(132,130,143);
   white-space: nowrap;
 }
 
+.wrap {
+  white-space: normal;
+  flex-wrap: wrap;
+}
+
+.wrap-reverse {
+  white-space: normal;
+  flex-wrap: wrap-reverse;
+}
+
 .buttonstyle {
   @extend .semi-transparent;
   @extend .mini-shadowed;
@@ -252,6 +262,9 @@ main {
     @extend .flexy-column;
     order: 1;
     flex: 1 0 auto;
+    padding-top: 53px;
+    padding-bottom: 48px;
+    width: 60%;
     article {
       margin-bottom: 48px;
     }
@@ -259,18 +272,15 @@ main {
       margin-bottom: 0;
     }
   }
-  section:not(.home) {
-    padding-top: 53px;
-    padding-bottom: 48px;
-    width: 60%;
-  }
+  // section:not(.home) {
+  // }
   section.note {
     @extend .text-shadow;
     font-size: 1.3em;
     font-weight: 600;
-
   }
-  section.secondary, section.messages {
+  section.secondary, 
+  section.messages {
     @extend .flexy-column;
     order: 3;
     width: 100%;
