@@ -17,9 +17,11 @@ $warncolor: rgba(250,169,22,1);
 $dangercolor: rgba(225,85,84,1);
 $disabledcolor: rgba(132,130,143,1);
 
+$generalshadow: 0 2px 3px;
+$generalshadowcolor: rgba(77, 75, 85, 0.3);
+$textshadow: $generalshadow;
 $textcolor: rgba(77,75,85,1);
-$textshadow: 0 2px 3px;
-$textshadowcolor: rgba(77, 75, 85, 0.3);
+$textshadowcolor: $generalshadowcolor;
 $highlighttextcolor: $basecolor;
 $secondaryhighlighttextcolor: rgba(79,67,125,0.5);
 $linktextcolor: $secondarycolor;
@@ -29,7 +31,6 @@ $codebackgroundcolor: $textcolor;
 
 $primarybuttoncolor: $successcolor;
 
-// $bordercolor: rgb(77, 75, 85);
 $bordercolor: rgba(235,233,243,1);
 $borderradius: 4px;
 $navbackgroundcolor: rgba(255,255,255,0.8);
@@ -183,11 +184,11 @@ nav {
     font-size: 2.7em;
     font-weight: 700;
     color: $highlighttextcolor;
-    text-shadow:
-      0 3px 5px $textshadowcolor,
-      2px -1px 1px $tertiarycolor,
-      -2px 1px 1px $successcolor
-    ;
+    // text-shadow:
+    //   0 3px 5px $textshadowcolor,
+    //   2px -1px 1px $tertiarycolor,
+    //   -2px 1px 1px $successcolor
+    // ;
     @media only screen and (min-width: 601px) {
       flex: 1 0 auto;
     }
@@ -709,11 +710,11 @@ article > .subhead {
   font-weight: bold;
   margin-bottom: 8px;
   color: $highlighttextcolor;
-  text-shadow:
-    $textshadow $textshadowcolor,
-    2px -1px 1px $tertiarycolor,
-    -2px 1px 1px $successcolor
-  ;
+  // text-shadow:
+  //   $textshadow $textshadowcolor,
+  //   2px -1px 1px $tertiarycolor,
+  //   -2px 1px 1px $successcolor
+  // ;
 }
 
 .hdg-2 {
@@ -723,11 +724,11 @@ article > .subhead {
   font-weight: bold;
   margin-bottom: 0.25em;
   color: $secondaryhighlighttextcolor;
-  text-shadow:
-    $textshadow $textshadowcolor,
-    1px -1px 1px $tertiarycolor,
-    -1px 1px 1px $successcolor
-  ;
+  // text-shadow:
+  //   $textshadow $textshadowcolor,
+  //   1px -1px 1px $tertiarycolor,
+  //   -1px 1px 1px $successcolor
+  // ;
 }
 
 .hdg-3 {

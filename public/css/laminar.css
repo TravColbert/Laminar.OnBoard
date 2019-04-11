@@ -147,7 +147,6 @@ nav #menu-title {
   font-size: 2.7em;
   font-weight: 700;
   color: #4f437d;
-  text-shadow: 0 3px 5px rgba(77, 75, 85, 0.3), 2px -1px 1px #bb36f0, -2px 1px 1px #79f1cd;
 }
 @media only screen and (min-width: 601px) {
   nav #menu-title {
@@ -649,7 +648,6 @@ article > .subhead {
   font-weight: bold;
   margin-bottom: 8px;
   color: #4f437d;
-  text-shadow: 0 2px 3px rgba(77, 75, 85, 0.3), 2px -1px 1px #bb36f0, -2px 1px 1px #79f1cd;
 }
 
 .hdg-2 {
@@ -657,7 +655,6 @@ article > .subhead {
   font-weight: bold;
   margin-bottom: 0.25em;
   color: rgba(79, 67, 125, 0.5);
-  text-shadow: 0 2px 3px rgba(77, 75, 85, 0.3), 1px -1px 1px #bb36f0, -1px 1px 1px #79f1cd;
 }
 
 .hdg-3 {
