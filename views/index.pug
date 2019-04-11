@@ -37,26 +37,25 @@ mixin list-user-domains(domainText)
       if(user.domains)
         each domain in user.domains
           if domain.name!="Trash" && domain.name!="Default"
-            .item-container
-              .item-listing
-                .itemhead #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
-                  if(user.defaultDomainId==domain.id)
-                    | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") stars]
-                .itemdetail #{domain.description}
-                  - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
-                  if(user.defaultDomainId!=domain.id)
-                    a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
-                      i.material-icons stars
-                      span Make Default
-                if(domain.notes)
-                  div Notes:
-                  each note in domain.notes
-                    .item-listing
-                      div
-                        i.material-icons receipt
-                      div
-                        .nobreak #{note.name}
-                        .layout-row #{note.description}
+            .item
+              .itemhead #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
+                if(user.defaultDomainId==domain.id)
+                  | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") stars]
+              .itemdetail #{domain.description}
+                - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
+                if(user.defaultDomainId!=domain.id)
+                  a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
+                    i.material-icons.badge stars
+                    span Make Default
+              if(domain.notes)
+                div Notes:
+                each note in domain.notes
+                  .item-listing
+                    div
+                      i.material-icons receipt
+                    div
+                      .nobreak #{note.name}
+                      .layout-row #{note.description}
 
 mixin link(options)
   if(options.type=="link")
