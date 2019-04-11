@@ -327,15 +327,15 @@ a.a-dotted {
 
 section.home,
 section.login {
-  background-image: url(/img/face7_cmyk_cyan.png);
+  background-image: url(/img/logo.png);
   background-size: 80%;
   background-repeat: no-repeat;
   background-position: bottom;
   @media only screen and (min-width: 601px) {
-    background-image: url(/img/face7_cmyk.png);
+    background-image: url(/img/logo.png);
     background-position-x: 90%;
     background-position-y: center;
-    background-size: 55%;
+    background-size: 47%;
   }
 }
 

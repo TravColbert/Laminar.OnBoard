@@ -282,7 +282,7 @@ a.a-dotted {
 
 section.home,
 section.login {
-  background-image: url(/img/face7_cmyk_cyan.png);
+  background-image: url(/img/logo.png);
   background-size: 80%;
   background-repeat: no-repeat;
   background-position: bottom;
@@ -290,10 +290,10 @@ section.login {
 @media only screen and (min-width: 601px) {
   section.home,
 section.login {
-    background-image: url(/img/face7_cmyk.png);
+    background-image: url(/img/logo.png);
     background-position-x: 90%;
     background-position-y: center;
-    background-size: 55%;
+    background-size: 49%;
   }
 }
 
@@ -510,7 +510,7 @@ article.main .articlemetadata {
   font-size: 1.2em;
 }
 .articlebody h2 {
-  font-size: 1.1em;
+  font-size: 1em;
 }
 .articlebody p {
   margin-block-start: 0.5em;
