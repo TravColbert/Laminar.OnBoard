@@ -646,6 +646,7 @@ article > .subhead {
 .item-container {
   @extend .flexy-column;
   align-items: stretch;
+  margin: 4px 8px 4px;
 }
 
 .itemhead {
@@ -657,7 +658,7 @@ article > .subhead {
 
 .itemdetail {
   @extend .flexy-column;
-  margin: 8px 8px 4px;
+  // margin: 8px 8px 4px;
 }
 
 .itemdetail:first-child {

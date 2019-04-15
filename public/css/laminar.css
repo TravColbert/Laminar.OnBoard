@@ -582,16 +582,13 @@ article > .subhead {
 
 .item-container {
   align-items: stretch;
+  margin: 4px 8px 4px;
 }
 
 .itemhead {
   align-items: center;
   font-size: 1.1em;
   font-weight: bold;
-}
-
-.itemdetail {
-  margin: 8px 8px 4px;
 }
 
 .itemdetail:first-child .label {
