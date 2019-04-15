@@ -396,7 +396,8 @@ article#herowelcome {
   font-size: 1em;
   margin-top: (-1 * $topnavheight);
 }
-article#welcome {
+article#welcome,
+article#features {
   @extend .full-height;
 
   .feature {
@@ -756,7 +757,10 @@ article > .subhead {
 
 .clickable:hover {
   cursor: pointer;
-  .data {
+  // .data {
+  //   color: $tertiarycolor;
+  // }
+  div {
     color: $tertiarycolor;
   }
 }

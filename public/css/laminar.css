@@ -82,7 +82,8 @@ article#skills, article#about > div div, .forminput, main, nav .navlinks ul, hea
 }
 
 .full-height, article#about,
-article#login, article#welcome, article#herowelcome, html,
+article#login, article#welcome,
+article#features, article#herowelcome, html,
 body {
   height: 100vh;
 }
@@ -332,11 +333,13 @@ article#herowelcome {
   margin-top: -56px;
 }
 
-article#welcome .feature {
+article#welcome .feature,
+article#features .feature {
   align-items: center;
   margin: 0 4px 8px;
 }
-article#welcome .hdg {
+article#welcome .hdg,
+article#features .hdg {
   text-align: center;
   margin-bottom: 1em;
 }
@@ -671,7 +674,7 @@ article > .subhead {
 .clickable:hover {
   cursor: pointer;
 }
-.clickable:hover .data {
+.clickable:hover div {
   color: #bb36f0;
 }
 
