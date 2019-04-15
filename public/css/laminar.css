@@ -674,7 +674,7 @@ article > .subhead {
 .clickable:hover {
   cursor: pointer;
 }
-.clickable:hover > div {
+.clickable:hover div {
   color: #bb36f0;
 }
 
