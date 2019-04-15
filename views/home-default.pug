@@ -5,14 +5,29 @@ block aside
     .sticky-50.flexy-column
       if(user)
         +list-user-invites()
+        article#links
+          .hdg.hdg-2 Links
+          .item
+            a.documentlink(href="/notes") Notes
+          .item
+            a.documentlink(href="/files") Files
+          .item
+            a.documentlink(href="#features") Documentation
         article#notes
           include notes-list
         +list-user-domains("Domain")
         +create-or-see-domains("Domain")
       if(!user)
-        if(notes && notes.length>0)
-          article#notes
-            include notes-list
+        article#links
+          .hdg.hdg-2 Links
+          .item
+            a.documentlink(href="#features") Features
+          .item
+            a.documentlink(href="#tryit") Try It
+          .item
+            a.documentlink(href="#features") Get Started
+          .item
+            a.documentlink(href="#features") Documentation
         article#getstarted
           .hdg.hdg-2 Get Started!
           +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
@@ -53,6 +68,18 @@ block content
             i.material-icons.big-icon security
             | Security Baked-In
           div.description Everything's secure! Your web app is locked-down and sealed tight by default. Only you and your collaborators can see your data.
+        div.feature
+          div.heading
+            i.material-icons.big-icon code
+            | Open source
+          div.description Laminar.OnBoard is opensource and steadily improving. All of our code is maintained on GitHub. Merge requests are always welcome!
+        div.feature
+          div.heading
+            i.material-icons.big-icon store
+            | Indie-Web Ready
+          div.description Be the master of your own data! You don't need to rely on the giant Internet silos to access your own data. Laminar.OnBoard allows you to host your own data on your own servers, either on-prem or in the cloud.
+
+    article#tryit
       .hdg.hdg-1 Go ahead and try Laminar.OnBoard for yourself.
       .hdg.hdg-3 Actually, you already are! This whole website is running on Laminar.OnBoard.
 
