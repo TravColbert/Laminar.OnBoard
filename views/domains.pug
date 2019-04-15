@@ -2,14 +2,11 @@ extends index.pug
 
 block aside
   aside.sidebar
-    article.domainactions
-      .hdg.hdg-2 Domain Actions
-      //- .nav
-      //-   .navitem One item
-      //-   .navitem Two 
-      //-   .navitem Three
-      .actions.secondary
-        #domain_add_button_container.addrole.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
+    .sticky-50.flexy-column
+      article.domainactions
+        .hdg.hdg-2 Domain Actions
+        .actions.secondary
+          #domain_add_button_container.addrole.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
 
 block content
   section.domain
