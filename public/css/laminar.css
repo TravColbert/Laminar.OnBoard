@@ -178,6 +178,9 @@ nav .navcenter {
   flex: 1 0 auto;
   justify-content: center;
 }
+nav .navcenter div {
+  align-items: center;
+}
 nav .navlinks {
   display: flex;
   width: 30%;
@@ -202,6 +205,7 @@ nav .navlinks ul li a {
 }
 nav .navleft {
   flex-direction: column;
+  justify-content: center;
 }
 nav > div:first-child {
   padding-left: 8px;
@@ -310,7 +314,8 @@ section.login {
   background-image: url(/img/logo.png);
   background-size: 80%;
   background-repeat: no-repeat;
-  background-position: bottom;
+  background-position-y: center;
+  background-position-x: center;
 }
 @media only screen and (min-width: 601px) {
   section.home,
@@ -365,10 +370,23 @@ article#login {
   }
 }
 @media only screen and (max-width: 600px) {
+  article#about,
+article#login {
+    background: rgba(255, 255, 255, 0.75);
+    justify-content: center;
+  }
   article#about .body,
 article#login .body {
     margin-top: 57px;
-    height: 100%;
+    flex: 1 0 auto;
+    justify-content: space-between;
+  }
+  article#about .body .apphifriend,
+article#about .body .appblurb,
+article#login .body .apphifriend,
+article#login .body .appblurb {
+    display: none;
+    visibility: hidden;
   }
 }
 article#about .subhead,

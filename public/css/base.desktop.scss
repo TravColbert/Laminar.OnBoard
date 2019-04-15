@@ -217,6 +217,9 @@ nav {
     display: flex;
     flex: 1 0 auto;
     justify-content: center;
+    div {
+      align-items: center;
+    }
   }
   .navlinks {
     display: flex;
@@ -243,6 +246,7 @@ nav {
   }
   .navleft {
     flex-direction: column;
+    justify-content: center;
   }
   > div:first-child {
     padding-left: 8px;
@@ -368,7 +372,8 @@ section.login {
   background-image: url(/img/logo.png);
   background-size: 80%;
   background-repeat: no-repeat;
-  background-position: bottom;
+  background-position-y: center;
+  background-position-x: center;
   @media only screen and (min-width: 601px) {
     background-image: url(/img/logo.png);
     background-position-x: 90%;
@@ -429,10 +434,18 @@ article#login {
   @media only screen and (min-width: 601px) {
     justify-content: center;
   }
-  .body {
-    @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 600px) {
+    background: rgba(255,255,255,0.75);
+    justify-content: center;
+    .body {
       margin-top: 57px;
-      height: 100%;
+      flex: 1 0 auto;
+      justify-content: space-between;
+      .apphifriend,
+      .appblurb {
+        display: none;
+        visibility: hidden;
+      }
     }
   }
   .subhead {
@@ -462,6 +475,13 @@ article#login {
     }
   }
 }
+
+// article#login {
+//   @media only screen and (max-width: 600px) {
+//     background: rgba(255,255,255,0.8);
+//     justify-content: center;
+//   }
+// }
 
 .badge {
   @extend .text-shadow;
