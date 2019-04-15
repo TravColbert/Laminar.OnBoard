@@ -815,10 +815,11 @@ h1 {
 }
 
 .pill {
-  background: rgba(0,0,0,0.2);
+  // background: rgba(0,0,0,0.2);
   padding: 0.25em;
   padding-right: 1em;
   border-radius: 1em;
+  border: 1px solid $bordercolor;
   align-items: center;
 }
 
