@@ -222,6 +222,9 @@ nav > div:last-child {
 footer {
   justify-content: flex-end;
 }
+footer nav {
+  height: 48px;
+}
 
 main {
   align-self: center;
