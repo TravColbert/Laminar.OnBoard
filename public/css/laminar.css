@@ -608,10 +608,6 @@ article > .subhead {
   font-style: italic;
 }
 
-.item {
-  margin-bottom: 0.25em;
-}
-
 .item.primary {
   font-size: 1.8em;
   border-bottom: 1px dotted #ebe9f3;
