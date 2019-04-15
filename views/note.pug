@@ -2,24 +2,25 @@ extends index.pug
 
 block aside
   aside.sidebar
-    if(user)
-      article.noteactions
-        .hdg.hdg-2 Actions
-        #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
-        #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
-      +list-user-invites()
-      #articles
-        include articles-list
-      +list-user-domains("Domain")
-      +create-or-see-domains("Domain")
-    if(!user)
-      article.actions
-        if(notes && notes.length>0)
-          #articles
-            include articles-list
-        #getstarted
-          //- .hdg.hdg-2 Get Started!
-          +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
+    .sticky-50.flexy-column
+      if(user)
+        article.noteactions
+          .hdg.hdg-2 Actions
+          #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
+          #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
+        +list-user-invites()
+        #articles
+          include articles-list
+        +list-user-domains("Domain")
+        +create-or-see-domains("Domain")
+      if(!user)
+        article.actions
+          if(notes && notes.length>0)
+            #articles
+              include articles-list
+          #getstarted
+            //- .hdg.hdg-2 Get Started!
+            +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
 
 block content
   section.note
