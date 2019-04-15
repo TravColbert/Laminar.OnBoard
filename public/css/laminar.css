@@ -1,19 +1,21 @@
 .flexy, .flexy-row, .content-titlebar, .btn,
-.button, .mediaitem, .itemhead, .articlemetadata, #articlelist .body, article#cta,
-article#skills, article#about > div div, .forminput, main, nav .navlinks ul, header nav, footer nav, .flexy-column, .item, .itembanner, .itemdetail, .item-container, .subitem-listing, .item-listing, article > .subhead, article#about #login-form,
-article#login #login-form, article, aside, main section.secondary, main section.messages, main section, header, footer, html,
+.button, .mediaitem, .mainblurb, .maintitle, .mainwelcome, .itemhead, .articlemetadata, #articlelist .body, article#cta,
+article#skills, article#about > div div, .forminput, main, nav .navlinks ul, header nav, footer nav, .flexy-column, .app-features .feature, .item, .itembanner, .itemdetail, .item-container, .subitem-listing, .item-listing, article > .subhead, article#about #login-form,
+article#login #login-form, article#herowelcome, article, aside, main section.secondary,
+main section.messages, main section, header, footer, html,
 body {
   display: flex;
 }
 
-.flexy-column, .item, .itembanner, .itemdetail, .item-container, .subitem-listing, .item-listing, article > .subhead, article#about #login-form,
-article#login #login-form, article, aside, main section.secondary, main section.messages, main section, header, footer, html,
+.flexy-column, .app-features .feature, .item, .itembanner, .itemdetail, .item-container, .subitem-listing, .item-listing, article > .subhead, article#about #login-form,
+article#login #login-form, article#herowelcome, article, aside, main section.secondary,
+main section.messages, main section, header, footer, html,
 body {
   flex-direction: column;
 }
 
 .flexy-row, .content-titlebar, .btn,
-.button, .mediaitem, .itemhead, .articlemetadata, #articlelist .body, article#cta,
+.button, .mediaitem, .mainblurb, .maintitle, .mainwelcome, .itemhead, .articlemetadata, #articlelist .body, article#cta,
 article#skills, article#about > div div, .forminput, main, nav .navlinks ul, header nav, footer nav {
   flex-direction: row;
 }
@@ -33,6 +35,12 @@ article#skills, article#about > div div, .forminput, main, nav .navlinks ul, hea
   top: 0;
 }
 
+.sticky-50 {
+  position: sticky;
+  top: 50px;
+  padding-top: 50px;
+}
+
 .sticky-middle {
   position: sticky;
   top: 30vh;
@@ -41,31 +49,46 @@ article#skills, article#about > div div, .forminput, main, nav .navlinks ul, hea
 .shadowed, .btn .empty,
 .button .empty, .btn,
 .button, .thumbnail img, .articlebody code, .articlebody img {
-  box-shadow: 0 3px 5px rgba(0, 0, 5, 0.1);
+  box-shadow: 0 2px 3px rgba(77, 75, 85, 0.3);
 }
 
 .text-soften {
   text-shadow: 0 0 6px #fafafa, 0 2px 3px rgba(77, 75, 85, 0.3);
 }
 
-.text-shadow, .hdg-3, .hdg-2, .articlebody, .articleblurb, .articledescription, .articletitle, .badge, main section.note, header nav {
+.text-shadow, .hdg-3, .hdg-2, .hdg-1, .articlebody, .articleblurb, .articledescription, .articletitle, .badge, header nav {
   text-shadow: 0 2px 3px rgba(77, 75, 85, 0.3);
 }
 
-.mini-shadowed, .buttonstyle, .app-features {
+.mini-shadowed, .buttonstyle {
   box-shadow: 0 3px 4px rgba(0, 0, 5, 0.2);
 }
 
 .nowrap,
 .nobreak,
 .btn,
-.button,
-.hdg-2 {
+.button {
   white-space: nowrap;
 }
 
-.buttonstyle, .app-features {
-  border-radius: 4px;
+.wrap {
+  white-space: normal;
+  flex-wrap: wrap;
+}
+
+.wrap-reverse {
+  white-space: normal;
+  flex-wrap: wrap-reverse;
+}
+
+.full-height, article#about,
+article#login, article#welcome, article#herowelcome, html,
+body {
+  height: 100vh;
+}
+
+.buttonstyle {
+  border-radius: 2px;
   padding: 8px;
   margin-bottom: 8px;
 }
@@ -81,7 +104,6 @@ html {
 html,
 body {
   margin: 0;
-  height: 100vh;
   width: 100%;
   font-size: 16px;
   font-family: "Rajdhani", Arial, Helvetica, sans-serif;
@@ -116,8 +138,14 @@ a {
   color: #4d4b55;
 }
 
+a:hover {
+  color: #bb36f0;
+}
+
 nav {
   position: fixed;
+  height: 56px;
+  max-height: 56px;
   width: 100%;
   max-width: 1024px;
   margin: 0;
@@ -132,10 +160,8 @@ nav #menu-title {
   display: flex;
   flex-direction: row;
   font-family: "KoHo", Arial, Helvetica, sans-serif;
-  font-size: 2.7em;
-  font-weight: 700;
+  font-size: 2em;
   color: #4f437d;
-  text-shadow: 0 3px 5px rgba(77, 75, 85, 0.3), 2px -1px 1px #bb36f0, -2px 1px 1px #79f1cd;
 }
 @media only screen and (min-width: 601px) {
   nav #menu-title {
@@ -143,6 +169,7 @@ nav #menu-title {
   }
 }
 nav #menu-title #app-title {
+  align-items: center;
   padding-bottom: 0.08em;
 }
 nav .navcenter {
@@ -208,23 +235,12 @@ main {
 main section {
   order: 1;
   flex: 1 0 auto;
-}
-main section article {
+  margin-top: 56px;
   margin-bottom: 48px;
-}
-main section article:last-child {
-  margin-bottom: 0;
-}
-main section:not(.home) {
-  padding-top: 53px;
-  padding-bottom: 48px;
   width: 60%;
 }
-main section.note {
-  font-size: 1.3em;
-  font-weight: 600;
-}
-main section.secondary, main section.messages {
+main section.secondary,
+main section.messages {
   order: 3;
   width: 100%;
 }
@@ -234,7 +250,7 @@ aside {
   min-width: 300px;
   z-index: 50;
   order: 2;
-  margin-top: 53px;
+  margin-top: 56px;
   justify-content: flex-end;
 }
 @media only screen and (min-width: 601px) {
@@ -259,8 +275,6 @@ aside.sidebar {
   aside.sidebar {
     display: flex;
     visibility: visible;
-    background: rgba(0, 0, 0, 0.01);
-    overflow-y: auto;
   }
 }
 
@@ -269,7 +283,7 @@ aside > *:first-child {
 }
 
 aside > *:last-child {
-  margin-bottom: 40px;
+  margin-bottom: 48px;
 }
 
 a {
@@ -293,8 +307,13 @@ section.login {
     background-image: url(/img/logo.png);
     background-position-x: 90%;
     background-position-y: center;
-    background-size: 47%;
+    background-size: 42%;
   }
+}
+section.home article,
+section.login article {
+  margin-top: -56px;
+  margin-bottom: -48px;
 }
 
 article#articles .hdg-2 {
@@ -302,10 +321,26 @@ article#articles .hdg-2 {
   padding-bottom: 0.5em;
 }
 
+article#herowelcome {
+  align-items: stretch;
+  justify-content: center;
+  color: #4d4b55 !important;
+  font-size: 1em;
+  margin-top: -56px;
+}
+
+article#welcome .feature {
+  align-items: center;
+  margin: 0 4px 8px;
+}
+article#welcome .hdg {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
 article#about,
 article#login {
   align-items: stretch;
-  height: 100vh;
   justify-content: flex-start;
   font-size: 1.6em;
   text-shadow: 0 2px 3px rgba(77, 75, 85, 0.3);
@@ -320,12 +355,6 @@ article#login {
   article#about .body,
 article#login .body {
     margin-top: 57px;
-  }
-}
-@media only screen and (max-width: 600px) {
-  article#about .hdg-2,
-article#login .hdg-2 {
-    visibility: hidden;
   }
 }
 article#about .subhead,
@@ -361,7 +390,7 @@ article#about #login-form input[type=password],
 article#login #login-form input[type=text],
 article#login #login-form input[type=password] {
   border: 1px solid #ebe9f3;
-  border-radius: 4px;
+  border-radius: 2px;
   background: rgba(0, 0, 0, 0.01);
 }
 
@@ -433,13 +462,12 @@ article.main .articlemetadata {
   font-size: 0.8em;
   font-weight: normal;
   color: #a2a0ad;
-  font-family: "Titillium Web", sans-serif;
+  font-family: "Titillium Web", Arial, Helvetica, sans-serif;
   font-style: italic;
 }
 
 .articletitle {
   font-family: "KoHo", Arial, Helvetica, sans-serif;
-  font-weight: bold;
   color: #30bf95;
 }
 
@@ -494,7 +522,7 @@ article.main .articlemetadata {
   align-items: center;
   padding: 8px;
   background: #fafafa;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 .articlebody code {
   display: block;
@@ -566,12 +594,11 @@ article > .subhead {
 }
 .itemdetail:first-child .data {
   font-size: 1.1em;
-  font-weight: bold;
 }
 
 .itemdetail:not(:first-child) .label {
   color: #a2a0ad;
-  font-family: "Titillium Web", sans-serif;
+  font-family: "Titillium Web", Arial, Helvetica, sans-serif;
   font-style: italic;
 }
 
@@ -598,6 +625,19 @@ article > .subhead {
 
 .item.tertiary {
   width: 100%;
+}
+
+.maintitle {
+  font-size: 4.5em;
+  font-family: "KoHo", Arial, Helvetica, sans-serif;
+  justify-content: center;
+}
+
+.mainblurb {
+  font-size: 1.3em;
+  letter-spacing: 0.3em;
+  justify-content: center;
+  color: #bb36f0;
 }
 
 .mediaitem {
@@ -628,29 +668,40 @@ article > .subhead {
 .clickable:hover {
   cursor: pointer;
 }
+.clickable:hover .data {
+  color: #bb36f0;
+}
+
+.applaminar {
+  color: #4d9de0 !important;
+}
+
+.apponboard {
+  color: #4f437d !important;
+}
+
+.heading {
+  font-size: 1.1em;
+  font-family: "KoHo", Arial, Helvetica, sans-serif;
+  align-items: center;
+  margin-bottom: 8px;
+}
 
 .hdg {
   font-family: "KoHo", Arial, Helvetica, sans-serif;
 }
 
 .hdg-1 {
-  font-size: 1.9em;
-  font-weight: bold;
+  font-size: 2em;
   margin-bottom: 8px;
-  color: #4f437d;
-  text-shadow: 0 2px 3px rgba(77, 75, 85, 0.3), 2px -1px 1px #bb36f0, -2px 1px 1px #79f1cd;
 }
 
 .hdg-2 {
-  font-size: 2em;
-  font-weight: bold;
+  font-size: 1.8em;
   margin-bottom: 0.25em;
-  color: rgba(79, 67, 125, 0.5);
-  text-shadow: 0 2px 3px rgba(77, 75, 85, 0.3), 1px -1px 1px #bb36f0, -1px 1px 1px #79f1cd;
 }
 
 .hdg-3 {
-  color: rgba(79, 67, 125, 0.5);
   font-size: 1.5em;
   margin-bottom: 8px;
 }
@@ -691,9 +742,8 @@ h1 {
 .button {
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  padding: 2px 8px;
-  border: 1px solid #ebe9f3;
+  border-radius: 2px;
+  padding: 4px 8px;
   background-color: #79f1cd;
   font-family: "Rajdhani", Arial, Helvetica, sans-serif;
   font-weight: 100;
@@ -717,12 +767,34 @@ h1 {
 .app-features {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   margin-top: 0;
+  flex-wrap: wrap;
 }
 
 .app-features:last-child {
   margin-bottom: 0;
+}
+
+.app-features .feature {
+  padding: 8px;
+  flex: 1 0 45%;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.01);
+}
+.app-features .feature .heading {
+  color: #4f437d;
+}
+.app-features .feature .heading i {
+  color: #4d4b55;
+}
+
+.huge-icon {
+  font-size: 3em;
+}
+
+.big-icon {
+  font-size: 2em;
 }
 
 .read-more {

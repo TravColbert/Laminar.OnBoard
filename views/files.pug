@@ -2,10 +2,11 @@ extends index.pug
 
 block aside
   aside.sidebar
-    article.noteactions
-      .hdg.hdg-2 File Actions
-      .actions.secondary
-        #file_add_button_container.addfile.authUI(data-fetch="file_add" data-href="/actions/create/files/")
+    .sticky-50.flexy-column
+      article.noteactions
+        .hdg.hdg-2 File Actions
+        .actions.secondary
+          #file_add_button_container.addfile.authUI(data-fetch="file_add" data-href="/actions/create/files/")
 
 block content
   section.files

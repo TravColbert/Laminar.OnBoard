@@ -2,10 +2,11 @@ extends index.pug
 
 block aside
   aside.sidebar
-    article.noteactions
-      .hdg.hdg-2 Note Actions
-      .actions.secondary
-        #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
+    .sticky-50.flexy-column
+      article.noteactions
+        .hdg.hdg-2 Note Actions
+        .actions.secondary
+          #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
 
 block content
   section.notes
