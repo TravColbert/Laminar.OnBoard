@@ -338,6 +338,9 @@ aside.sidebar {
     // background: $sidebarbackgroundcolor;
     // overflow-y: auto;
   }
+  article:not(:last-child) {
+    margin-bottom: 8px;
+  }
 }
 
 aside > *:first-child {
@@ -637,8 +640,8 @@ article > .subhead {
 
 .subitem-listing {
   @extend .flexy-column;
-  padding: 8px 0;
-  margin-bottom: 4px;
+  padding: 4px;
+  // margin-bottom: 4px;
   .data {
     font-weight: bold;
   }

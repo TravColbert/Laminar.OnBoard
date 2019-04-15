@@ -281,6 +281,9 @@ aside.sidebar {
     visibility: visible;
   }
 }
+aside.sidebar article:not(:last-child) {
+  margin-bottom: 8px;
+}
 
 aside > *:first-child {
   top: 0;
@@ -574,8 +577,7 @@ article > .subhead {
 }
 
 .subitem-listing {
-  padding: 8px 0;
-  margin-bottom: 4px;
+  padding: 4px;
 }
 .subitem-listing .data {
   font-weight: bold;
