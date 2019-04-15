@@ -147,6 +147,13 @@ module.exports = function (app, model) {
             as: 'domain'
           }
         )
+      } else {
+        searchObj.include.push(
+          {
+            model: app.models['domains'],
+            as: 'domain'
+          }
+        )
       }
 
       app.controllers[model].__get(searchObj)
