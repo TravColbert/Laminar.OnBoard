@@ -591,7 +591,7 @@ article > .subhead {
 }
 
 .itemdetail {
-  margin-bottom: 4px;
+  margin: 8px 8px 4px;
 }
 
 .itemdetail:first-child .label {
@@ -609,7 +609,7 @@ article > .subhead {
 }
 
 .item {
-  margin-bottom: 1em;
+  margin-bottom: 0.25em;
 }
 
 .item.primary {
