@@ -1,4 +1,5 @@
 // $topheight: 40px;
+$topnavheight: 56px;
 $sidebarwidth: 30%;
 // $mainwidth: 70%;
 // $mainmaxwidthpx: 1024px;
@@ -32,9 +33,10 @@ $codebackgroundcolor: $textcolor;
 $primarybuttoncolor: $successcolor;
 
 $bordercolor: rgba(235,233,243,1);
-$borderradius: 4px;
+$borderradius: 2px;
 $navbackgroundcolor: rgba(255,255,255,0.8);
 $sidebarbackgroundcolor: rgba(0,0,0,0.01);
+
 
 
 .flexy {
@@ -66,6 +68,12 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
   top: 0;
 }
 
+.sticky-50 {
+  position: sticky;
+  top: 50px;
+  padding-top: 50px;
+}
+
 .sticky-middle {
   position: sticky;
   top: 30vh;
@@ -78,7 +86,7 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 
 .shadowed {
   // box-shadow: 0 3px 8px rgba(0,0,5,0.3);
-  box-shadow: 0 3px 5px rgba(0, 0, 5, 0.1)
+  box-shadow: $generalshadow $generalshadowcolor;
 }
 
 .text-soften {
@@ -108,6 +116,10 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
   flex-wrap: wrap-reverse;
 }
 
+.full-height {
+  height: 100vh;
+}
+
 .buttonstyle {
   @extend .semi-transparent;
   @extend .mini-shadowed;
@@ -127,8 +139,8 @@ html {
 html,
 body {
   @extend .flexy-column;
+  @extend .full-height;
   margin: 0;
-  height: 100vh;
   width: 100%;
   font-size: 16px;
   font-family: $generalfont;
@@ -166,8 +178,14 @@ a {
   color: $textcolor;
 }
 
+a:hover {
+  color: $tertiarycolor;
+}
+
 nav {
   position: fixed;
+  height: $topnavheight;
+  max-height: $topnavheight;
   width: 100%;
   max-width: 1024px;
   margin: 0;
@@ -181,18 +199,14 @@ nav {
     display: flex;
     flex-direction: row;
     font-family: $titlefont;
-    font-size: 2.7em;
-    font-weight: 700;
+    font-size: 2em;
+    // font-weight: 700;
     color: $highlighttextcolor;
-    // text-shadow:
-    //   0 3px 5px $textshadowcolor,
-    //   2px -1px 1px $tertiarycolor,
-    //   -2px 1px 1px $successcolor
-    // ;
     @media only screen and (min-width: 601px) {
       flex: 1 0 auto;
     }
     #app-title {
+      align-items: center;
       padding-bottom: 0.08em;
     }
   }
@@ -278,11 +292,7 @@ main {
   }
   // section:not(.home) {
   // }
-  section.note {
-    @extend .text-shadow;
-    font-size: 1.3em;
-    font-weight: 600;
-  }
+
   section.secondary, 
   section.messages {
     @extend .flexy-column;
@@ -318,8 +328,8 @@ aside.sidebar {
   @media only screen and (min-width: 601px) {
     display: flex;
     visibility: visible;  
-    background: $sidebarbackgroundcolor;
-    overflow-y: auto;
+    // background: $sidebarbackgroundcolor;
+    // overflow-y: auto;
   }
 }
 
@@ -363,10 +373,34 @@ article#articles {
     padding-bottom: 0.5em;
   } 
 }
+
+article#herowelcome {
+  @extend .flexy-column;
+  @extend .full-height;
+  align-items: stretch;
+  justify-content: center;
+  // align-items: center;
+  margin-top: -57px;
+  color: $textcolor !important;
+  font-size: 1em;
+}
+article#welcome {
+  @extend .full-height;
+
+  .feature {
+    align-items: center;
+    margin: 0 4px 8px;
+  }
+  .hdg {
+    text-align: center;
+    margin-bottom: 1em;
+  }
+}
+
 article#about,
 article#login {
+  @extend .full-height;
   align-items: stretch;
-  height: 100vh;
   justify-content: flex-start;
   font-size: 1.6em;
   text-shadow: 
@@ -510,7 +544,6 @@ article.main {
   padding-top: 0.25em;
   padding-bottom: 0.1em;
   .user {
-    // font-weight: bold;
   }
   * {
     margin-right: 1em;
@@ -633,7 +666,6 @@ article > .subhead {
 
 .itemdetail:not(:first-child) {
   .label {
-    // text-decoration: underline;
     color: $minortextcolor;
     font-family: $detailfont;
     font-style: italic;
@@ -668,6 +700,25 @@ article > .subhead {
   width: 100%;
 }
 
+.mainwelcome {
+  @extend .flexy-row;
+}
+
+.maintitle {
+  @extend .flexy-row;
+  font-size: 4.5em;
+  font-family: $titlefont;
+  justify-content: center;
+}
+
+.mainblurb {
+  @extend .flexy-row;
+  font-size: 1.3em;
+  letter-spacing: 0.3em;
+  justify-content: center;
+  color: $tertiarycolor;
+}
+
 .mediaitem {
   @extend .flexy-row;
   width: 100%;
@@ -699,6 +750,24 @@ article > .subhead {
 
 .clickable:hover {
   cursor: pointer;
+  .data {
+    color: $tertiarycolor;
+  }
+}
+
+.applaminar {
+  color: $primarycolor !important;
+}
+
+.apponboard {
+  color: $basecolor !important;
+}
+
+.heading {
+  font-size: 1.1em;
+  font-family: $titlefont;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .hdg {
@@ -706,34 +775,19 @@ article > .subhead {
 }
 
 .hdg-1 {
-  font-size: 1.9em;
-  font-weight: bold;
+  @extend .text-shadow;
+  font-size: 2em;
   margin-bottom: 8px;
-  color: $highlighttextcolor;
-  // text-shadow:
-  //   $textshadow $textshadowcolor,
-  //   2px -1px 1px $tertiarycolor,
-  //   -2px 1px 1px $successcolor
-  // ;
 }
 
 .hdg-2 {
   @extend .text-shadow;
-  @extend .nobreak;
-  font-size: 2em;
-  font-weight: bold;
+  font-size: 1.8em;
   margin-bottom: 0.25em;
-  color: $secondaryhighlighttextcolor;
-  // text-shadow:
-  //   $textshadow $textshadowcolor,
-  //   1px -1px 1px $tertiarycolor,
-  //   -1px 1px 1px $successcolor
-  // ;
 }
 
 .hdg-3 {
   @extend .text-shadow;
-  color: $secondaryhighlighttextcolor;
   font-size: 1.5em;
   margin-bottom: 8px;
 }
@@ -777,8 +831,9 @@ h1 {
   align-items: center;
   justify-content: center;
   border-radius: $borderradius;
-  padding: 2px 8px;
-  border: 1px solid $bordercolor;
+  padding: 4px 8px;
+  // border: 1px solid $bordercolor;
+  // border: 3px solid $primarybuttoncolor;
   background-color: $primarybuttoncolor;
   font-family: $generalfont;
   font-weight: 100;
@@ -805,9 +860,9 @@ h1 {
 .app-features {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  @extend .buttonstyle;
+  align-items: stretch;
   margin-top: 0;
+  flex-wrap: wrap;
 }
 
 .app-features:last-child {
@@ -815,7 +870,29 @@ h1 {
 }
 
 .app-features .feature {
-  @extend .flexy-row;
+  @extend .flexy-column;
+  padding: 8px;
+  flex: 1 0 45%;
+  border-radius: $borderradius;
+  background: $sidebarbackgroundcolor;
+  .heading {
+    color: $basecolor;
+    i {
+      color: $textcolor;
+    }
+  }
+}
+
+.feature .description {
+
+}
+
+.huge-icon {
+  font-size: 3em;
+}
+
+.big-icon {
+  font-size: 2em;
 }
 
 .read-more {
