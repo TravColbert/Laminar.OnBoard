@@ -248,7 +248,8 @@ module.exports = function (app, model) {
         })
     },
     showBlog: function (req, res, next) {
-      req.appData.view = 'notes-list'
+      // req.appData.view = 'blogs-list'
+      req.appData.view = 'home-blog'
       return next()
     },
     editNoteForm: function (req, res, next) {
