@@ -14,15 +14,13 @@ mixin login-or-register(loginText,registerText)
 mixin create-or-see-domains(domainName)
   article#createorseedomains
     .hdg.hdg-2 Domain Actions
-    .item-listing
-      .item-container
-        a.btn.secondary(href="/domains/")
-          i.material-icons list_alt
-          span #{domainName} List
-      .item-container
-        a.btn.primary(href="/actions/create/domains/")
-          i.material-icons check_circle_outline
-          span Create #{domainName}
+    .item-container
+      a.btn.secondary(href="/domains/")
+        i.material-icons list_alt
+        span #{domainName} List
+      a.btn.primary(href="/actions/create/domains/")
+        i.material-icons check_circle_outline
+        span Create #{domainName}
 
 mixin list-user-invites
   if(invites && invites.length>0)

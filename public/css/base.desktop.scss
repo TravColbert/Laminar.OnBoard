@@ -1,37 +1,44 @@
 // $topheight: 40px;
+$topnavheight: 56px;
+$bottomnavheight: 48px;
 $sidebarwidth: 30%;
 // $mainwidth: 70%;
 // $mainmaxwidthpx: 1024px;
 // $sidebarmaxwidthpx: 307px;
 $titlefont: 'KoHo', Arial, Helvetica, sans-serif;
 $generalfont: 'Rajdhani', Arial, Helvetica, sans-serif;
-$detailfont: 'Titillium Web', sans-serif;
+$detailfont: 'Titillium Web', Arial, Helvetica, sans-serif;
 
-$textcolor: rgb(77, 75, 85);
-$textshadow: 0 2px 3px;
-$textshadowcolor: rgb(77, 75, 85, 0.3);
-$highlighttextcolor: rgba(79,67,125,1);
+$basecolor: rgba(79,67,125,1);
+$primarycolor: rgba(77,157,224,1);
+$secondarycolor: rgb(48,191,149,1);
+$tertiarycolor: rgba(187,54,240,1);
+
+$successcolor: rgba(121,241,205,1);
+$warncolor: rgba(250,169,22,1);
+$dangercolor: rgba(225,85,84,1);
+$disabledcolor: rgba(132,130,143,1);
+
+$generalshadow: 0 2px 3px;
+$generalshadowcolor: rgba(77, 75, 85, 0.3);
+$textshadow: $generalshadow;
+$textcolor: rgba(77,75,85,1);
+$textshadowcolor: $generalshadowcolor;
+$highlighttextcolor: $basecolor;
 $secondaryhighlighttextcolor: rgba(79,67,125,0.5);
-$linktextcolor: rgb(48, 191, 149);
-$minortextcolor: rgb(162, 160, 173);
-$codetextcolor: rgb(205, 204, 211);
+$linktextcolor: $secondarycolor;
+$minortextcolor: rgba(162,160,173);
+$codetextcolor: rgba(205,204,211);
 $codebackgroundcolor: $textcolor; 
 
-$primarybuttoncolor: rgba(121, 241, 205, 1);
+$primarybuttoncolor: $successcolor;
 
-// $bordercolor: rgb(77, 75, 85);
 $bordercolor: rgba(235,233,243,1);
-$borderradius: 4px;
+$borderradius: 2px;
 $navbackgroundcolor: rgba(255,255,255,0.8);
 $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 
-$primarycolor: rgba(77,157,224,1);
-// $secondarycolor: rgba(35,100,170,1);
-$secondarycolor: rgb(187, 54, 240);
-$successcolor: rgba(121, 241, 205, 1);
-$warncolor: rgba(250,169,22,1);
-$dangercolor: rgba(225,85,84,1);
-$disabledcolor: rgba(132,130,143);
+
 
 .flexy {
   display: flex;
@@ -62,6 +69,12 @@ $disabledcolor: rgba(132,130,143);
   top: 0;
 }
 
+.sticky-50 {
+  position: sticky;
+  top: 50px;
+  padding-top: 50px;
+}
+
 .sticky-middle {
   position: sticky;
   top: 30vh;
@@ -74,7 +87,7 @@ $disabledcolor: rgba(132,130,143);
 
 .shadowed {
   // box-shadow: 0 3px 8px rgba(0,0,5,0.3);
-  box-shadow: 0 3px 5px rgba(0, 0, 5, 0.1)
+  box-shadow: $generalshadow $generalshadowcolor;
 }
 
 .text-soften {
@@ -92,6 +105,22 @@ $disabledcolor: rgba(132,130,143);
 .nowrap,
 .nobreak {
   white-space: nowrap;
+}
+
+.wrap {
+  white-space: normal;
+  flex-wrap: wrap;
+}
+
+.wrap-reverse {
+  white-space: normal;
+  flex-wrap: wrap-reverse;
+}
+
+.full-height {
+  height: 100vh;
+  // margin-top: (-1 * $topnavheight);
+  // margin-bottom: (-1 * $bottomnavheight);
 }
 
 .buttonstyle {
@@ -113,8 +142,8 @@ html {
 html,
 body {
   @extend .flexy-column;
+  @extend .full-height;
   margin: 0;
-  height: 100vh;
   width: 100%;
   font-size: 16px;
   font-family: $generalfont;
@@ -152,8 +181,14 @@ a {
   color: $textcolor;
 }
 
+a:hover {
+  color: $tertiarycolor;
+}
+
 nav {
   position: fixed;
+  height: $topnavheight;
+  max-height: $topnavheight;
   width: 100%;
   max-width: 1024px;
   margin: 0;
@@ -167,18 +202,14 @@ nav {
     display: flex;
     flex-direction: row;
     font-family: $titlefont;
-    font-size: 2.7em;
-    font-weight: 700;
+    font-size: 2em;
+    // font-weight: 700;
     color: $highlighttextcolor;
-    text-shadow:
-      0 3px 5px $textshadowcolor,
-      2px -1px 1px $secondarycolor,
-      -2px 1px 1px $successcolor
-    ;
     @media only screen and (min-width: 601px) {
       flex: 1 0 auto;
     }
     #app-title {
+      align-items: center;
       padding-bottom: 0.08em;
     }
   }
@@ -252,25 +283,22 @@ main {
     @extend .flexy-column;
     order: 1;
     flex: 1 0 auto;
-    article {
-      margin-bottom: 48px;
-    }
-    article:last-child {
-      margin-bottom: 0;
-    }
-  }
-  section:not(.home) {
-    padding-top: 53px;
-    padding-bottom: 48px;
+    margin-top: $topnavheight;
+    margin-bottom: $bottomnavheight;
     width: 60%;
+    // article {
+    //   margin-top: (-1 * $topnavheight);
+    //   margin-bottom: (-1 * $bottomnavheight);
+    // }
+    // article:last-child {
+    //   margin-bottom: 0;
+    // }
   }
-  section.note {
-    @extend .text-shadow;
-    font-size: 1.3em;
-    font-weight: 600;
+  // section:not(.home) {
+  // }
 
-  }
-  section.secondary, section.messages {
+  section.secondary, 
+  section.messages {
     @extend .flexy-column;
     order: 3;
     width: 100%;
@@ -283,7 +311,7 @@ aside {
   min-width: 300px;
   z-index: 50;
   order: 2;
-  margin-top: 53px;
+  margin-top: $topnavheight;
   justify-content: flex-end;
   @media only screen and (min-width: 601px) {
     justify-content: flex-start;
@@ -304,8 +332,8 @@ aside.sidebar {
   @media only screen and (min-width: 601px) {
     display: flex;
     visibility: visible;  
-    background: $sidebarbackgroundcolor;
-    overflow-y: auto;
+    // background: $sidebarbackgroundcolor;
+    // overflow-y: auto;
   }
 }
 
@@ -314,7 +342,7 @@ aside > *:first-child {
 }
 
 aside > *:last-child {
-  margin-bottom: 40px;
+  margin-bottom: $bottomnavheight;
 }
 
 a {
@@ -335,7 +363,11 @@ section.login {
     background-image: url(/img/logo.png);
     background-position-x: 90%;
     background-position-y: center;
-    background-size: 47%;
+    background-size: 42%;
+  }
+  article {
+    margin-top: (-1 * $topnavheight);
+    margin-bottom: (-1 * $bottomnavheight);
   }
 }
 
@@ -349,10 +381,35 @@ article#articles {
     padding-bottom: 0.5em;
   } 
 }
+
+article#herowelcome {
+  @extend .flexy-column;
+  @extend .full-height;
+  align-items: stretch;
+  justify-content: center;
+  // align-items: center;
+  // margin-top: -57px;
+  color: $textcolor !important;
+  font-size: 1em;
+  margin-top: (-1 * $topnavheight);
+}
+article#welcome {
+  @extend .full-height;
+
+  .feature {
+    align-items: center;
+    margin: 0 4px 8px;
+  }
+  .hdg {
+    text-align: center;
+    margin-bottom: 1em;
+  }
+}
+
 article#about,
 article#login {
+  @extend .full-height;
   align-items: stretch;
-  height: 100vh;
   justify-content: flex-start;
   font-size: 1.6em;
   text-shadow: 
@@ -364,12 +421,6 @@ article#login {
   .body {
     @media only screen and (max-width: 600px) {
       margin-top: 57px;
-    }
-  }
-
-  .hdg-2 {
-    @media only screen and (max-width: 600px) {
-      visibility: hidden;
     }
   }
   .subhead {
@@ -475,7 +526,7 @@ article.main {
 .articletitle {
   // font-size: 1.4em;
   font-family: $titlefont;
-  font-weight: bold;
+  // font-weight: bold;
   @extend .text-shadow;
   color: $linktextcolor;
 }
@@ -496,7 +547,6 @@ article.main {
   padding-top: 0.25em;
   padding-bottom: 0.1em;
   .user {
-    // font-weight: bold;
   }
   * {
     margin-right: 1em;
@@ -613,13 +663,12 @@ article > .subhead {
   }
   .data {
     font-size: 1.1em;
-    font-weight: bold;
+    // font-weight: bold;
   }
 }
 
 .itemdetail:not(:first-child) {
   .label {
-    // text-decoration: underline;
     color: $minortextcolor;
     font-family: $detailfont;
     font-style: italic;
@@ -654,6 +703,25 @@ article > .subhead {
   width: 100%;
 }
 
+.mainwelcome {
+  @extend .flexy-row;
+}
+
+.maintitle {
+  @extend .flexy-row;
+  font-size: 4.5em;
+  font-family: $titlefont;
+  justify-content: center;
+}
+
+.mainblurb {
+  @extend .flexy-row;
+  font-size: 1.3em;
+  letter-spacing: 0.3em;
+  justify-content: center;
+  color: $tertiarycolor;
+}
+
 .mediaitem {
   @extend .flexy-row;
   width: 100%;
@@ -685,6 +753,24 @@ article > .subhead {
 
 .clickable:hover {
   cursor: pointer;
+  .data {
+    color: $tertiarycolor;
+  }
+}
+
+.applaminar {
+  color: $primarycolor !important;
+}
+
+.apponboard {
+  color: $basecolor !important;
+}
+
+.heading {
+  font-size: 1.1em;
+  font-family: $titlefont;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .hdg {
@@ -692,34 +778,19 @@ article > .subhead {
 }
 
 .hdg-1 {
-  font-size: 1.9em;
-  font-weight: bold;
+  @extend .text-shadow;
+  font-size: 2em;
   margin-bottom: 8px;
-  color: $highlighttextcolor;
-  text-shadow:
-    $textshadow $textshadowcolor,
-    2px -1px 1px $secondarycolor,
-    -2px 1px 1px $successcolor
-  ;
 }
 
 .hdg-2 {
   @extend .text-shadow;
-  @extend .nobreak;
-  font-size: 2em;
-  font-weight: bold;
+  font-size: 1.8em;
   margin-bottom: 0.25em;
-  color: $secondaryhighlighttextcolor;
-  text-shadow:
-    $textshadow $textshadowcolor,
-    1px -1px 1px $secondarycolor,
-    -1px 1px 1px $successcolor
-  ;
 }
 
 .hdg-3 {
   @extend .text-shadow;
-  color: $secondaryhighlighttextcolor;
   font-size: 1.5em;
   margin-bottom: 8px;
 }
@@ -763,8 +834,9 @@ h1 {
   align-items: center;
   justify-content: center;
   border-radius: $borderradius;
-  padding: 2px 8px;
-  border: 1px solid $bordercolor;
+  padding: 4px 8px;
+  // border: 1px solid $bordercolor;
+  // border: 3px solid $primarybuttoncolor;
   background-color: $primarybuttoncolor;
   font-family: $generalfont;
   font-weight: 100;
@@ -791,13 +863,39 @@ h1 {
 .app-features {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  @extend .buttonstyle;
+  align-items: stretch;
   margin-top: 0;
+  flex-wrap: wrap;
 }
 
 .app-features:last-child {
   margin-bottom: 0;
+}
+
+.app-features .feature {
+  @extend .flexy-column;
+  padding: 8px;
+  flex: 1 0 45%;
+  border-radius: $borderradius;
+  background: $sidebarbackgroundcolor;
+  .heading {
+    color: $basecolor;
+    i {
+      color: $textcolor;
+    }
+  }
+}
+
+.feature .description {
+
+}
+
+.huge-icon {
+  font-size: 3em;
+}
+
+.big-icon {
+  font-size: 2em;
 }
 
 .read-more {

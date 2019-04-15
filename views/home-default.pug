@@ -2,12 +2,7 @@ extends index.pug
 
 block aside
   aside.sidebar
-    .title Sidebar?
-    .nav
-      .navitem One item
-      .navitem Two 
-      .navitem Three
-    .nav
+    .sticky-50.flexy-column
       if(user)
         +list-user-invites()
         article#notes
@@ -16,64 +11,88 @@ block aside
         +create-or-see-domains("Domain")
       if(!user)
         if(notes && notes.length>0)
-          article
+          article#notes
             include notes-list
         article#getstarted
           .hdg.hdg-2 Get Started!
           +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
 
 block content
-  section.home
+  section
+    article#herowelcome
+      //- .mainwelcome Welcome to
+      .mainlogo
+        img(src="/files/logo.png")
+      .maintitle
+        span.applaminar Laminar
+        span.plain .
+        span.apponboard OnBoard
+      .mainblurb Lean,&nbsp;&nbsp;Secure&nbsp;&nbsp;Application&nbsp;&nbsp;Framework
+    article#features
+      .hdg.hdg-1 Laminar.OnBoard is the easiest, fastest way to build secure, collaborative web applications.
+      .hdg.hdg-3 Laminar.OnBoard helps you build websites and applications using Node, Express and any database backend you want.
+      .feature.hdg.hdg-3 Check out these features:
+      .app-features
+        div.feature
+          div.heading
+            i.material-icons.big-icon folder
+            | Express.js
+          div.description Need custom features for your web application? It's easy to add new super-powers to your apps with Laminar.OnBoard. That's because we use Express.js - the de-facto standard middleware-server for Node.js.
+        div.feature
+          div.heading
+            i.material-icons.big-icon people
+            | Sequelize.js
+          div.description Laminar.OnBoard uses Sequelize.js, the most powerful ORM for Node.js. This means you can use just about any SQL backend you want: Postgres, MySQL, MariaDB, SQLite and even Microsoft SQL Server.
+        div.feature
+          div.heading
+            i.material-icons.big-icon receipt
+            | MV-Whatever
+          div.description You can build highly flexible, lightweight web-applications with Laminar.OnBoard. This is because we use the MV* pattern to organize your app's structure.
+        div.feature
+          div.heading
+            i.material-icons.big-icon security
+            | Security Baked-In
+          div.description Everything's secure! Your web app is locked-down and sealed tight by default. Only you and your collaborators can see your data.
+      .hdg.hdg-1 Go ahead and try Laminar.OnBoard for yourself.
+      .hdg.hdg-3 Actually, you already are! This whole website is running on Laminar.OnBoard.
+
     article#welcome
-      .hdg.hdg-1 Congrats! Here's your awesome web app.
       if(user)
         .hdg.hdg-2 Welcome, #{user.email}!
         .app-features
-          div
+          div.feature
             div
               i.material-icons.big-icon folder
             div This is your front page. Now that you are logged-on let's begin!
-          div
+          div.feature
             div
               i.material-icons.big-icon people
             div Create or invite users to collaborate with you in your domains. Those users can create their own domains of data too.
-          div
+          div.feature
             div
               i.material-icons.big-icon receipt
             div You can create notes and other pieces of data in your domains. Notes are visible by all users that are collaborating with you in your domains.
-          div
+          div.feature
             div
               i.material-icons.big-icon security
             div Everything's secure! Your web app is locked-down and sealed tight by default. Only you and your collaborators can see your data.
       else
         .hdg.hdg-2 It Works!
         .app-features
-          div
+          div.feature
             div
               i.material-icons.big-icon folder
             div This is your front page. When you're logged-in you'll get access to you domains. Domains are groupings of similar data. Use domains like filling cabinets.
-          div
+          div.feature
             div
               i.material-icons.big-icon people
             div Create or invite users to collaborate with you in your domains. Those users can create their own domains of data too.
-          div
+          div.feature
             div
               i.material-icons.big-icon receipt
             div You can create notes and other pieces of data in your domains. Notes are visible by all users that are collaborating with you in your domains.
-          div
+          div.feature
             div
               i.material-icons.big-icon security
             div Everything's secure! Your web app is locked-down and sealed tight by default. Only you and your collaborators can see your data.
-    //- if(user)
-    //-   +list-user-invites()
-    //-   article#notes
-    //-     include notes-list
-    //-   +list-user-domains("Domain")
-    //-   +create-or-see-domains("Domain")
-    //- if(!user)
-    //-   if(notes && notes.length>0)
-    //-     article
-    //-       include notes-list
-    //-   article#getstarted
-    //-     .hdg.hdg-2 Get Started!
-    //-     +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
+
