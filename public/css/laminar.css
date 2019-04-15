@@ -235,15 +235,9 @@ main {
 main section {
   order: 1;
   flex: 1 0 auto;
-  padding-top: 53px;
-  padding-bottom: 48px;
-  width: 60%;
-}
-main section article {
+  margin-top: 56px;
   margin-bottom: 48px;
-}
-main section article:last-child {
-  margin-bottom: 0;
+  width: 60%;
 }
 main section.secondary,
 main section.messages {
@@ -256,7 +250,7 @@ aside {
   min-width: 300px;
   z-index: 50;
   order: 2;
-  margin-top: 53px;
+  margin-top: 56px;
   justify-content: flex-end;
 }
 @media only screen and (min-width: 601px) {
@@ -289,7 +283,7 @@ aside > *:first-child {
 }
 
 aside > *:last-child {
-  margin-bottom: 40px;
+  margin-bottom: 48px;
 }
 
 a {
@@ -313,8 +307,13 @@ section.login {
     background-image: url(/img/logo.png);
     background-position-x: 90%;
     background-position-y: center;
-    background-size: 47%;
+    background-size: 42%;
   }
+}
+section.home article,
+section.login article {
+  margin-top: -56px;
+  margin-bottom: -48px;
 }
 
 article#articles .hdg-2 {
@@ -325,9 +324,9 @@ article#articles .hdg-2 {
 article#herowelcome {
   align-items: stretch;
   justify-content: center;
-  margin-top: -57px;
   color: #4d4b55 !important;
   font-size: 1em;
+  margin-top: -56px;
 }
 
 article#welcome .feature {
@@ -356,12 +355,6 @@ article#login {
   article#about .body,
 article#login .body {
     margin-top: 57px;
-  }
-}
-@media only screen and (max-width: 600px) {
-  article#about .hdg-2,
-article#login .hdg-2 {
-    visibility: hidden;
   }
 }
 article#about .subhead,
@@ -475,7 +468,6 @@ article.main .articlemetadata {
 
 .articletitle {
   font-family: "KoHo", Arial, Helvetica, sans-serif;
-  font-weight: bold;
   color: #30bf95;
 }
 
@@ -602,7 +594,6 @@ article > .subhead {
 }
 .itemdetail:first-child .data {
   font-size: 1.1em;
-  font-weight: bold;
 }
 
 .itemdetail:not(:first-child) .label {
@@ -796,6 +787,10 @@ h1 {
 }
 .app-features .feature .heading i {
   color: #4d4b55;
+}
+
+.huge-icon {
+  font-size: 3em;
 }
 
 .big-icon {

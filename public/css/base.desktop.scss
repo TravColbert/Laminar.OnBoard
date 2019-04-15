@@ -1,5 +1,6 @@
 // $topheight: 40px;
 $topnavheight: 56px;
+$bottomnavheight: 48px;
 $sidebarwidth: 30%;
 // $mainwidth: 70%;
 // $mainmaxwidthpx: 1024px;
@@ -118,6 +119,8 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 
 .full-height {
   height: 100vh;
+  // margin-top: (-1 * $topnavheight);
+  // margin-bottom: (-1 * $bottomnavheight);
 }
 
 .buttonstyle {
@@ -280,15 +283,16 @@ main {
     @extend .flexy-column;
     order: 1;
     flex: 1 0 auto;
-    padding-top: 53px;
-    padding-bottom: 48px;
+    margin-top: $topnavheight;
+    margin-bottom: $bottomnavheight;
     width: 60%;
-    article {
-      margin-bottom: 48px;
-    }
-    article:last-child {
-      margin-bottom: 0;
-    }
+    // article {
+    //   margin-top: (-1 * $topnavheight);
+    //   margin-bottom: (-1 * $bottomnavheight);
+    // }
+    // article:last-child {
+    //   margin-bottom: 0;
+    // }
   }
   // section:not(.home) {
   // }
@@ -307,7 +311,7 @@ aside {
   min-width: 300px;
   z-index: 50;
   order: 2;
-  margin-top: 53px;
+  margin-top: $topnavheight;
   justify-content: flex-end;
   @media only screen and (min-width: 601px) {
     justify-content: flex-start;
@@ -338,7 +342,7 @@ aside > *:first-child {
 }
 
 aside > *:last-child {
-  margin-bottom: 40px;
+  margin-bottom: $bottomnavheight;
 }
 
 a {
@@ -359,7 +363,11 @@ section.login {
     background-image: url(/img/logo.png);
     background-position-x: 90%;
     background-position-y: center;
-    background-size: 47%;
+    background-size: 42%;
+  }
+  article {
+    margin-top: (-1 * $topnavheight);
+    margin-bottom: (-1 * $bottomnavheight);
   }
 }
 
@@ -380,9 +388,10 @@ article#herowelcome {
   align-items: stretch;
   justify-content: center;
   // align-items: center;
-  margin-top: -57px;
+  // margin-top: -57px;
   color: $textcolor !important;
   font-size: 1em;
+  margin-top: (-1 * $topnavheight);
 }
 article#welcome {
   @extend .full-height;
@@ -412,12 +421,6 @@ article#login {
   .body {
     @media only screen and (max-width: 600px) {
       margin-top: 57px;
-    }
-  }
-
-  .hdg-2 {
-    @media only screen and (max-width: 600px) {
-      visibility: hidden;
     }
   }
   .subhead {
@@ -523,7 +526,7 @@ article.main {
 .articletitle {
   // font-size: 1.4em;
   font-family: $titlefont;
-  font-weight: bold;
+  // font-weight: bold;
   @extend .text-shadow;
   color: $linktextcolor;
 }
@@ -660,7 +663,7 @@ article > .subhead {
   }
   .data {
     font-size: 1.1em;
-    font-weight: bold;
+    // font-weight: bold;
   }
 }
 
