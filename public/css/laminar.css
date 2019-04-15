@@ -673,6 +673,7 @@ article > .subhead {
 
 .clickable:hover {
   cursor: pointer;
+  background: rgba(0, 0, 0, 0.01);
 }
 .clickable:hover div {
   color: #bb36f0;
