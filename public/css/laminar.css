@@ -298,6 +298,10 @@ a.a-dotted {
   text-shadow: none;
 }
 
+img {
+  pointer-events: none !important;
+}
+
 section.home,
 section.login {
   background-image: url(/img/logo.png);
