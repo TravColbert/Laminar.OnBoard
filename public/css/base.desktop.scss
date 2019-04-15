@@ -270,6 +270,9 @@ footer {
   @extend .fixed-bottom;
   @extend .semi-transparent;
   justify-content: flex-end;
+  nav {
+    height: $bottomnavheight;
+  }
 }
 
 main {
