@@ -363,6 +363,14 @@ a.a-dotted {
   text-shadow: none;
 }
 
+a.link {
+  color: $basecolor;
+  text-decoration: dashed;
+  text-underline-position: under;
+  text-decoration-line: underline;
+  text-decoration-color: aquamarine; 
+}
+
 img {
   pointer-events: none !important;
 }
@@ -496,8 +504,9 @@ article#login {
 article#about > div {
   margin-bottom: 56px;
   // color: rgb(250,250,250);
-  font-weight: 600;
+  // font-weight: 600;
   font-size: 1em;
+  align-items: center;
   @media only screen and (min-width: 601px) {
     // color: rgb(250,250,250);
     width: 45%;
@@ -513,8 +522,8 @@ article#about > div {
     @extend .flexy-row;
     flex-wrap: wrap;
     margin-bottom: 0.25em;
+    justify-content: center;
     @media only screen and (max-width: 600px) {
-      justify-content: center;
       text-align: center;
     }
   }
@@ -563,16 +572,23 @@ article.main {
   color: $linktextcolor;
 }
 .articledescription {
-  font-size: 1.1em;
-  // font-style: italic;
+  font-size: 0.8em;
   padding: .2em 0;
   @extend .text-shadow;
 }
 .articleblurb {
   flex-direction: column;
-  font-size: 0.75em;
+  // font-size: 0.75em;
+  font-size: 0.5em;
   @extend .text-shadow;
   font-family: 'Titillium Web', sans-serif;
+  h1, h2, h3, h4 {
+    display: none;
+    visibility: hidden;
+  }
+  p {
+    margin: 0;
+  }
 }
 .articlemetadata {
   @extend .flexy-row;
@@ -616,17 +632,6 @@ article.main {
     border-radius: $borderradius;
     @extend .shadowed;
   }
-  code {
-    display: block;
-    // width: 100%;
-    border-radius: 4px;
-    color: $codetextcolor;
-    background: $codebackgroundcolor;
-    padding: 1em;
-    font-size: 0.8em;
-    overflow-x: scroll;
-    @extend .shadowed;
-  }
   h1 {
     font-size: 1.2em;
   }
@@ -650,6 +655,29 @@ article > * {
 article > .subhead {
   @extend .flexy-column;
   height: fit-content;
+}
+
+.appmaintitle {
+  .hdg {
+    color: white;
+    background-color: $successcolor;
+    border-radius: 8px;
+    padding: 0.1em 0.2em;
+    text-shadow: none;
+    @extend .shadowed;
+  }
+}
+
+code {
+  display: block;
+  // width: 100%;
+  border-radius: 4px;
+  color: $codetextcolor;
+  background: $codebackgroundcolor;
+  padding: 1em;
+  font-size: 0.8em;
+  overflow-x: scroll;
+  @extend .shadowed;
 }
 
 .item-listing {
@@ -718,7 +746,8 @@ article > .subhead {
 }
 
 .item.primary {
-  font-size: 1.8em;
+  width: 100%;
+  font-size: 1.65em;
   border-bottom: 1px dotted $bordercolor;
   padding: 0.5em 0;
 }
@@ -816,7 +845,7 @@ article > .subhead {
 
 .hdg-1 {
   @extend .text-shadow;
-  font-size: 2em;
+  font-size: 1.6em;
   margin-bottom: 8px;
 }
 
@@ -890,6 +919,9 @@ h1 {
 }
 
 .main-buttons {
+  a {
+    margin: 0 8px;
+  }
   .button {
     width: 35%;
   }

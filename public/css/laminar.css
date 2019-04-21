@@ -48,7 +48,7 @@ article#skills, article#about > div div, .forminput, main, nav .navlinks ul, hea
 
 .shadowed, .btn .empty,
 .button .empty, .btn,
-.button, .thumbnail img, .articlebody code, .articlebody img {
+.button, .thumbnail img, code, .appmaintitle .hdg, .articlebody img {
   box-shadow: 0 2px 3px rgba(77, 75, 85, 0.3);
 }
 
@@ -305,6 +305,14 @@ a.a-dotted {
   text-shadow: none;
 }
 
+a.link {
+  color: #4f437d;
+  text-decoration: dashed;
+  text-underline-position: under;
+  text-decoration-line: underline;
+  text-decoration-color: aquamarine;
+}
+
 img {
   pointer-events: none !important;
 }
@@ -436,8 +444,8 @@ article#login #login-form input[type=password] {
 
 article#about > div {
   margin-bottom: 56px;
-  font-weight: 600;
   font-size: 1em;
+  align-items: center;
 }
 @media only screen and (min-width: 601px) {
   article#about > div {
@@ -458,10 +466,10 @@ article#about > div {
 article#about > div div {
   flex-wrap: wrap;
   margin-bottom: 0.25em;
+  justify-content: center;
 }
 @media only screen and (max-width: 600px) {
   article#about > div div {
-    justify-content: center;
     text-align: center;
   }
 }
@@ -504,14 +512,21 @@ article.main .articlemetadata {
 }
 
 .articledescription {
-  font-size: 1.1em;
+  font-size: 0.8em;
   padding: 0.2em 0;
 }
 
 .articleblurb {
   flex-direction: column;
-  font-size: 0.75em;
+  font-size: 0.5em;
   font-family: "Titillium Web", sans-serif;
+}
+.articleblurb h1, .articleblurb h2, .articleblurb h3, .articleblurb h4 {
+  display: none;
+  visibility: hidden;
+}
+.articleblurb p {
+  margin: 0;
 }
 
 .articlemetadata {
@@ -556,15 +571,6 @@ article.main .articlemetadata {
   background: #fafafa;
   border-radius: 2px;
 }
-.articlebody code {
-  display: block;
-  border-radius: 4px;
-  color: #cdccd3;
-  background: #4d4b55;
-  padding: 1em;
-  font-size: 0.8em;
-  overflow-x: scroll;
-}
 .articlebody h1 {
   font-size: 1.2em;
 }
@@ -588,6 +594,24 @@ article > * {
 
 article > .subhead {
   height: fit-content;
+}
+
+.appmaintitle .hdg {
+  color: white;
+  background-color: #79f1cd;
+  border-radius: 8px;
+  padding: 0.1em 0.2em;
+  text-shadow: none;
+}
+
+code {
+  display: block;
+  border-radius: 4px;
+  color: #cdccd3;
+  background: #4d4b55;
+  padding: 1em;
+  font-size: 0.8em;
+  overflow-x: scroll;
 }
 
 .item-listing > div:not(:last-child) {
@@ -630,7 +654,8 @@ article > .subhead {
 }
 
 .item.primary {
-  font-size: 1.8em;
+  width: 100%;
+  font-size: 1.65em;
   border-bottom: 1px dotted #ebe9f3;
   padding: 0.5em 0;
 }
@@ -716,7 +741,7 @@ article > .subhead {
 }
 
 .hdg-1 {
-  font-size: 2em;
+  font-size: 1.6em;
   margin-bottom: 8px;
 }
 
@@ -781,6 +806,9 @@ h1 {
   background: none;
 }
 
+.main-buttons a {
+  margin: 0 8px;
+}
 .main-buttons .button {
   width: 35%;
 }
