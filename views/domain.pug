@@ -4,7 +4,7 @@ block aside
   aside.sidebar
     .sticky-50.flexy-column
       article.domainactions
-        .hdg.hdg-2 Domain Actions
+        .hdg.hdg-2 Actions
         .actions.primary
           .item-listing
             .itemdetail
@@ -27,6 +27,9 @@ block aside
               .subitem-listing.clickable(onclick="goTo('" + targetLoc + "')")
                 .data #{role.name}
                 .subdata #{role.description}
+      +list-user-domains("Domains")
+      +create-or-see-domains("Domain")
+
 
 block content
   section.domain

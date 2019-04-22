@@ -3,13 +3,16 @@ extends index.pug
 block aside
   aside.sidebar
     article.domainactions
-      .hdg.hdg-2 Domain List Actions
-      .actions.secondary
-        .domainsubmit.itemdetail
-          label.label(for="submit") Submit:
-          .data
-            input#submit.btn.normal.buttonconfirm(form="create-domain-form" type="submit" value="Confirm")
-            a.btn.cancel.buttoncancel(href="/domain/") Cancel
+      .hdg.hdg-2 Actions
+      //- .actions.secondary
+      //-   .domainsubmit.itemdetail
+      //-     label.label(for="submit") Submit:
+      //-     .data
+      input#submit.btn.normal.buttonconfirm(form="create-domain-form" type="submit" value="Confirm")
+      a.btn.cancel.buttoncancel(href="/domain/") Cancel
+    +list-user-domains("Domains")
+    +create-or-see-domains("Domain")
+
 
 block content
   section.createdomain

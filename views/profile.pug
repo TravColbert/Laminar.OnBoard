@@ -1,39 +1,48 @@
 extends index.pug
 
+
+//- No actions yet
+block aside
+  - console.log(domains)
+  - console.log(roles)
+  aside.sidebar
+    .sticky-50.flexy-column
+      +list-user-domains("Domains")
+      +create-or-see-domains("Domain")
+
 block content
   section.profile
     article.main
-      .hdg.hdg-1 My Profile #{user.fullname}
-      div
-        .itempanel
-          .itembanner
-            .itemhead User: #{user.fullname} 
-            .itemdetail
-              label.label(for="partnum") First Name:
-              .data #{user.firstname}
-            .itemdetail
-              label.label(for="partnum") Last Name:
-              .data #{user.lastname}
-            .itemdetail
-              label.label(for="email") Email:
-              .data #{user.email}
-          .item-listing
-            .itemdetail
-              label.label(for="partnum") Domains:
-                -
-                  let domainList = {};
-                  user.roles.forEach(role => {
-                    role.domains.forEach(domain => {
-                      if(!domainList.hasOwnProperty(domain.uniqueAppId))
-                        domainList[domain.uniqueAppId] = domain;
-                    });
-                  });
-                each domain, uniqeId in domainList
-                  .data #{domain.name}
-            .itemdetail
-              label.label Roles:
-                each role in user.roles
-                  .data #{role.name}
+      .hdg.hdg-2.profilename My Profile: #{user.fullname}
+      .item-listing
+        .itemdetail
+          label.label User: #{user.fullname}
+        .itemdetail
+          label.label(for="partnum") First Name:
+          .data #{user.firstname}
+        .itemdetail
+          label.label(for="partnum") Last Name:
+          .data #{user.lastname}
+        .itemdetail
+          label.label(for="email") Email:
+          .data #{user.email}
+      .item-listing
+        .itemdetail
+          label.label(for="partnum") Domains:
+            -
+              let domainList = {};
+              user.roles.forEach(role => {
+                role.domains.forEach(domain => {
+                  if(!domainList.hasOwnProperty(domain.uniqueAppId))
+                    domainList[domain.uniqueAppId] = domain;
+                });
+              });
+            each domain, uniqeId in domainList
+              .data #{domain.name}
+        .itemdetail
+          label.label Roles:
+            each role in user.roles
+              .data #{role.name}
     //- article.secondary
     //-   .description
     //-     .infotext.hdg.hdg-3 Edit User View
