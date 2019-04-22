@@ -697,7 +697,7 @@ module.exports = function(app,sequelize) {
       }
       app.log("User is authorized to show form: " + model + action,myName,6);
       app.models["domains"]
-      .findById(req.session.user.currentDomain.id)
+      .findByPk(req.session.user.currentDomain.id)
       .then(domain => {
         if(domain===null) return res.send("Couldn't determine a valid domain");
         req.appData.domain = domain;

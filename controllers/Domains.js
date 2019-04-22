@@ -340,7 +340,7 @@ module.exports = function(app,model) {
       return new Promise((resolve,reject) => {
         app.log("Getting all roles with domainId " + domainId,myName,6);
         app.models[model]
-        .findById(domainId,{include:[app.models["roles"]]})
+        .findByPk(domainId,{include:[app.models["roles"]]})
         .then((domain) => {
           app.log(domain,myName,6,">>>");
           resolve(domain.roles);
@@ -367,7 +367,7 @@ module.exports = function(app,model) {
     getUsersByDomainId : function(req,res,next) {
       let myName = "getUsersByDomainId";
       app.models[model]
-      .findById(req.params.id,{include:[{model:app.models["roles"],include:[app.models["users"]]}]})
+      .findByPk(req.params.id,{include:[{model:app.models["roles"],include:[app.models["users"]]}]})
       .then((domain) => {
         if(domain===null) return res.redirect('/');
         req.appData.domain = domain;
@@ -454,7 +454,7 @@ module.exports = function(app,model) {
         let domainObj = app.tools.pullParams(req.params,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
         app.log("Getting domain with ID: " + domainObj.id,myName,6);
         app.models[model]
-        .findById(req.params.id)
+        .findByPk(req.params.id)
         .then(domain => {
           if(domain===null) {
             app.log("Couldn't find domain",myName,4);
