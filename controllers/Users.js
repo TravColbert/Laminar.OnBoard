@@ -254,8 +254,23 @@ module.exports = function(app,model) {
       let myName = "getProfile()";
       let userObj = app.tools.pullParams(req.session.user,["id","email"]);
       if(!userObj) return res.redirect('/');
-      app.models[model]
-      .findByPk(userObj.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      app.log("getting profile for user ID: " + userObj.id, myName, 7);
+      app.controllers[model]
+      .getUserById(userObj.id)
+      // .findByPk(userObj.id,
+      //   {
+      //     include:[
+      //       {
+      //         model:app.models["roles"],
+      //         as:"roles",
+      //         include:[
+      //           {
+      //             model:app.models["domains"]
+      //           }
+      //         ]
+      //       }
+      //     ]
+      //   })
       .then(user => {
         if(user===null) return res.redirect('/');
         // return res.send(user);
@@ -289,8 +304,21 @@ module.exports = function(app,model) {
     getUser : function(req,res,next) {
       let myName = "getUser()";
       let userObj = app.tools.pullParams(req.params,["id"]);
-      app.models[model]
-      .findByPk(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      // app.models[model]
+      // .findByPk(req.params.id,
+      //   {
+      //     include:[
+      //       {
+      //         model:app.models["roles"],
+      //         include:[
+      //           app.models["domains"]
+      //         ]
+      //       }
+      //     ]
+      //   }
+      //   )
+      app.controllers[model]
+      .getUserById(req.params.id)
       .then(user => {
         if(user===null) return res.redirect('/');
         req.appData.user = user;
@@ -306,13 +334,17 @@ module.exports = function(app,model) {
       // app.log("Hello!!!: " + userId,myName,6);
       return new Promise((resolve,reject) => {
         app.log("Getting user by ID: " + userId,myName,6);
-        app.models[model].findByPk(
-          userId,{
+        app.models[model]
+        .findByPk(userId,
+          {
             include:[
               {
                 model:app.models["roles"],
+                as:"roles",
                 include:[
-                  app.models["domains"]
+                  {
+                    model:app.models["domains"]
+                  }
                 ]
               }
             ]
