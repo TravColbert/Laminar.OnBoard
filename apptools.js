@@ -776,12 +776,12 @@ module.exports = function(app,sequelize) {
 
       let finalObj = {"Messages":[mailObj]};
 
-      app.log("Prepared email object for sending: " + JSON.stringify(finalObj),myName,6);
+      app.log("Prepared email object for sending: " + JSON.stringify(finalObj),myName,7);
       let sendMail = app.mailjet
       .post("send",{'version':'v3.1'})
       .request(finalObj)
       .then(result => {
-        app.log("Here's what happened: " + result,myName,6);
+        app.log("Here's what happened: " + JSON.stringify(result), myName, 7);
         resolve(result);
       })
       .catch(err => {
