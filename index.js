@@ -6,6 +6,7 @@ const fs = require('fs')
 const https = require('https')
 const express = require('express')
 const session = require('express-session')
+const SQLiteStore = require('connect-sqlite3')(session)
 const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
 const app = express()
@@ -55,7 +56,9 @@ app.mailjet = require('node-mailjet').connect(app.secrets['mail-api-key'], app.s
 })
 
 let sessionConfig = {
+  store: new SQLiteStore(),
   secret: app.secrets.sessionSecret,
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 1 week
   resave: false,
   saveUninitialized: false
 }
