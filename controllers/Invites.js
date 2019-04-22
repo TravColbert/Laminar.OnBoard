@@ -115,11 +115,11 @@ module.exports = function(app,model) {
     checkInvites : function(userEmail,expirationHours) {
       let myName = "checkInvites";
       return new Promise((resolve,reject) => {
-        app.log("Checking invites for: " + userEmail,myName,6);
         let searchObj = app.controllers[model].getInviteQueryObj(userEmail,expirationHours);
-        app.controllers.invites.__get(searchObj)
+        app.log("Checking invites through: " + JSON.stringify(searchObj), myName, 7);
+        app.controllers[model].__get(searchObj)
         .then(invites => {
-          // app.log(invites,myName,6);
+          app.log(JSON.stringify(invites), myName, 6);
           resolve(invites);
         })
         .catch(err => {
