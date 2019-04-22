@@ -11,6 +11,32 @@ The config.json file in the root of your project makes a couple references to th
 	<dd>The location to the CRT certificate file. You can technically use any directory you want but the tls directory is there for your convenience.</dd>
 </dl>
 
+You can generate your own keys for testing or you can acquire the keys.
+
+## Getting the keys through Let's Encrypt and Certbot
+
+One option is to use Certbot to get SSL keys through Let's Encrypt.
+
+If you have control over your DNS records you may find that the easiest way to get your SSL certs is by using the DNS challenge method.  
+
+### Command
+
+After having installed certbot you can run the command:
+
+```
+sudo certbot -d yourdnsname.dom --manual --preferred-challenges dns certonly
+```
+
+This will start a script that will attempt to authorize you by ensuring that you have control over the DNS records for the domain name you intend to create SSL certs for.
+
+When you start the script it will ask you to create a TXT record in your DNS server with some specific text. Once this is done, continue with the script.
+
+If the script was able to query the TXT record you created then it will download your new certs and keys into the /etc/letsencrypt directory.
+
+### Copy the fullchain.pem and privkey.pem
+
+Put the fullchain.pem and privkey.pem into the **tls/** folder of your Laminar installation.
+
 ## Creating Your SSL keys:
 
 To create these files:
