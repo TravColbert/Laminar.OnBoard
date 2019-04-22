@@ -74,7 +74,7 @@ module.exports = function(app,model) {
     getRole : function(req,res,next) {
       let myName = "getRole()";
       app.models[model]
-      .findById(req.params.id)
+      .findByPk(req.params.id)
       .then(role => {
         if(role===null) return res.redirect('/');
         req.appData.role = role;
@@ -130,7 +130,7 @@ module.exports = function(app,model) {
     getUsersByRoleId : function(req,res,next) {
       let myName = "getUsersByRoleId";
       app.models[model]
-      .findById(req.params.id,{include:[app.models["users"]]})
+      .findByPk(req.params.id,{include:[app.models["users"]]})
       .then(role => {
         if(role===null) res.redirect('/');
         req.appData.role = role;
@@ -144,7 +144,7 @@ module.exports = function(app,model) {
     getDomainsByRoleId : function(req,res,next) {
       let myName = "getDomainsByRole()";
       app.models[model]
-      .findById(req.params.id,{include:[app.models["domains"]]})
+      .findByPk(req.params.id,{include:[app.models["domains"]]})
       .then(role => {
         if(role===null) res.redirect('/');
         req.appData.role = role;
@@ -170,7 +170,7 @@ module.exports = function(app,model) {
         app.log("User is authorized to edit role",myName,6);
         let roleObj = app.tools.pullParams(req.params,["id"]);
         app.log("Getting role with ID: " + roleObj.id,myName,6);
-        app.models[model].findById(req.params.id)
+        app.models[model].findByPk(req.params.id)
         .then(role => {
           if(role===null) {
             app.log("Couldn't find role",myName,4);

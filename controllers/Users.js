@@ -234,7 +234,7 @@ module.exports = function(app,model) {
     enrollUserInRoleById : function(userId,roleId) {
       let myName = "enrollUserInRoleById()";
       app.models[model]
-      .findById(userId)
+      .findByPk(userId)
       .then(user => {
         app.log("Found user: " + user.id);
         // if(user===null) return res.redirect('/');
@@ -255,7 +255,7 @@ module.exports = function(app,model) {
       let userObj = app.tools.pullParams(req.session.user,["id","email"]);
       if(!userObj) return res.redirect('/');
       app.models[model]
-      .findById(userObj.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      .findByPk(userObj.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
       .then(user => {
         if(user===null) return res.redirect('/');
         // return res.send(user);
@@ -290,7 +290,7 @@ module.exports = function(app,model) {
       let myName = "getUser()";
       let userObj = app.tools.pullParams(req.params,["id"]);
       app.models[model]
-      .findById(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      .findByPk(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
       .then(user => {
         if(user===null) return res.redirect('/');
         req.appData.user = user;
@@ -306,7 +306,7 @@ module.exports = function(app,model) {
       // app.log("Hello!!!: " + userId,myName,6);
       return new Promise((resolve,reject) => {
         app.log("Getting user by ID: " + userId,myName,6);
-        app.models[model].findById(
+        app.models[model].findByPk(
           userId,{
             include:[
               {
@@ -358,7 +358,7 @@ module.exports = function(app,model) {
         let userObj = app.tools.pullParams(req.params,["id"]);
         app.log("Getting user with ID: " + userObj.id,myName,6);
         app.models[model]
-        .findById(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+        .findByPk(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
         .then((user) => {
           if(user===null) {
             app.log("Couldn't find a user...",myName,4);
@@ -403,7 +403,7 @@ module.exports = function(app,model) {
     //   let myName = "getUserEnrollments()";
     //   // users -> roles -> domains
     //   app.models[model]
-    //   .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+    //   .findByPk(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
     //   .then(user => {
     //     if(user===null) return cb();
     //     cb(null,user);
@@ -416,7 +416,7 @@ module.exports = function(app,model) {
       let myName = "getUserRoles()";
       return new Promise((resolve,reject) => {
         app.models[model]
-        .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+        .findByPk(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
         .then((user) => {
           if(user===null) return reject(new Error("no users found"));
           return resolve(user);
@@ -431,7 +431,7 @@ module.exports = function(app,model) {
       // let userId = req.params.id;
       // users -> roles ->domains
       app.models[model]
-      .findById(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+      .findByPk(req.params.id,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
       .then(user => {
         req.appData.user = user;
         req.appData.view = "userdomains"
@@ -442,7 +442,7 @@ module.exports = function(app,model) {
     //   let myName = "fetchDomainsByUserId()";
     //   // users -> roles -> domains
     //   app.models[model]
-    //   .findById(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
+    //   .findByPk(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
     //   .then(user => {
     //     if(user===null) return cb();
     //     cb(null,user);
@@ -488,7 +488,7 @@ module.exports = function(app,model) {
       // let userId = req.params.id;
       // users -> roles
       app.models[model]
-      .findById(req.params.id,{include:[{model:app.models["roles"]}]})
+      .findByPk(req.params.id,{include:[{model:app.models["roles"]}]})
       .then(user => {
         req.appData.user = user;
         req.appData.view = "userroles"
@@ -499,7 +499,7 @@ module.exports = function(app,model) {
     //   let myName = "fetchRolesByUserId()";
     //   // users -> roles -> domains
     //   app.models[model]
-    //   .findById(req.params.id,{include:[{model:app.models["roles"]}]})
+    //   .findByPk(req.params.id,{include:[{model:app.models["roles"]}]})
     //   .then(user => {
     //     if(user===null) return cb();
     //     cb(null,user);

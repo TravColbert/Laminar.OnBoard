@@ -309,10 +309,9 @@ module.exports = function(app,sequelize) {
   };
   obj.ignoreFavicon = function(req,res,next) {
     let myName = "ignoreFavicon()";
-    app.log("ignoring favicon",myName,5);
-    if(req.url=='/favicon.ico') {
+    if(req.url=='/favicon.ico' && !app.locals.favicon) {
+      app.log("ignoring favicon",myName,5);
       res.writeHead(200, {'Content-Type': 'image/x-icon'});
-      app.log("sent favicon",myName,5);
       return res.end();
     }
     return next();
@@ -697,7 +696,7 @@ module.exports = function(app,sequelize) {
       }
       app.log("User is authorized to show form: " + model + action,myName,6);
       app.models["domains"]
-      .findById(req.session.user.currentDomain.id)
+      .findByPk(req.session.user.currentDomain.id)
       .then(domain => {
         if(domain===null) return res.send("Couldn't determine a valid domain");
         req.appData.domain = domain;
