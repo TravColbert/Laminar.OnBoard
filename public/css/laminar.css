@@ -738,6 +738,7 @@ code {
 
 .hdg {
   font-family: "KoHo", Arial, Helvetica, sans-serif;
+  white-space: nowrap;
 }
 
 .hdg-1 {
