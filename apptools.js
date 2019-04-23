@@ -411,6 +411,21 @@ module.exports = function(app,sequelize) {
       targetSocket.socket.emit(type,message);
     });
   };
+  obj.getInviteQueryObj = function (userEmail, expirationHours) {
+    expirationHours = expirationHours || app.locals.invitationTimeoutHours
+    // Calculate the date some days ago
+    let timeLimit = new Date(new Date() - (1000 * 60 * 60 * expirationHours))
+    
+    return {
+      where: {
+        'userEmail': userEmail,
+        'accepted': 0,
+        'createdAt': {
+          [Sequelize.Op.gt]: timeLimit
+        }
+      }
+    }
+  };
   obj.isAuthenticated = function(req) {
     let myName = "isAuthenticated";
     app.log("Checking if session is authenticated",myName,6);
@@ -622,37 +637,6 @@ module.exports = function(app,sequelize) {
       app.log(err.message);
       return res.send(err.message);
     });
-    /*
-    if(req.session.user) {
-      app.log("Session detected",myName,6);
-      app.controllers.invites.checkInvites(req.session.user.email)
-      .then(invites => {
-        let numInvites = (invites) ? invites.length : 0;
-        app.log("Invites found: " + numInvites,myName,6);
-        req.appData.invites = invites;
-        return true;
-      })
-      .then(() => {
-        app.log("Checking for custom 'home' module: " + app.locals.homeModule,myName,6);
-        if(app.homeModule) {
-          app.log("Inserting custom 'home' module...",myName,6)
-          return app.homeModule.home(req,res,next);
-        } else {
-          return;
-        }
-      })
-      .then(() => {
-        return next();
-      })
-      .catch(err => {
-        app.log(err.message);
-        return res.send(err.message);
-      });
-    } else {
-      app.log("No session detected",myName,6);
-      return next();
-    }
-    */
   };
   obj.loginPage = function(req,res,next) {
     let myName = "loginPage()";
