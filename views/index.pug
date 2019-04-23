@@ -25,8 +25,31 @@ mixin create-or-see-domains(domainName)
 mixin list-user-invites
   if(invites && invites.length>0)
     article#invites
-      .hdg.hdg-2 Invites (#{user.domains.length})
-      include invites
+      .hdg.hdg-2 Invites (#{invites.length})
+      .item-listing
+        each invite in invites
+          .item
+            .itemhead
+              | New Invite
+              i.material-icons.badge new_releases
+            .itemdetail
+              label.label From
+              .data #{invite.fromEmail}
+            if(invite.comment)
+              .itemdetail
+                label.label Comment
+                .data #{invite.comment}
+            //- .itemdetail
+            //-   label.label Note 
+            //-   .data You've probably received notification about this invitation. If not you can ignore it for now.
+            .itemdetail
+              a.btn.btn-small.primary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
+                i.material-icons check_circle_outline
+                span Accept Invite
+            .itemdetail
+              a.btn.btn-small.tertiary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
+                i.material-icons highlight_off
+                span Decline Invite
 
 mixin list-user-domains(domainText)
   article#domains
