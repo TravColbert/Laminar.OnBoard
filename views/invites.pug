@@ -1,20 +1,35 @@
-div Note: You have recently received the following invites:
-each invite in invites
-  .item-listing
-    .layout-width-1-1
-      .layout-width-1-8
-        i.material-icons new_releases
-      .layout-width-7-8.layout-col
-        .layout-width-1-1 From: #{invite.fromEmail}
-        if(invite.comment)
-          .layout-width-1-1 #{invite.comment}
-        .layout-width-1-1 You've probably received notification about this invitation. If not you can ignore it for now.
-    .layout-width-1-1.layout-row
-      .layout-width-1-2.layout-row
-        a.btn.btn-small.primary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
-          i.material-icons check_circle_outline
-          spane Accept Invite
-      .layout-width-1-2.layout-row
-        a.btn.btn-small.tertiary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
-          i.material-icons highlight_off
-          span Decline Invite
+extends index.pug
+
+block aside
+  aside.sidebar
+    .sticky-50.flexy-column
+      article.inviteactions
+
+block content
+  section.invites
+    article.main
+      .hdg.hdg-2.invitelist
+      .item-listing
+        each invite in invites
+          .item
+            .itemhead
+              | New Invite
+              i.material-icons.badge new_releases
+            .itemdetail
+              label.label From
+              .data #{invite.fromEmail}
+            if(invite.comment)
+              .itemdetail
+                label.label Comment
+                .data #{invite.comment}
+            //- .itemdetail
+            //-   label.label Note 
+            //-   .data You've probably received notification about this invitation. If not you can ignore it for now.
+            .itemdetail
+              a.btn.btn-small.primary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
+                i.material-icons check_circle_outline
+                span Accept Invite
+            .itemdetail
+              a.btn.btn-small.tertiary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
+                i.material-icons highlight_off
+                span Decline Invite

@@ -24,44 +24,29 @@ module.exports = function(app,model) {
       return app.controllers["default"].delete(model,obj);
     },
 
-    add : function(roleAppid,userEmail,fromEmail,pin,comment) {
-      let myName = "add";
-      return new Promise((resolve,reject) => {
-        app.log("Adding new invite: " + roleAppid + " : " + userEmail + " : " + pin,myName,6);
+    add: function (roleAppid, userEmail, fromEmail, pin, comment) {
+      let myName = 'add'
+      return new Promise((resolve, reject) => {
+        app.log('Adding new invite: ' + roleAppid + ' : ' + userEmail + ' : ' + pin, myName, 6)
         let createObj = {
-          roleAppid : roleAppid,
-          userEmail : userEmail,
-          fromEmail : fromEmail,
-          pin : pin,
-          comment : comment
-        };
+          roleAppid: roleAppid,
+          userEmail: userEmail,
+          fromEmail: fromEmail,
+          pin: pin,
+          comment: comment
+        }
         app.controllers[model].__create(createObj)
         .then(invite => {
-          resolve(invite);
+          resolve(invite)
         })
         .catch(err => {
-          app.log(err.message,myName,4);
-          reject(new Error("(" + myName + ") " + err.message));
+          app.log(err.message, myName, 4)
+          reject(new Error('(' + myName + ') ' + err.message))
         })
       })
     },
-
-    getInviteQueryObj : function(userEmail, expirationHours) {
-      expirationHours = expirationHours || app.locals.invitationTimeoutHours;
-      // Calculate the date some days ago
-      let timeLimit = new Date(new Date() - (1000 * 60 * 60 * expirationHours)); 
-      return {
-        where : {
-          "userEmail" : userEmail,
-          "accepted" : false,
-          "createdAt" : {
-            $gt : timeLimit
-          }  
-        }
-      }
-    },
-    attemptAccept : function(req,res,next) {
-      let myName = "attemptAccept";
+    attemptAccept: function (req, res, next) {
+      let myName = 'attemptAccept'
       app.log("Attempting to accept invite: " + req.params.id,myName,6);
       req.appData.roleAppid = req.params.id;
       req.appData.userEmail = req.session.user.email;
@@ -73,7 +58,7 @@ module.exports = function(app,model) {
       app.log("Attempting to confirm invite: " + req.params.id,myName,6);
       let targetRole;
       let invitation;
-      let searchObj = app.controllers[model].getInviteQueryObj(req.body.userEmail);
+      let searchObj = app.tools.getInviteQueryObj(req.body.userEmail);
       searchObj.where.pin = req.body.pin;
       app.controllers[model].__get(searchObj)
       .then(invites => {
@@ -111,22 +96,36 @@ module.exports = function(app,model) {
         return next();
       });      
     },
-
-    checkInvites : function(userEmail,expirationHours) {
-      let myName = "checkInvites";
-      return new Promise((resolve,reject) => {
-        let searchObj = app.controllers[model].getInviteQueryObj(userEmail,expirationHours);
-        app.log("Checking invites through: " + JSON.stringify(searchObj), myName, 7);
+    gets: function (req, res, next) {
+      let myName = 'gets (invites)'
+      app.log('Getting invites for user: ' + req.session.user.id + ' ' + req.session.user.email, myName, 7)
+      let searchObj = app.tools.getInviteQueryObj(req.session.user.email)
+      app.controllers[model].__get(searchObj)
+      .then(invites => {
+        req.appData.invites = invites
+        req.appData.view = 'invites'
+        return next()
+      })
+      .catch(err => {
+        app.log('Err: ' + err.message, myName, 4)
+        return res.redirect('/')
+      })
+    },
+    checkInvites: function (userEmail, expirationHours) {
+      let myName = 'checkInvites'
+      return new Promise((resolve, reject) => {
+        let searchObj = app.tools.getInviteQueryObj(userEmail, expirationHours)
+        app.log('Checking invites through: ' + JSON.stringify(searchObj), myName, 7)
         app.controllers[model].__get(searchObj)
         .then(invites => {
-          app.log(JSON.stringify(invites), myName, 6);
-          resolve(invites);
+          app.log(JSON.stringify(invites), myName, 6)
+          resolve(invites)
         })
         .catch(err => {
-          reject(err);
-        });
+          reject(err)
+        })
       })
     }
-  };
-  return obj;
+  }
+  return obj
 }
