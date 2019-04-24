@@ -341,7 +341,6 @@ module.exports = function (app, sequelize) {
     req.appData = {}
     app.log('setting app name', myName, 5)
     req.appData.title = app.locals.appName
-    app.log('PATHS: ' + JSON.stringify(app.paths), myName, 5)
     // req.appData.modelName = obj.getModelName(req);
     req.appData.models = []
     req.appData.errors = []
@@ -352,7 +351,7 @@ module.exports = function (app, sequelize) {
   obj.render = function (req, res) {
     let myName = 'render'
     let templateFile = req.appData.view || app.locals.homeView
-    app.log('Query Params: ' + JSON.stringify(req.query), myName, 6, ' >>> ')
+    app.log('Query Params: ' + JSON.stringify(req.query), myName, 7, ' >>> ')
     let format = req.query.format || 'html'
     switch (format.toLowerCase()) {
       case 'json':
@@ -376,7 +375,7 @@ module.exports = function (app, sequelize) {
   },
   obj.makeMessage = function (obj) {
     let myName = 'makeMessage'
-    app.log(myName + ': Making a message for: ' + JSON.stringify(obj))
+    app.log(`${myName}: Making a message for: ${JSON.stringify(obj)}`, myName, 7)
     obj.msgId = Date.now()
     return obj
   }
@@ -522,7 +521,7 @@ module.exports = function (app, sequelize) {
     if (req.session.user) {
       app.controllers['users'].getUserById(req.session.user.id)
       .then((user) => {
-        app.log(JSON.stringify(user), myName, 6)
+        // app.log(JSON.stringify(user), myName, 8)
         return app.controllers['users'].compileDomainList(user)
       })
       .then((domains) => {
@@ -712,7 +711,7 @@ module.exports = function (app, sequelize) {
       .then((data) => {
         if (data) req.appData[model + action] = data
         req.appData.domains = req.session.user.domains
-        app.log(JSON.stringify(req.appData.domains), myName, 6)
+        // app.log(JSON.stringify(req.appData.domains), myName, 8)
         return next()
       })
     })
@@ -732,7 +731,7 @@ module.exports = function (app, sequelize) {
           return next()
         }
         app.log(myName + ': Authorized for request: ' + req.method + ':' + req.route.path)
-        app.log(myName + ': Sending element: ' + JSON.stringify(app.elements[req.params.element]))
+        // app.log(myName + ': Sending element: ' + JSON.stringify(app.elements[req.params.element]))
         return res.json(app.elements[req.params.element])
       })
       .catch(err => {
@@ -780,7 +779,7 @@ module.exports = function (app, sequelize) {
 
       let finalObj = {'Messages': [mailObj]}
 
-      app.log('Prepared email object for sending: ' + JSON.stringify(finalObj), myName, 7)
+      // app.log('Prepared email object for sending: ' + JSON.stringify(finalObj), myName, 7)
       let sendMail = app.mailjet
       .post('send', {'version': 'v3.1'})
       .request(finalObj)

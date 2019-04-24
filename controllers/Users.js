@@ -203,7 +203,7 @@ module.exports = function(app,model) {
         return user.update({verified:true,disabled:false});
       })
       .then(user => {
-        app.log(JSON.stringify(user),myName,6);
+        // app.log(JSON.stringify(user),myName,6);
         verifiedUser = user;
         return app.controllers["domains"].fetchRoleByName("Default","Default Role");
       })

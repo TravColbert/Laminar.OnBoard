@@ -158,7 +158,8 @@ module.exports = function (app, model) {
 
       app.controllers[model].__get(searchObj)
         .then(notes => {
-          app.log('Found notes: ' + JSON.stringify(notes), myName, 6)
+          // app.log('Found notes: ' + JSON.stringify(notes), myName, 6)
+          app.log(`Found ${notes.length} notes`, myName, 7)
           if (!notes || notes.length === 0) return res.redirect('/blog/')
           req.appData.note = notes[0]
           req.appData.view = 'blogentry'
@@ -277,7 +278,7 @@ module.exports = function (app, model) {
         .then(notes => {
           if (!notes) return res.redirect('/notes/')
           // app.log("Note found: " + notes[0],myName,6);
-          app.log(JSON.stringify(notes[0]), myName, 6)
+          // app.log(JSON.stringify(notes[0]), myName, 6)
           req.appData.note = notes[0]
           req.appData.view = 'noteedit'
           return next()
@@ -295,7 +296,7 @@ module.exports = function (app, model) {
       if (!noteObj.hasOwnProperty('public')) noteObj.public = false
       app.log(noteObj.id + ' ' + requestedNoteId, myName, 6)
       delete noteObj.id
-      app.log('Updating note: ' + JSON.stringify(noteObj), myName, 6)
+      // app.log('Updating note: ' + JSON.stringify(noteObj), myName, 6)
       app.controllers[model].__update({ values: noteObj, options: { where: { 'id': requestedNoteId } } })
         .then((notes) => {
           app.log(notes[0] + ' notes updated')
@@ -312,7 +313,7 @@ module.exports = function (app, model) {
       if (!newNote) return res.send('Required field missing... try again')
       newNote.userId = req.session.user.id
       newNote.domainId = req.body.domainId || req.session.user.currentDomain.id
-      app.log('New note: ' + JSON.stringify(newNote), myName, 6, '::::>')
+      // app.log('New note: ' + JSON.stringify(newNote), myName, 6, '::::>')
       app.controllers[model].__create(newNote)
         .then(note => {
           return res.redirect('/notes/' + note.id + '/')

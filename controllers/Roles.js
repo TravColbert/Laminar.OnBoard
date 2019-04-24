@@ -275,7 +275,7 @@ module.exports = function(app,model) {
     },
     connectRoleToDomain : function(role,domain) {
       let myName = "connectRoleToDomain()";
-      app.log(JSON.stringify(role),myName,6);
+      // app.log(JSON.stringify(role),myName,6);
       return new Promise((resolve,reject) => {
         app.log("Connecting role: '" + role.name + "' to '" + domain.name,myName,6," --- ");
         domain.addRoles(role)
@@ -329,7 +329,7 @@ module.exports = function(app,model) {
           return app.controllers[model].connectRoleToDomain(role,domain);
         })
         .then((success) => {
-          app.log("Here are the roles we've created: " + JSON.stringify(createdRoles),myName,6,"--- ");
+          // app.log("Here are the roles we've created: " + JSON.stringify(createdRoles),myName,6,"--- ");
           resolve(createdRoles);
         })
         .catch((err) => {

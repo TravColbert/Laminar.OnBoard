@@ -31,7 +31,7 @@ module.exports = function(app,model) {
       let obj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
       obj.ownerId = req.session.user.id;
       // obj.settings = {"visible":true};
-      app.log("Create object (domain): " + JSON.stringify(obj),myName,6);
+      // app.log("Create object (domain): " + JSON.stringify(obj),myName,6);
       app.controllers[model].__create(obj)
       .then(result => {
         if(!result) {
@@ -52,7 +52,7 @@ module.exports = function(app,model) {
       req.appData.models.push(model);
       let obj = app.tools.makeObj(req.query,app.modelDefinitions[model].requiredFields.concat(app.modelDefinitions[model].optionalFields));
       if(req.params.id) obj.id = req.params.id;
-      app.log("Search obj: " + JSON.stringify(obj),myName,6);
+      // app.log("Search obj: " + JSON.stringify(obj),myName,6);
       let searchObj = {
         "where" : obj
       };
@@ -106,7 +106,7 @@ module.exports = function(app,model) {
           "id":req.params.id
         }
       };
-      app.log("Delete object: " + JSON.stringify(deleteObj),myName,6);
+      // app.log("Delete object: " + JSON.stringify(deleteObj),myName,6);
       app.controllers[model].__delete(deleteObj)
       .then(result => {
         if(!result) {
@@ -163,18 +163,18 @@ module.exports = function(app,model) {
       let myName = "createDomainAndRoles";
       return app.controllers[model].__create(obj)
       .then(result => {
-        app.log("Created domain: " + JSON.stringify(result),myName,5);
+        // app.log("Created domain: " + JSON.stringify(result),myName,5);
         // Create default roles
         return app.controllers["roles"].createDefaultRoles(result);
       })
       .then(roles => {
-        app.log("Roles created: " + JSON.stringify(roles),myName,5);
+        // app.log("Roles created: " + JSON.stringify(roles),myName,5);
         // Add ownerId to Admin role...
         let adminRole = roles.filter(role => {
           return (role.name.indexOf("Admin")>=0);
         })[0];
         if(!adminRole) return false;
-        app.log("Found admin role: " + JSON.stringify(adminRole));
+        // app.log("Found admin role: " + JSON.stringify(adminRole));
         app.log("User: " + owner.id);
         return app.controllers["users"].enrollUserInRoleById(owner.id,adminRole.id);
       })
@@ -418,7 +418,7 @@ module.exports = function(app,model) {
       };
       return app.controllers[model].__get(searchObj)
       .then(domain => {
-        app.log("Found domains/roles: " + JSON.stringify(domain),myName,6);
+        // app.log("Found domains/roles: " + JSON.stringify(domain),myName,8);
         return domain;
       })
       .catch(err => {
