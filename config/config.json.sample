@@ -17,7 +17,7 @@
   "sessionTimeoutHours":4,
   "logLevel":6,
   "invitationTimeoutHours":72,
-  "viewsDir":"./views",
+  "viewsDir":"views",
   "navDir":"navigation",
   "staticDir":"public",
   "modelsDir":"models",
