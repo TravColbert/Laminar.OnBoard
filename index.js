@@ -151,6 +151,7 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
    */
   app.use(
     app.tools.ignoreFavicon,
+    app.tools.logRequest,
     app.tools.setOriginalUrl,
     app.tools.setAppData,
     app.tools.timeStart
