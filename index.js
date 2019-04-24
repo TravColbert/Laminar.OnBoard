@@ -1,6 +1,7 @@
 #!/usr/bin/node
+const path = require('path')
 console.log(`Current directory: ${process.cwd()}`)
-const cwd = __dirname + '/'
+const cwd = path.join(__dirname, '/')
 console.log('Script directory is:', cwd)
 const fs = require('fs')
 const https = require('https')
@@ -12,20 +13,20 @@ const fileUpload = require('express-fileupload')
 const app = express()
 const myName = 'setup'
 
-app.locals = JSON.parse(fs.readFileSync(cwd + 'config.json'))
-app.secrets = JSON.parse(fs.readFileSync(cwd + 'secrets.json'))
+app.locals = JSON.parse(fs.readFileSync(path.join(cwd, 'config/config.json')))
+app.secrets = JSON.parse(fs.readFileSync(path.join(cwd, 'config/secrets.json')))
 app.debug = require('debug')('laminar')
 
 // Define the objects that are linked to domains:
-app.domainlinks = JSON.parse(fs.readFileSync(cwd + 'domainlinks.json'))
+app.domainlinks = JSON.parse(fs.readFileSync(path.join(cwd, 'config/domainlinks.json')))
 
 // Configure host:port
 app.locals.url = 'https://' + app.locals.addr
 if (app.locals.port !== '443') app.locals.url += ':' + app.locals.port
 
 const options = {
-  key: fs.readFileSync(cwd + app.locals.keyFile),
-  cert: fs.readFileSync(cwd + app.locals.certFile)
+  key: fs.readFileSync(path.join(cwd, app.locals.keyFile)),
+  cert: fs.readFileSync(path.join(cwd, app.locals.certFile))
 }
 
 // Setup our ORM (Sequelize)
@@ -55,26 +56,27 @@ app.mailjet = require('node-mailjet').connect(app.secrets['mail-api-key'], app.s
 
 let sessionConfig = {
   store: new SQLiteStore(),
+  table: path.join(cwd, '/db/sessions.db'),
   secret: app.secrets.sessionSecret,
-  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }, // 1 week
+  cookie: { maxAge: (app.locals.sessionTimeoutHours * 60 * 60 * 1000) },
   resave: false,
   saveUninitialized: false
 }
 
 // Setup default Home module
-app.homeModule = false 
+app.homeModule = false
 if (app.locals.hasOwnProperty('homeModule')) {
   if (app.locals.homeModule !== false && app.locals.homeModule !== null) {
     app.log('Including home module: ' + app.locals.homeModule, myName, 6)
-    app.homeModule = require("./" + app.locals.modulesDir + "/" + app.locals.homeModule + ".js")(app)  
+    app.homeModule = require(path.join(app.locals.modulesDir, app.locals.homeModule))(app)
   }
 }
 
 // Basic Express setup: templater, query-parsing, ...
-app.set('views', cwd + app.locals.viewsDir)
+app.set('views', path.join(cwd, app.locals.viewsDir))
 app.set('view engine', 'pug')
 app.set('query parser', true)
-app.use(express.static(cwd + app.locals.staticDir))
+app.use(express.static(path.join(cwd, app.locals.staticDir)))
 app.use('/favicon.ico', express.static(app.locals.favicon || 'public/img/laminar_favicon.ico'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -96,45 +98,45 @@ app.linkedObjects = {}
 const navigation = require('./navigation')(app)
 
 // Build app starting with model-hydration
-app.tools.readDir(app.cwd + app.locals.modelsDir)
+app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
 .then(modelFiles => {
   return app.tools.processFiles(modelFiles, app.tools.readModel)
 }).then(() => {
   // Hydrate controllers
-  return app.tools.readDir(cwd + app.locals.controllersDir)
+  return app.tools.readDir(path.join(cwd, app.locals.controllersDir))
 }).then(controllerFiles => {
   return app.tools.processFiles(controllerFiles, app.tools.readController)
 }).then(() => {
-  return app.tools.readDir(cwd + app.locals.elementsDir)
+  return app.tools.readDir(path.join(cwd, app.locals.elementsDir), '.js')
 }).then(elementFiles => {
   return app.tools.processFiles(elementFiles, app.tools.readElement)
 }).then(() => {
   // Bind associations and start the models
-  return app.tools.associateModels()
+  // return app.tools.associateModels()
+  return app.tools.readDir(path.join(cwd, app.locals.modelsDir, 'associations'))
+}).then(associationFiles => {
+  return app.tools.processFiles(associationFiles, app.tools.readAssociation)
 }).then(() => {
   return app.tools.startModels(app.models)
 }).then(() => {
   return app.tools.setupBasePermissions()
 }).then(() => {
   // Run and post-startup model tasks (e.g. creating records)
-  return app.tools.readDir(cwd + app.locals.modelsDir + "/modelstartups")
+  return app.tools.readDir(path.join(cwd, app.locals.modelsDir, 'modelstartups'), '.js')
 }).then(modelStartupFiles => {
   return app.tools.processFiles(modelStartupFiles, app.tools.readModelStartup)
 }).then(() => {
   // Collect menu elements
-  return app.tools.readDir(app.cwd + app.locals.navDir)
+  return app.tools.readDir(path.join(app.cwd, app.locals.navDir), '.json')
 }).then(menuFiles => {
   return app.tools.processFiles(menuFiles, app.tools.readMenu)
 }).then(() => {
-  // Include the main menu
-  app.menu = app.menu.concat(require("./" + app.locals.navDir + "/menu.json")["main"])
-}).then(() => {
   // Parse headoptions file, if available
-  fs.readFile(cwd + "/headoptions.json", (err, data) => {
+  fs.readFile(path.join(cwd, 'config', 'headoptions.json'), (err, data) => {
     if (err) {
-      app.log("No headoptions file found")
+      app.log('No headoptions file found')
     } else {
-      app.log("Head options: " + data, myName, 6)
+      app.log('Head options: ' + data, myName, 6)
       app.headOptions = JSON.parse(data)
     }
   })
@@ -183,17 +185,17 @@ app.tools.readDir(app.cwd + app.locals.modelsDir)
    *
    * All of these routes can be excluded or replaced.
    */
-  return app.tools.readDir(cwd + app.locals.routesDir)
+  return app.tools.readDir(path.join(cwd, app.locals.routesDir))
 }).then(routeFiles => {
   return app.tools.processFiles(routeFiles, app.tools.readRoute)
 }).then(() => {
-  app.log("Total routes: " + Object.keys(app.routes).length, myName, 6)
+  app.log(`Total routes: ${Object.keys(app.routes).length}`, myName, 6)
   let routeNames = Object.keys(app.routes)
   routeNames.forEach(name => {
-    app.use("/" + name + "/", app.routes[name])
+    app.use(`/${name}/`, app.routes[name])
   })
 }).then(() => {
-  app.get('/profile/', app.tools.checkAuthentication, app.controllers["users"].getProfile)
+  app.get('/profile/', app.tools.checkAuthentication, app.controllers['users'].getProfile)
   app.post('/authorizedelements/:element', app.tools.checkAuthentication, app.tools.getElement)
   app.get('/', app.tools.homePage)
 }).then(() => {
@@ -209,6 +211,6 @@ app.tools.readDir(app.cwd + app.locals.modelsDir)
  * START THE SERVER
  */
 let server = https.createServer(options, app)
-server.listen(app.locals.port, app.locals.host, function() {
-  console.log(app.locals.appName + " server listening on port " + app.locals.port)
+server.listen(app.locals.port, app.locals.host, () => {
+  console.log(app.locals.appName + ' server listening on port ' + app.locals.port)
 })
