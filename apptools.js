@@ -337,9 +337,9 @@ module.exports = function (app, sequelize) {
   obj.setAppData = function (req, res, next) {
     let myName = 'setAppData()'
     // app.log("original request: " + req.session.originalReq,myName,4);
-    app.log('clearing appData', myName, 5)
+    app.log('clearing appData', myName, 6)
     req.appData = {}
-    app.log('setting app name', myName, 5)
+    app.log('setting app name', myName, 6)
     req.appData.title = app.locals.appName
     // req.appData.modelName = obj.getModelName(req);
     req.appData.models = []

@@ -125,7 +125,7 @@ module.exports = function (app, model) {
     gets: function (req, res, next) {
       let myName = 'gets(files)'
       let getPromise = Promise.resolve()
-      app.log('Getting files', myName, 5)
+      app.log('Getting files', myName, 6)
       getPromise
         .then(() => {
           if (app.tools.isAuthenticated(req)) {
