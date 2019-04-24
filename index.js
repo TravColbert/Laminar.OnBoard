@@ -54,15 +54,6 @@ app.mailjet = require('node-mailjet').connect(app.secrets['mail-api-key'], app.s
   perform_api_call: true // used for tests. default is true
 })
 
-let sessionConfig = {
-  store: new SQLiteStore(),
-  table: path.join(cwd, '/db/sessions.db'),
-  secret: app.secrets.sessionSecret,
-  cookie: { maxAge: (app.locals.sessionTimeoutHours * 60 * 60 * 1000) },
-  resave: false,
-  saveUninitialized: false
-}
-
 // Setup default Home module
 app.homeModule = false
 if (app.locals.hasOwnProperty('homeModule')) {
@@ -70,6 +61,19 @@ if (app.locals.hasOwnProperty('homeModule')) {
     app.log('Including home module: ' + app.locals.homeModule, myName, 6)
     app.homeModule = require(path.join(app.locals.modulesDir, app.locals.homeModule))(app)
   }
+}
+
+app.log(path.join(cwd, 'db'), myName, 8)
+
+let sessionConfig = {
+  store: new SQLiteStore({
+    db: 'sessions.db',
+    dir: path.join(cwd, 'db')
+  }),
+  secret: app.secrets.sessionSecret,
+  cookie: { maxAge: (app.locals.sessionTimeoutHours * 60 * 60 * 1000) },
+  resave: false,
+  saveUninitialized: false
 }
 
 // Basic Express setup: templater, query-parsing, ...
