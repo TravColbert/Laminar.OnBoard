@@ -1,3 +1,7 @@
+.bold {
+  font-weight: bolder;
+}
+
 .flexy, .flexy-row, .content-titlebar, .btn,
 .button, .mediaitem, .mainblurb, .maintitle, .mainwelcome, .itemhead, .articlemetadata, #articlelist .body, article#cta,
 article#skills, article#about > div div, .forminput, main, nav .navlinks ul, header nav, footer nav, .flexy-column, .app-features .feature, .item, .itembanner, .itemdetail, .item-container, .subitem-listing, .item-listing, article > .subhead, article#about #login-form,

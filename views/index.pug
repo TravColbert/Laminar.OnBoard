@@ -25,31 +25,32 @@ mixin create-or-see-domains(domainName)
 mixin list-user-invites
   if(invites && invites.length>0)
     article#invites
-      .hdg.hdg-2 Invites (#{invites.length})
+      .hdg.hdg-2 New Invites!
       .item-listing
-        each invite in invites
-          .item
-            .itemhead
-              | New Invite
-              i.material-icons.badge new_releases
-            .itemdetail
-              label.label From
-              .data #{invite.fromEmail}
-            if(invite.comment)
-              .itemdetail
-                label.label Comment
-                .data #{invite.comment}
+        a.btn.secondary(href="/invites/")
+          i.material-icons.badge(alt="(invites)" title="Respond to your new invites") card_giftcard
+          span See Invites
+            //- .itemhead
+            //-   | New Invite
+            //-   i.material-icons.badge new_releases
             //- .itemdetail
-            //-   label.label Note 
-            //-   .data You've probably received notification about this invitation. If not you can ignore it for now.
-            .itemdetail
-              a.btn.btn-small.primary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
-                i.material-icons check_circle_outline
-                span Accept Invite
-            .itemdetail
-              a.btn.btn-small.tertiary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
-                i.material-icons highlight_off
-                span Decline Invite
+            //-   label.label From
+            //-   .data #{invite.fromEmail}
+            //- if(invite.comment)
+            //-   .itemdetail
+            //-     label.label Comment
+            //-     .data #{invite.comment}
+            //- //- .itemdetail
+            //- //-   label.label Note 
+            //- //-   .data You've probably received notification about this invitation. If not you can ignore it for now.
+            //- .itemdetail
+            //-   a.btn.btn-small.primary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
+            //-     i.material-icons check_circle_outline
+            //-     span Accept Invite
+            //- .itemdetail
+            //-   a.btn.btn-small.tertiary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
+            //-     i.material-icons highlight_off
+            //-     span Decline Invite
 
 mixin list-user-domains(domainText)
   article#domains
@@ -61,12 +62,12 @@ mixin list-user-domains(domainText)
             .item
               .itemhead #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
                 if(user.defaultDomainId==domain.id)
-                  | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") stars]
+                  | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") favorite]
               .itemdetail #{domain.description}
                 - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
                 if(user.defaultDomainId!=domain.id)
                   a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
-                    i.material-icons.badge stars
+                    i.material-icons.badge favorite_border
                     span Make Default
               if(domain.notes)
                 div Notes:
@@ -86,7 +87,7 @@ mixin link(options)
 
 include mixins.pug
 
-html
+html(lang="en")
   include head.pug
   if(headoptions)
     for headoption in headoptions

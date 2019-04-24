@@ -8,20 +8,23 @@ block aside
 block content
   section.invites
     article.main
-      .hdg.hdg-2.invitelist
+      .hdg.hdg-2.invitelist Invites (#{invites.length})
       .item-listing
         each invite in invites
           .item
             .itemhead
               | New Invite
-              i.material-icons.badge new_releases
-            .itemdetail
-              label.label From
-              .data #{invite.fromEmail}
+              i.material-icons.badge card_giftcard
             if(invite.comment)
               .itemdetail
-                label.label Comment
-                .data #{invite.comment}
+                label.label 
+                  span.bold #{invite.fromEmail}
+                  | &nbsp;says:
+                .data "#{invite.comment}"
+            .itemdetail
+              label.label Date
+              .data #{invite.updatedAt}
+
             //- .itemdetail
             //-   label.label Note 
             //-   .data You've probably received notification about this invitation. If not you can ignore it for now.
