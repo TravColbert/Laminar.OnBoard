@@ -441,25 +441,25 @@ module.exports = function (app, sequelize) {
     let myName = 'isAuthenticated'
     app.log('Checking if session is authenticated', myName, 6)
     if (!req.session.cookie) return false
-    app.log('session cookie exists...', myName, 5)
+    app.log('session cookie exists...', myName, 6)
     if (!req.session.user) return false
-    app.log('session user object exists...', myName, 5)
+    app.log('session user object exists...', myName, 6)
     if (!req.session.user.email) return false
-    app.log('session user email exists...', myName, 5)
+    app.log('session user email exists...', myName, 6)
     if (!req.session.user.id) return false
-    app.log('session user appears to be intact. Moving on...', myName, 6)
+    app.log('session user appears to be intact. Moving on...', myName, 5)
     return true
   }
   obj.checkAuthentication = function (req, res, next) {
     let myName = 'checkAuthentication()'
     if (!obj.isAuthenticated(req)) return res.redirect('/login')
-    app.log('session user id is set...', myName, 5)
-    app.log('found all session info: ' + req.session.user.email, myName, 5)
-    app.log('final confirmation that ' + req.session.user.email + ' user id (' + req.session.user.id + ') exists', myName, 5)
+    app.log('session user id is set...', myName, 6)
+    app.log('found all session info: ' + req.session.user.email, myName, 6)
+    app.log('final confirmation that ' + req.session.user.email + ' user id (' + req.session.user.id + ') exists', myName, 6)
     app.models['users']
     .count({where: {email: req.session.user.email, id: req.session.user.id}})
     .then((count) => {
-      app.log('Number of matching user records: ' + count, myName, 5)
+      app.log('Number of matching user records: ' + count, myName, 6)
       if (count == 1) return next()
       app.log('Incorrect number of user records returned - this is a problem!', myName, 3)
       return res.redirect('/login')
@@ -507,9 +507,9 @@ module.exports = function (app, sequelize) {
   }
   obj.setUserAccount = function (req, res, next) {
     var myName = 'setUserAccount()'
-    app.log('setting user account data...', myName, 5)
+    app.log('setting user account data...', myName, 6)
     if (req.session.user) {
-      app.log('user: ' + req.session.user.email + ' id: ' + req.session.user.id, myName, 5)
+      app.log('user: ' + req.session.user.email + ' id: ' + req.session.user.id, myName, 6)
       req.appData.account = req.session.user.email
       req.appData.accountNum = req.session.user.id
     }
@@ -517,7 +517,7 @@ module.exports = function (app, sequelize) {
   }
   obj.getUserDomains = function (req, res, next) {
     var myName = 'getUserDomains()'
-    app.log('getting all user domains...', myName, 5)
+    app.log('getting all user domains...', myName, 6)
     if (req.session.user) {
       app.controllers['users'].getUserById(req.session.user.id)
       .then((user) => {
@@ -525,8 +525,8 @@ module.exports = function (app, sequelize) {
         return app.controllers['users'].compileDomainList(user)
       })
       .then((domains) => {
-        app.log('Domain List:')
-        app.log(domains, myName, 6)
+        // app.log('Domain List:')
+        // app.log(domains, myName, 6)
         req.session.user.domainList = domains
       })
       .catch((err) => {
@@ -750,7 +750,7 @@ module.exports = function (app, sequelize) {
   }
   obj.setOriginalUrl = function (req, res, next) {
     let myName = 'setOriginalUrl()'
-    app.log('got a request of type: ' + req.protocol + ' :' + req.method + ' TO: ' + req.originalUrl + ' URL: ' + req.url, myName, 4)
+    app.log('got a request of type: ' + req.protocol + ' :' + req.method + ' TO: ' + req.originalUrl + ' URL: ' + req.url, myName, 7)
     if (req.session) {
       req.session.originalReq = (req.originalUrl != '/login') ? req.originalUrl : req.session.originalReq
       // app.log("original request: " + req.session.originalReq,myName,4);
