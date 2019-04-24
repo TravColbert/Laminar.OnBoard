@@ -1,5 +1,5 @@
 {
-  "appName":"OnBoard",
+  "appName":"Laminar",
   "host":"0.0.0.0",
   "addr":"127.0.0.1",
   "port":443,
@@ -8,12 +8,13 @@
   "smtpServer":"my.mail.server.net",
   "smtpPort":"366",
   "smtpSecurity":false,
-  "smtpFromName":"OnBoard",
+  "smtpFromName":"Laminar",
   "smtpFromAddr":"us@yourdomain.net",
   "smtpDomain":"yourdomain.net",
   "homeView":"home-default",
   "homeModule":false,
   "loginPage":"/login",
+  "sessionTimeoutHours":4,
   "logLevel":6,
   "invitationTimeoutHours":72,
   "viewsDir":"./views",
@@ -31,14 +32,14 @@
   "dbConnection":{
     "sqlite":{
       "host":"localhost",
-      "user":"onboard",
-      "storage":"db/onboard.db",
+      "user":"laminar",
+      "storage":"db/laminar.db",
       "logging":false
     },
     "mysql":{
       "host":"127.0.0.1",
-      "user":"onboard",
-      "database":"onboard",
+      "user":"laminar",
+      "database":"laminar",
       "charset":"utf8",
       "logging":true
     }
