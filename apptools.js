@@ -381,13 +381,13 @@ module.exports = function (app, sequelize) {
   }
   obj.clearMessageQueue = function (req) {
     let myName = 'clearMessageQueue()'
-    app.log('clearing messages queue', myName, 5)
+    app.log('clearing messages queue', myName, 6)
     req.appData.messages = []
     return true
   }
   obj.setMessage = function (req, res, next) {
     let myName = 'setMessage()'
-    app.log('setting up messages', myName, 5)
+    app.log('setting up messages', myName, 6)
     if (req.session.hasOwnProperty('messages')) {
       if (req.session.messages.length > 0) {
         // app.log(JSON.stringify(req.session.messages),myName,6);

@@ -1,4 +1,4 @@
-module.exports = function(app) {
+module.exports = function (app) {
   //   /**
   //    * The app's menu.
   //    * It is a JSON file object containing properties representing menu 
@@ -23,49 +23,49 @@ module.exports = function(app) {
   //     {link:"/logout/",text:"Log Out",icon:"highlight_off",secured:true},
   //   ]
 
-  let obj = {};
+  let obj = {}
 
-  obj.getMenu = function(req,res,next) {
-    let myName = "getMenu";
-    app.log("building menu object",myName,5);
-    req.appData.menu = [];
-    app.menu.forEach(function(v,i,a) {
-      if(!v.hasOwnProperty("secured")) {
-        req.appData.menu.push(v);
+  obj.getMenu = function (req, res, next) {
+    let myName = 'getMenu'
+    app.log('building menu object', myName, 5)
+    req.appData.menu = []
+    app.menu.forEach(function (v, i, a) {
+      if (!v.hasOwnProperty('secured')) {
+        req.appData.menu.push(v)
       } else {
-        if(v.secured && req.session.user) req.appData.menu.push(v);
-        if(!v.secured && !req.session.user) req.appData.menu.push(v);
+        if (v.secured && req.session.user) req.appData.menu.push(v)
+        if (!v.secured && !req.session.user) req.appData.menu.push(v)
       }
-    });
-    return next();
+    })
+    return next()
   };
-  obj.isAuthorized = function(req,requiredRole) {
-    let myName = "isAuthorized()";
-    app.log(myName + ": Checking authorization for: " + req.session.user.email);
-    app.log(myName + ": S/He's trying to access: " + req.method + ":" + req.route.path);
-    app.log(myName + ": S/He needs role: '" + requiredRole + "'...");
-    if(req.user.hasOwnProperty(requiredRole)) {
-      app.log(myName + ": Role '" + requiredRole + "' is: " + req.user[requiredRole]);
-      return req.user[requiredRole];
+  obj.isAuthorized = function (req, requiredRole) {
+    let myName = 'isAuthorized()'
+    app.log(myName + ': Checking authorization for: ' + req.session.user.email)
+    app.log(myName + ": S/He's trying to access: " + req.method + ':' + req.route.path)
+    app.log(myName + ": S/He needs role: '" + requiredRole + "'...")
+    if (req.user.hasOwnProperty(requiredRole)) {
+      app.log(myName + ": Role '" + requiredRole + "' is: " + req.user[requiredRole])
+      return req.user[requiredRole]
     }
-    app.log(myName + ": Correct role not set as TRUE for this user. NOT authorized.");
-    return false;
+    app.log(myName + ': Correct role not set as TRUE for this user. NOT authorized.')
+    return false
   };
-  obj.checkAuthorization = function(req,res,next) {
-    let myName = "checkAuthorization()";
+  obj.checkAuthorization = function (req, res, next) {
+    let myName = 'checkAuthorization()'
     /**
      * Maybe check authorization based on: user roles and req.baseUrl
      * First, look up the baseUrl, check the role that it wants vs what the 
      * user's role supports.
      */
-    if(authElements.hasOwnProperty(req.method + ":" + req.route.path)) {
-      if(isAuthorized(req,authElements[req.method + ":" + req.route.path].role)) {
-        this.app.log(myName + ": Authorized for request: " + req.method + ":" + req.route.path);
-        return next();
+    if (authElements.hasOwnProperty(req.method + ':' + req.route.path)) {
+      if (isAuthorized(req, authElements[req.method + ':' + req.route.path].role)) {
+        this.app.log(myName + ': Authorized for request: ' + req.method + ':' + req.route.path)
+        return next()
       }
     }
-    this.app.log(myName + ": NOT Authorized for request: " + req.method + ":" + req.route.path);
-    return res.redirect('/');
+    this.app.log(myName + ': NOT Authorized for request: ' + req.method + ':' + req.route.path)
+    return res.redirect('/')
   }
-  return obj;
+  return obj
 }
