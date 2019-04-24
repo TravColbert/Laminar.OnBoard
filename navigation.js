@@ -27,7 +27,7 @@ module.exports = function (app) {
 
   obj.getMenu = function (req, res, next) {
     let myName = 'getMenu'
-    app.log('building menu object', myName, 5)
+    app.log('building menu object', myName, 6)
     req.appData.menu = []
     app.menu.forEach(function (v, i, a) {
       if (!v.hasOwnProperty('secured')) {
