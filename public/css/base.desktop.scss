@@ -638,7 +638,7 @@ article.main {
     font-size: 1.2em;
   }
   h2 {
-    font-size: 1.0em;
+    font-size: 1.1em;
   }
   h3 {
     font-size: 1.0em;
@@ -675,6 +675,7 @@ article > .subhead {
   }
 }
 
+pre.snippet, 
 code {
   display: block;
   // width: 100%;
@@ -683,7 +684,7 @@ code {
   background: $codebackgroundcolor;
   padding: 1em;
   font-size: 0.8em;
-  overflow-x: scroll;
+  // overflow-x: scroll;
   @extend .shadowed;
 }
 

@@ -57,3 +57,14 @@ block content
             picture
               source(srcset='/files/' + file.appid)
               img.preview(src='/files/' + file.appid)
+        if(file.mimetype.includes('image'))
+          .itemdetail
+            label.label Snippets
+            .data Use this snippet to include this image in a note entry:
+            pre.snippet
+              = '<figure>\n'
+              = '\t<img src="https://[your.url]/files/' + file.appid + '" alt="[your_description]">\n'
+              = '\t<figcaption>[Fig.1 - your_caption.]</figcaption>\n'
+              = '</figure>\n'
+            .data Remember to change the URL, description and caption!
+
