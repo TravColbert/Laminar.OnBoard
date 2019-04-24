@@ -581,6 +581,11 @@ article.main .articlemetadata {
 .articlebody h2 {
   font-size: 1em;
 }
+.articlebody h3 {
+  font-size: 1em;
+  font-weight: normal;
+  text-decoration: underline;
+}
 .articlebody p {
   margin-block-start: 0.5em;
   margin-block-end: 0.5em;
