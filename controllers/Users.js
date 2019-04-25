@@ -157,9 +157,9 @@ module.exports = function(app,model) {
         })
         .then(result => {
           if(result) {
-            app.log("I think we sent the email!");
+            app.log(`Sent registration confirmation mail`, myName, 4);
           } else {
-            app.log("I think something went wrong!");
+            app.log(`Failed to send registration confirmation mail`, myName, 3);
           }
           req.appData.view = "registrationcomplete";
           return next();
