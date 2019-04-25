@@ -195,7 +195,7 @@ module.exports = function (app, sequelize) {
           'disabled': false,
           'password': app.secrets['admin@' + app.locals.smtpDomain]
         }
-        // The 'create' method returns an object, not an array! 
+        // The 'create' method returns an object, not an array!
         return app.controllers.users.createUser(adminUserDef)
       } else {
         // If the "user.length" check (above) passes then we're looking at an array here!
@@ -220,10 +220,10 @@ module.exports = function (app, sequelize) {
       }
     }).then(role => {
       superAdminRole = role
-      return adminUser.addRole(role, {through: {comment: 'Initial creation phase'}})
+      return adminUser.addRole(role, { through: { comment: 'Initial creation phase' } })
     }).then(() => {
       app.log('Admin user connected to admin role', myName, 6)
-      return app.controllers.domains.__get({where: {name: 'Default'}})
+      return app.controllers.domains.__get({ where: { name: 'Default' } })
     })
     .then(domain => {
       if (domain.length == 0) {
@@ -237,7 +237,7 @@ module.exports = function (app, sequelize) {
             visible: ['notes']
           },
           ownerId: adminUser.id
-        }  
+        }
         return app.controllers.domains.createDomainAndRoles(defaultDomain, adminUser)
       } else {
         return domain
@@ -248,7 +248,7 @@ module.exports = function (app, sequelize) {
       return defaultDomain
     })
     .then(() => {
-      return app.controllers.domains.__get({where: {name: 'Trash'}})
+      return app.controllers.domains.__get({ where: { name: 'Trash' } })
     })
     .then(domain => {
       if (domain == 0) {
@@ -284,7 +284,7 @@ module.exports = function (app, sequelize) {
     .catch(err => {
       app.log(err.message, myName, 3, '!')
     })
-    return setupPromises  
+    return setupPromises
   }
   obj.startModels = function (models) {
     let myName = 'startModels'
@@ -323,7 +323,7 @@ module.exports = function (app, sequelize) {
     let myName = 'ignoreFavicon()'
     if (req.url == '/favicon.ico' && !app.locals.favicon) {
       app.log('ignoring favicon', myName, 5)
-      res.writeHead(200, {'Content-Type': 'image/x-icon'})
+      res.writeHead(200, { 'Content-Type': 'image/x-icon' })
       return res.end()
     }
     return next()
@@ -405,28 +405,15 @@ module.exports = function (app, sequelize) {
     let index = req.session.messages.findIndex(function (message) {
       return message.msgId == msgId
     })
-    if (index == -1) return res.json({'msgId': false})
-    if (req.session.messages.splice(index, 1).length != 1) return res.json({'msgId': false})
-    return res.json({'msgId': msgId})
-  }
-  obj.socketSend = function (sessionId, type, message) {
-    let myName = 'socketSend'
-    app.log('Looking for socket of session ID: ' + sessionId, myName, 6)
-    // app.log(app.socketSessions,myName,6,"| | | | >");
-    let targetSockets = app.socketSessions.filter((v) => {
-      return v.sessionId = sessionId
-    })
-    targetSockets.forEach((targetSocket) => {
-      app.log('Found a socket. Sending message: ' + message + ' of type: ' + type, myName, 6)
-      // app.log(targetSocket.socket.id,myName,6,": : : >");
-      targetSocket.socket.emit(type, message)
-    })
+    if (index == -1) return res.json({ 'msgId': false })
+    if (req.session.messages.splice(index, 1).length != 1) return res.json({ 'msgId': false })
+    return res.json({ 'msgId': msgId })
   }
   obj.getInviteQueryObj = function (userEmail, expirationHours) {
     expirationHours = expirationHours || app.locals.invitationTimeoutHours
     // Calculate the date some days ago
     let timeLimit = new Date(new Date() - (1000 * 60 * 60 * expirationHours))
-    
+
     return {
       where: {
         'userEmail': userEmail,
@@ -457,10 +444,10 @@ module.exports = function (app, sequelize) {
     app.log('found all session info: ' + req.session.user.email, myName, 6)
     app.log('final confirmation that ' + req.session.user.email + ' user id (' + req.session.user.id + ') exists', myName, 6)
     app.models['users']
-    .count({where: {email: req.session.user.email, id: req.session.user.id}})
+    .count({ where: { email: req.session.user.email, id: req.session.user.id } })
     .then((count) => {
       app.log('Number of matching user records: ' + count, myName, 6)
-      if (count == 1) return next()
+      if (count === 1) return next()
       app.log('Incorrect number of user records returned - this is a problem!', myName, 3)
       return res.redirect('/login')
     })
@@ -471,15 +458,15 @@ module.exports = function (app, sequelize) {
     app.log('Checking if user ' + userId + ' is authorized to ' + capability + ' on domain ' + domainId, myName, 6)
     return new Promise((resolve, reject) => {
       let cap = {}
-      cap[capability[0]] = {[Op.eq]: capability[1]}
+      cap[capability[0]] = { [Op.eq]: capability[1] }
       // The above is a way to query from within a JSON obj
       // When we call this method we pass capability as, e.g: ["create":"all"]
       // So, the above just makes it look like this: {"create":{[Op.eq]:"all"}}
       // [Op.eq] is a Sequelize operator meaning equal-to
       let query = {}
-      query.roles = {capabilities: cap}
-      query.users = {id: userId}
-      query.domains = (domainId) ? {id: domainId} : null   // Admin user doesn't have a default domain ATM
+      query.roles = { capabilities: cap }
+      query.users = { id: userId }
+      query.domains = (domainId) ? { id: domainId } : null   // Admin user doesn't have a default domain ATM
       app.models['roles']
       .findAll({
         where: query.roles || null,
@@ -672,6 +659,7 @@ module.exports = function (app, sequelize) {
   obj.showPage = function (view) {
     return function (req, res, next) {
       let myName = 'showPage' + view
+      app.log(`Setting home view to ${view}`, myName, 6)
       req.appData.view = view
       return next()
     }
@@ -715,7 +703,8 @@ module.exports = function (app, sequelize) {
         return next()
       })
     })
-    .catch((err) => {
+    .catch(err => {
+      app/log(err.message, myName, 4)
       return res.send('Not authorized')
     })
   }
@@ -736,7 +725,7 @@ module.exports = function (app, sequelize) {
       })
       .catch(err => {
         app.log(err.message, myName, 4)
-        return res.json({'error': err.message})
+        return res.json({ 'error': err.message })
       })
     }
   }
@@ -777,11 +766,11 @@ module.exports = function (app, sequelize) {
       }
       mailObj.To = toArray
 
-      let finalObj = {'Messages': [mailObj]}
+      let finalObj = { 'Messages': [mailObj] }
 
       // app.log('Prepared email object for sending: ' + JSON.stringify(finalObj), myName, 7)
       let sendMail = app.mailjet
-      .post('send', {'version': 'v3.1'})
+      .post('send', { 'version': 'v3.1' })
       .request(finalObj)
       .then(result => {
         app.log("Here's what happened: " + JSON.stringify(result), myName, 7)
