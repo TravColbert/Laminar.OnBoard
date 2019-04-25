@@ -67,6 +67,27 @@ mixin list-files(files)
               label.label Domain:
               .data #{file.domain.name}
 
+mixin list-users(users)
+  .item-listing.users
+    each user in users
+      - let targetLoc = "/users/" + user.id + "/";
+      item.clickable(onclick="goTo('" + targetLoc + "')")
+        .itemdetail.layout-col
+          .label User:
+          .data #[a(href="/users/" + user.id + "/") #{user.fullname}]
+        - let email = user.email || null
+        if email
+          .itemdetail.layout-col
+            .label Email:
+            .data #{user.email}
+        - let roles = user.roles || null;
+        if roles
+          .itemdetail.layout-col
+            - let labelLabel = (roles.length>1) ? "Roles" : "Role"
+            .label #{labelLabel}:
+            each role in roles
+              .data #{role.name}
+
 mixin list-domains(domains)
   //- #domain_add_button_container.addrole.layout-row.layout-justify-between.authUI(data-fetch="domain_add" data-href="/actions/create/domains/")
   .item-listing.domains
