@@ -114,6 +114,14 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
   flex-wrap: wrap;
 }
 
+.orderfirst {
+  order: 0;
+}
+
+.ordernormal {
+  order: 1;
+}
+
 .wrap-reverse {
   white-space: normal;
   flex-wrap: wrap-reverse;

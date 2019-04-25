@@ -59,7 +59,8 @@ mixin list-user-domains(domainText)
       if(user.domains)
         each domain in user.domains
           if domain.name!="Trash" && domain.name!="Default"
-            .item
+            - let order = (user.defaultDomainId==domain.id) ? "orderfirst" : "ordernormal"
+            .item(class=order)
               .itemhead #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
                 if(user.defaultDomainId==domain.id)
                   | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") favorite]
