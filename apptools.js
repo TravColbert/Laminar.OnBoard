@@ -719,10 +719,10 @@ module.exports = function (app, sequelize) {
     })
   }
   obj.getElement = function (req, res, next) {
-    let myName = 'appGetElement'
+    let myName = 'getElement'
     if (app.elements.hasOwnProperty(req.params.element)) {
       app.log('Found element: ' + req.params.element, myName, 6)
-      let targetDomain = req.session.user.currentDomain || req.session.user.defaultDomainId || 1
+      let targetDomain = req.session.user.currentDomain.id || req.session.user.defaultDomainId || 1
       app.log(`Target domain to search on: ${targetDomain}`, myName, 6)
       return app.tools.checkAuthorization(app.elements[req.params.element].role, req.session.user.id, targetDomain)
       .then(authorized => {
