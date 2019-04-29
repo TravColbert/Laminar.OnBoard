@@ -161,8 +161,9 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
    * SET SESSION AND ACCOUNT DATA
    */
   app.use(
-    app.tools.setCurrentDomain,
+    // app.tools.setCurrentDomain,
     app.tools.setUserAccount,
+    app.tools.getUserDomains,
     app.tools.setMessage
   )
 

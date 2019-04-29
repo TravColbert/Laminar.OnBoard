@@ -5,22 +5,18 @@ module.exports = function (app, model) {
   return {
     __create: function (obj) {
       let myName = '__create'
-      app.log('Creating obj: ' + JSON.stringify(obj), myName, 6)
       return app.controllers['default'].create(model, obj)
     },
     __get: function (obj) {
       let myName = '__get'
-      app.log('Getting obj: ' + JSON.stringify(obj), myName, 6)
       return app.controllers['default'].get(model, obj)
     },
     __update: function (obj) {
       let myName = '__update'
-      app.log('Updating obj: ' + JSON.stringify(obj), myName, 6)
       return app.controllers['default'].update(model, obj)
     },
     __delete: function (obj) {
       let myName = '__delete'
-      app.log('Deleting obj: ' + JSON.stringify(obj), myName, 6)
       return app.controllers['default'].delete(model, obj)
     },
 
@@ -70,11 +66,14 @@ module.exports = function (app, model) {
       return getsPromise
     },
     get: function (req, res, next) {
-      let myName = 'getNote()'
+      let myName = 'get (note)'
       let searchObj = {
         where: {
-          'id': req.params.id
+          id: req.params.id
         },
+        order: [
+          ['updatedAt', 'DESC']
+        ],
         include: [
           {
             model: app.models['users'],
@@ -107,7 +106,8 @@ module.exports = function (app, model) {
       }
       app.controllers[model].__get(searchObj)
         .then(notes => {
-          req.appData.notes = notes[0]
+          app.log(`Found ${notes.length} notes`, myName, 7)
+          req.appData.note = notes[0]
           req.appData.view = 'note'
           return next()
         })
@@ -116,6 +116,7 @@ module.exports = function (app, model) {
         })
     },
     getAsBlog: function (req, res, next) {
+      let myName = 'getAsBlog()'
       // The main difference here is that we assume that we aren't authenticated.
       // We also check to see if 1) the domain is marked public and 2) the note
       // is marked public
@@ -133,7 +134,6 @@ module.exports = function (app, model) {
           }
         ]
       }
-
       if (!app.tools.isAuthenticated(req)) {
         // User is not authenticated...
         // The note must be 'public'
@@ -158,7 +158,6 @@ module.exports = function (app, model) {
 
       app.controllers[model].__get(searchObj)
         .then(notes => {
-          // app.log('Found notes: ' + JSON.stringify(notes), myName, 6)
           app.log(`Found ${notes.length} notes`, myName, 7)
           if (!notes || notes.length === 0) return res.redirect('/blog/')
           req.appData.notes = notes[0]
@@ -171,7 +170,7 @@ module.exports = function (app, model) {
           }
         })
         .then(notes => {
-          req.appData.notes = notes
+          req.appData.notesList = notes
           return next()
         })
     },

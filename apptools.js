@@ -483,39 +483,51 @@ module.exports = function (app, sequelize) {
     var myName = 'setUserAccount()'
     app.log('setting user account data...', myName, 6)
     if (req.session.user) {
-      app.log('user: ' + req.session.user.email + ' id: ' + req.session.user.id, myName, 6)
+      app.log('Session found: user: ' + req.session.user.email + ' id: ' + req.session.user.id, myName, 6)
+      req.appData.user = req.session.user
       req.appData.account = req.session.user.email
       req.appData.accountNum = req.session.user.id
+    } else {
+      app.log(`No user session detected`, myName, 6)
     }
     return next()
   }
   obj.getUserDomains = function (req, res, next) {
     var myName = 'getUserDomains()'
     app.log('getting all user domains...', myName, 6)
-    if (req.session.user) {
-      app.controllers['users'].getUserById(req.session.user.id)
-      .then((user) => {
-        // app.log(JSON.stringify(user), myName, 8)
-        return app.controllers['users'].compileDomainList(user)
-      })
-      .then((domains) => {
-        // app.log('Domain List:')
-        // app.log(domains, myName, 6)
-        req.session.user.domainList = domains
-      })
-      .catch((err) => {
-        app.log('Error finding list of domains for this user: ' + err.message, myName, 2)
-        return res.send("This is the reason we can't continue: " + err.message)
-      })
+    if (!req.session.user) {
+      app.log(`No user session detected`, myName, 6)
+      return next()
     }
-    return next()
+    return app.controllers['users'].getUserById(req.session.user.id)
+    .then((user) => {
+      // app.log(JSON.stringify(user), myName, 8)
+      return app.controllers['users'].compileDomainList(user)
+    })
+    .then((domains) => {
+      // app.log('Domain List:')
+      // app.log(domains, myName, 6)
+      for (let domain of domains) {
+        app.log(`Adding domain to user's domain list: ${domain.name}`, myName, 7)
+      }
+      req.session.user.domainList = domains
+      return next()
+    })
+    .catch((err) => {
+      app.log('Error finding list of domains for this user: ' + err.message, myName, 2)
+      return res.send("This is the reason we can't continue: " + err.message)
+    })
   }
   obj.triggerDomainSwitchBy = function (modelType) {
     return function (req, res, next) {
       let myName = `switchDomainByType(${modelType})`
       app.log(`Switching domain by model type: ${modelType}`, myName, 6)
-      app.controllers['users'].switchToDomainByType(modelType, req)
-      return next()
+      return app.controllers['users'].switchToDomainByType(modelType, req)
+      .then(result => {
+        app.log(`${myName} got a ${result} result`, myName, 6)
+        // console.log(req.session.user)
+        return next()
+      })
     }
   } 
   obj.setCurrentDomain = function (req, res, next) {
@@ -561,10 +573,10 @@ module.exports = function (app, sequelize) {
       })
     } else {
       // probably user is not logged-in
-      app.log("I guess there's no user right now... moving on...", myName, 6)
+      app.log("No user session. Moving on...", myName, 6)
       return next()
     }
-  },
+  }
   obj.switchToDomain = function (req, res, next) {
     let myName = 'switchToDomain()'
     app.log('Request to set current domain to: ' + req.params.domainId, myName, 6)
@@ -575,14 +587,14 @@ module.exports = function (app, sequelize) {
       app.log('Domain-switch request granted for domain ' + req.session.user.switchDomain, myName, 4)
     }
     return res.redirect('/')
-  },
+  }
   obj.currentUserHasDomain = function (req, domainId) {
     let myName = 'currentUserHasDomain'
     // app.log(req.session.user,myName,6,"-->");
     return req.session.user.domains.filter(domain => {
       return domain.id == domainId
     }).length > 0
-  },
+  }
   obj.homePage = function (req, res, next) {
     let myName = 'homePage'
     app.log('queueing home page', myName, 5)

@@ -159,8 +159,7 @@ module.exports = function (app, model) {
           if (!file) {
             req.appData.files = []
           } else {
-            // app.log('Got: ' + JSON.stringify(file), myName, 6)
-            req.appData.files = file[0]
+            req.appData.file = file[0]
           }
           req.appData.view = 'file'
           return next()

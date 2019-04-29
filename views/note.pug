@@ -7,7 +7,7 @@ block aside
         article.noteactions
           .hdg.hdg-2 Actions
           #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
-          #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + notes.id + "/actions/edit/")
+          #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
         +list-user-invites()
         #articles
           include articles-list
@@ -25,28 +25,28 @@ block aside
 block content
   section.note
     article.main
-      .hdg.hdg-2.articletitle #{notes.name}
+      .hdg.hdg-2.articletitle #{note.name}
       .article-listing
         .itemdetail
-          .articledescription #{notes.description}
+          .articledescription #{note.description}
           .articlemetadata
             .articlemeta.user
               .label author:
-              .data #{notes.user.firstname} #{notes.user.lastname}
+              .data #{note.user.firstname} #{note.user.lastname}
             .articlemeta.updated
               .label updated on:
-              .data #{notes.updatedAt.toLocaleDateString()}
+              .data #{note.updatedAt.toLocaleDateString()}
             .articlemeta.domain
               .label category:
-              .data #{notes.domain.name}
+              .data #{note.domain.name}
         if(user)
           .itemdetail.articlevisibility
             label.label Public:
             .data
-              input#public.hidden(type="checkbox" name="public" value="true" disabled checked=!!(notes.public))
+              input#public.hidden(type="checkbox" name="public" value="true" disabled checked=!!(note.public))
               label.togglepublicfalse(for="public")
                 i.material-icons.toggle.toggleoff radio_button_unchecked
               label.togglepublictrue(for="public")
                 i.material-icons.toggle.toggleon radio_button_checked
         .itemdetail
-          .articlebody !{notes.html}
+          .articlebody !{note.html}
