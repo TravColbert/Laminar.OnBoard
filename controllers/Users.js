@@ -89,10 +89,6 @@ module.exports = function(app,model) {
         });
       });
     },
-
-
-
-
     ifUserHasRole : function(roleName,user,cb) {
       let myName = "userHasRole()";
       let result = false;
@@ -431,19 +427,6 @@ module.exports = function(app,model) {
         return new Error("(" + myName + ") Could not create user: " + err.message);
       });
     },
-    // getUserEnrollments : function(userId,cb) {
-    //   let myName = "getUserEnrollments()";
-    //   // users -> roles -> domains
-    //   app.models[model]
-    //   .findByPk(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
-    //   .then(user => {
-    //     if(user===null) return cb();
-    //     cb(null,user);
-    //   })
-    //   .catch(err => {
-    //     cb(err);
-    //   });
-    // },
     getUserRoles : function(userId) {
       let myName = "getUserRoles()";
       return new Promise((resolve,reject) => {
@@ -470,19 +453,6 @@ module.exports = function(app,model) {
         return next();
       });
     },
-    // fetchDomainsByUserId : function(userId,cb) {
-    //   let myName = "fetchDomainsByUserId()";
-    //   // users -> roles -> domains
-    //   app.models[model]
-    //   .findByPk(userId,{include:[{model:app.models["roles"],include:[app.models["domains"]]}]})
-    //   .then(user => {
-    //     if(user===null) return cb();
-    //     cb(null,user);
-    //   })
-    //   .catch(err => {
-    //     cb(err);
-    //   });
-    // },
     setDefaultDomain : function(req,res,next) {
       let myName = "setDefaultDomain";
       return new Promise((resolve,reject) => {
@@ -515,6 +485,17 @@ module.exports = function(app,model) {
         });
       });
     },
+    setCurrentDomain : function(domain, req) {
+      // Is the suggested domain in this user's list of domains?
+      let domainMatch = req.session.user.domains.filter(userDomain => {
+        return userDomain.id === domain.id
+      })
+      if (domainMatch) {
+        req.session.user.currentDomain = domain
+        return true
+      }
+      return false
+    },
     getRolesByUserId : function(req,res,next) {
       let myName = "getRolesByUserId()";
       // let userId = req.params.id;
@@ -527,19 +508,6 @@ module.exports = function(app,model) {
         return next();
       });
     },
-    // fetchRolesByUserId : function(userId,cb) {
-    //   let myName = "fetchRolesByUserId()";
-    //   // users -> roles -> domains
-    //   app.models[model]
-    //   .findByPk(req.params.id,{include:[{model:app.models["roles"]}]})
-    //   .then(user => {
-    //     if(user===null) return cb();
-    //     cb(null,user);
-    //   })
-    //   .catch(err => {
-    //     cb(err);
-    //   });
-    // },
     requestNewDomain : function(user,newDomainId) {
       let myName = "requestNewDomain()";
       app.log("Request to switch user " + user.id + " to domain: " + newDomainId,myName,6);
@@ -567,22 +535,27 @@ module.exports = function(app,model) {
             }
           }
         }
-        // for(let c=0;c<user.roles.length;c++) {
-        //   for(let i=0;i<user.roles[c].domains.length;i++) {
-        //     let domainFound = domainList.filter(v => {
-        //       return v.id == user.roles[c].domains[i].id;
-        //     });
-        //     if(domainFound.length<1) {
-        //       app.log("Adding domain: " + user.roles[c].domains[i].id + " to user's domain list",myName,6," - - - ");
-        //       domainList.push(user.roles[c].domains[i]);
-        //     } else {
-        //       app.log("Skipping domain: " + user.roles[c].domains[i].id + " already in user's domain list",myName,6," # # # ");
-        //     }
-        //   }
-        // }
-        // app.log(JSON.stringify(domainList),myName,6);
         resolve(domainList);
       });
+    },
+    switchToDomainByType: function (modelType, req) {
+      let myName = 'switchToDomainByType'
+      app.log(`Switching to domain owning model type: ${modelType}`, myName, 6)
+      if(req.appData[modelType]) {
+        // Look up domain of the model type if not there
+        app.log(`Object '${modelType}' belongs to domain ${req.appData[modelType].domainId}`, myName, 7)
+        // console.log(req.session.user)
+        app.controllers['domains'].getDomainById(req.appData[modelType].domainId)
+        .then(domain => {
+          return app.controllers['users'].setCurrentDomain(domain[0], req)
+        })
+        .then(result => {
+          // console.log(req.session.user)
+          return result
+        })
+      }
+      app.log(`No model detected in request`, myName, 6)
+      return false
     },
     logout : function(req,res,next) {
       req.session.destroy((err) => {
