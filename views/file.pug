@@ -7,7 +7,7 @@ block aside
         article.fileactions
           .hdg.hdg-2 Actions
           #file_add_button_container.addfile.authUI(data-fetch="file_add" data-href="/actions/create/file/")
-          #file_edit_button_container.editfile.authUI(data-fetch="file_edit" data-href="/files/" + file.id + "/actions/edit/")
+          #file_edit_button_container.editfile.authUI(data-fetch="file_edit" data-href="/files/" + files.id + "/actions/edit/")
         +list-user-invites()
         //- #articles
         //-   include articles-list
@@ -25,28 +25,28 @@ block aside
 block content
   section.file
     article.main
-      .hdg.hdg-2.articletitle File: #{file.name}
+      .hdg.hdg-2.articletitle File: #{files.name}
       .item
         .itemdetail
           label.label Description:
-          .data #{file.description}
+          .data #{files.description}
         .itemdetail
           label.label Unique ID:
-          .data #{file.appid}
+          .data #{files.appid}
         .itemdetail
           label.label Type:
-          .data #{file.mimetype}
+          .data #{files.mimetype}
         .itemdetail
           label.label Domain
-          .data #{file.domain.name}
+          .data #{files.domain.name}
         .itemdetail
           label.label User
-          .data #{file.user.fullname}
-        if(file)
+          .data #{files.user.fullname}
+        if(files)
           .itemdetail.filevisibility
             label.label Public:
             .data
-              input#public.hidden(type="checkbox" name="public" value="true" disabled checked=!!(file.public))
+              input#public.hidden(type="checkbox" name="public" value="true" disabled checked=!!(files.public))
               label.togglepublicfalse(for="public")
                 i.material-icons.toggle.toggleoff visibility_off
               label.togglepublictrue(for="public")
@@ -55,15 +55,15 @@ block content
           label.label View
           .data
             picture
-              source(srcset='/files/' + file.appid)
-              img.preview(src='/files/' + file.appid)
-        if(file.mimetype.includes('image'))
+              source(srcset='/files/' + files.appid)
+              img.preview(src='/files/' + files.appid)
+        if(files.mimetype.includes('image'))
           .itemdetail
             label.label Snippets
             .data Use this snippet to include this image in a note entry:
             pre.snippet
               = '<figure>\n'
-              = '\t<img src="https://[your.url]/files/' + file.appid + '" alt="[your_description]">\n'
+              = '\t<img src="https://[your.url]/files/' + files.appid + '" alt="[your_description]">\n'
               = '\t<figcaption>[Fig.1 - your_caption.]</figcaption>\n'
               = '</figure>\n'
             .data Remember to change the URL, description and caption!

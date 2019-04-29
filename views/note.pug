@@ -7,7 +7,7 @@ block aside
         article.noteactions
           .hdg.hdg-2 Actions
           #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
-          #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
+          #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + notes.id + "/actions/edit/")
         +list-user-invites()
         #articles
           include articles-list
@@ -25,37 +25,28 @@ block aside
 block content
   section.note
     article.main
-      .hdg.hdg-2.articletitle #{note.name}
+      .hdg.hdg-2.articletitle #{notes.name}
       .article-listing
         .itemdetail
-          .articledescription #{note.description}
+          .articledescription #{notes.description}
           .articlemetadata
             .articlemeta.user
               .label author:
-              .data #{note.user.firstname} #{note.user.lastname}
+              .data #{notes.user.firstname} #{notes.user.lastname}
             .articlemeta.updated
               .label updated on:
-              .data #{note.updatedAt.toLocaleDateString()}
+              .data #{notes.updatedAt.toLocaleDateString()}
             .articlemeta.domain
               .label category:
-              .data #{note.domain.name}
+              .data #{notes.domain.name}
         if(user)
           .itemdetail.articlevisibility
             label.label Public:
             .data
-              input#public.hidden(type="checkbox" name="public" value="true" disabled checked=!!(note.public))
+              input#public.hidden(type="checkbox" name="public" value="true" disabled checked=!!(notes.public))
               label.togglepublicfalse(for="public")
                 i.material-icons.toggle.toggleoff radio_button_unchecked
               label.togglepublictrue(for="public")
                 i.material-icons.toggle.toggleon radio_button_checked
         .itemdetail
-          .articlebody !{note.html}
-          //- .notebody !{note.html}
-    //- article.secondary
-    //-   .hdg.hdg-1 Note Actions
-    //-   #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
-    //-   .description
-    //-     .infotext.hdg.hdg-3 Note View
-    //-     .infotext This is a list of users. You may edit the user's details by clicking on a user entry.
-    //-     .infotext Click the "Add User" button to create a new user.
-    //-     .infotext Each user is given a user ID that is used by stockr to keep track of the user and the user's cases.
+          .articlebody !{notes.html}
