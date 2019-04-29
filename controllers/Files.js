@@ -157,10 +157,10 @@ module.exports = function (app, model) {
       return app.controllers[model].getById(req.params.id)
         .then(file => {
           if (!file) {
-            req.appData.file = []
+            req.appData.files = []
           } else {
             // app.log('Got: ' + JSON.stringify(file), myName, 6)
-            req.appData.file = file[0]
+            req.appData.files = file[0]
           }
           req.appData.view = 'file'
           return next()
