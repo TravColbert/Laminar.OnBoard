@@ -160,19 +160,6 @@ module.exports = function (app, sequelize) {
     })
     return routeReadPromises
   }
-  // obj.associateModels = function () {
-  //   let myName = 'associateModels'
-  //   let associationPromises = Promise.resolve()
-  //   associationPromises = associationPromises.then(() => {
-  //     app.log('Building model associations', myName, 6, '::>')
-  //     return app.tools.readDir(path.join(app.cwd, app.locals.modelsDir, 'associations'))
-  //   }).then(associations => {
-  //     return app.tools.processFiles(associations, app.tools.readAssociation)
-  //   }).catch(err => {
-  //     app.log('Error: ' + err.message, myName, 4)
-  //   })
-  //   return associationPromises
-  // }
   obj.setupBasePermissions = function () {
     let myName = 'setupBasePermissions'
     app.log('Setting up admin user...', myName, 6)
@@ -523,6 +510,14 @@ module.exports = function (app, sequelize) {
     }
     return next()
   }
+  obj.triggerDomainSwitchBy = function (modelType) {
+    return function (req, res, next) {
+      let myName = `switchDomainByType(${modelType})`
+      app.log(`Switching domain by model type: ${modelType}`, myName, 6)
+      app.controllers['users'].switchToDomainByType(modelType, req)
+      return next()
+    }
+  } 
   obj.setCurrentDomain = function (req, res, next) {
     let myName = 'setCurrentDomain()'
     app.log('Setting current domain', myName, 6)
