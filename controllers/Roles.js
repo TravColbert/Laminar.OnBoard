@@ -39,6 +39,8 @@ module.exports = function(app,model) {
           }
         ]
       }
+      /*
+      console.log(req.session.user)
       app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
       .then(response => {
         if(!response) {
@@ -48,6 +50,8 @@ module.exports = function(app,model) {
         app.log("User is authorized to list roles",myName,6);
         return app.controllers[model].__get(searchObj);
       })
+      */
+      return app.controllers[model].__get(searchObj)
       .then(items => {
         req.appData.role = items[0];
         req.appData.view = "role";
