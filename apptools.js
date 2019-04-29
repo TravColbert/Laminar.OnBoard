@@ -308,12 +308,19 @@ module.exports = function (app, sequelize) {
   }
   obj.ignoreFavicon = function (req, res, next) {
     let myName = 'ignoreFavicon()'
-    if (req.url == '/favicon.ico' && !app.locals.favicon) {
-      app.log('ignoring favicon', myName, 5)
-      res.writeHead(200, { 'Content-Type': 'image/x-icon' })
-      return res.end()
+    app.log(`Found request for favicon`, myName, 7)
+    if (req.url == '/favicon.ico') {
+      if (!app.locals.favicon) {
+        app.log('ignoring favicon', myName, 5)
+        res.writeHead(200, { 'Content-Type': 'image/x-icon' })
+        res.end()
+      }
+      app.log(`Attempting to send favicon explicitly`, myName, 7)
+      let fileToSend = app.locals.favicon || 'public/img/laminar_favicon.ico'
+      res.sendFile(path.join(app.cwd, fileToSend))
+    } else {
+      return next()
     }
-    return next()
   }
   obj.getModelName = function (req) {
     let myName = 'getModelName()'
@@ -713,10 +720,11 @@ module.exports = function (app, sequelize) {
   }
   obj.getElement = function (req, res, next) {
     let myName = 'appGetElement'
-    // app.log("App Elements:\n" + JSON.stringify(app.elements),myName,6);
     if (app.elements.hasOwnProperty(req.params.element)) {
       app.log('Found element: ' + req.params.element, myName, 6)
-      app.tools.checkAuthorization(app.elements[req.params.element].role, req.session.user.id, req.session.user.currentDomain.id)
+      let targetDomain = req.session.user.currentDomain || req.session.user.defaultDomainId || 1
+      app.log(`Target domain to search on: ${targetDomain}`, myName, 6)
+      return app.tools.checkAuthorization(app.elements[req.params.element].role, req.session.user.id, targetDomain)
       .then(authorized => {
         if (!authorized) {
           app.log('User failed authorization check', myName, 6)
