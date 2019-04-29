@@ -479,7 +479,7 @@ module.exports = function (app, model) {
       let myName = 'setCurrentDomain'
       app.log(`Setting 'currentDomain' to: '${domain.name}' id: ${domain.id}`, myName, 6)
       // Is the suggested domain in this user's list of domains?
-      let domainMatch = req.session.user.domainList.filter(userDomain => {
+      let domainMatch = req.session.user.domains.filter(userDomain => {
         return userDomain.id === domain.id
       })
       if (domainMatch) {

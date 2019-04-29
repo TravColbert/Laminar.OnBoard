@@ -501,16 +501,13 @@ module.exports = function (app, sequelize) {
     }
     return app.controllers['users'].getUserById(req.session.user.id)
     .then((user) => {
-      // app.log(JSON.stringify(user), myName, 8)
       return app.controllers['users'].compileDomainList(user)
     })
     .then((domains) => {
-      // app.log('Domain List:')
-      // app.log(domains, myName, 6)
       for (let domain of domains) {
         app.log(`Adding domain to user's domain list: ${domain.name}`, myName, 7)
       }
-      req.session.user.domainList = domains
+      req.session.user.domains = domains
       return next()
     })
     .catch((err) => {
@@ -525,7 +522,6 @@ module.exports = function (app, sequelize) {
       return app.controllers['users'].switchToDomainByType(modelType, req)
       .then(result => {
         app.log(`${myName} got a ${result} result`, myName, 6)
-        // console.log(req.session.user)
         return next()
       })
     }

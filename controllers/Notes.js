@@ -160,7 +160,7 @@ module.exports = function (app, model) {
         .then(notes => {
           app.log(`Found ${notes.length} notes`, myName, 7)
           if (!notes || notes.length === 0) return res.redirect('/blog/')
-          req.appData.notes = notes[0]
+          req.appData.note = notes[0]
           req.appData.view = 'blogentry'
           // Now, get a list of notes...
           if (app.tools.isAuthenticated(req)) {
@@ -278,7 +278,7 @@ module.exports = function (app, model) {
           if (!notes) return res.redirect('/notes/')
           // app.log("Note found: " + notes[0],myName,6);
           // app.log(JSON.stringify(notes[0]), myName, 6)
-          req.appData.notes = notes[0]
+          req.appData.note = notes[0]
           req.appData.view = 'noteedit'
           return next()
         })
