@@ -330,7 +330,7 @@ module.exports = function(app,model) {
         },
         include:[app.models["roles"]]
       }
-      app.models[model].__get(searchObj)
+      return app.controllers[model].__get(searchObj)
       .then(domain => {
         return domain;
       });
