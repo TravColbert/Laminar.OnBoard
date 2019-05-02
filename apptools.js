@@ -732,7 +732,7 @@ module.exports = function (app, sequelize) {
   }
   obj.logRequest = function (req, res, next) {
     let myName = 'logRequest'
-    app.log(`${req.method} ${req.protocol}://${req.hostname}${req.url} (from ${req.ip})`, myName, 4)
+    app.log(`${req.method} - ${req.protocol}://${req.hostname}${req.url} - (from ${req.ip} - ${req.get('User-Agent')})`, myName, 4)
     app.log(`Fresh: ${!!(req.fresh)}`, myName, 4)
     app.log(`Original URL: ${req.originalUrl}`, myName, 4)
     if (req.xhr) app.log(`Probably a client library request (e.g. JQuery) (XHR=${!!(req.xhr)})`, myName, 4)
