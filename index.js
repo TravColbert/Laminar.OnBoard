@@ -82,9 +82,15 @@ app.set('view engine', 'pug')
 app.set('query parser', true)
 app.use(express.static(path.join(cwd, app.locals.staticDir)))
 let favIcon = app.locals.favicon || 'public/img/laminar_favicon.ico'
-app.use('/favicon.ico', express.static(path.join(cwd, favIcon)), function(req, res, next) {
-  let iconMessage = `Could not serve static file: ${path.join(cwd, favIcon)}`
-  app.log(iconMessage)
+app.use('/favicon.ico', express.static(path.join(cwd, favIcon)), function (req, res, next) {
+  let message = `Could not serve static file: ${path.join(cwd, favIcon)}`
+  app.log(message)
+  res.end()
+})
+let robots = app.locals.robots
+app.use('/robots.txt', express.static(path.join(cwd, robots)), function (req, res, next) {
+  let message = `Could not serve static file: ${path.join(cwd, robots)}`
+  app.log(message)
   res.end()
 })
 app.use(bodyParser.json())
