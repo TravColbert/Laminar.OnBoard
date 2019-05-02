@@ -116,7 +116,7 @@ module.exports = function (app, model) {
         })
     },
     getAsBlog: function (req, res, next) {
-      let myName = 'getAsBlog()'
+      let myName = 'getAsBlog'
       // The main difference here is that we assume that we aren't authenticated.
       // We also check to see if 1) the domain is marked public and 2) the note
       // is marked public
@@ -135,6 +135,7 @@ module.exports = function (app, model) {
         ]
       }
       if (!app.tools.isAuthenticated(req)) {
+        app.log(`User not authenticated - showing public entries only`, myName, 6)
         // User is not authenticated...
         // The note must be 'public'
         searchObj.where.public = true
@@ -148,6 +149,7 @@ module.exports = function (app, model) {
           }
         )
       } else {
+        app.log(`User authenticated - showing all entries`, myName, 6)
         searchObj.include.push(
           {
             model: app.models['domains'],
@@ -170,7 +172,7 @@ module.exports = function (app, model) {
           }
         })
         .then(notes => {
-          req.appData.notesList = notes
+          req.appData.notes = notes
           return next()
         })
     },

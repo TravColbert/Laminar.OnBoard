@@ -1,231 +1,225 @@
-module.exports = function(app,model) {
-  if(!model) return false;
-  let myName = model + "Controller";
+module.exports = function (app, model) {
+  if (!model) return false
+  let myName = model + 'Controller'
   return {
-    __create : function(obj) {
-      let myName = "__create";
-      app.log("Creating obj: " + obj,myName,6);
-      return app.controllers["default"].create(model,obj);
+    __create: function (obj) {
+      let myName = '__create'
+      return app.controllers['default'].create(model, obj)
     },
-    __get : function(obj) {
-      let myName = "__get";
-      app.log("Getting obj: " + obj,myName,6);
-      return app.controllers["default"].get(model,obj);
+    __get: function (obj) {
+      let myName = '__get'
+      return app.controllers['default'].get(model, obj)
     },
-    __update : function(obj) {
-      let myName = "__update";
-      app.log("Updating obj: " + obj,myName,6);
-      return app.controllers["default"].update(model,obj);
+    __update: function (obj) {
+      let myName = '__update'
+      return app.controllers['default'].update(model, obj)
     },
-    __delete : function(obj) {
-      let myName = "__delete";
-      app.log("Deleting obj: " + obj,myName,6);
-      return app.controllers["default"].delete(model,obj);
+    __delete: function (obj) {
+      let myName = '__delete'
+      return app.controllers['default'].delete(model, obj)
     },
 
     /* UPDATED METHODS */
-    create : function(req,res,next) {
-      let myName = "create(" + model + ")";
-      req.appData.models.push(model);
-      app.log(req.body,myName,6);
-      let obj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
-      obj.ownerId = req.session.user.id;
+    create: function (req, res, next) {
+      let myName = 'create(' + model + ')'
+      req.appData.models.push(model)
+      app.log(req.body, myName, 6)
+      let obj = app.tools.pullParams(req.body, app.modelDefinitions[model].requiredFields, app.modelDefinitions[model].optionalFields)
+      obj.ownerId = req.session.user.id
       // obj.settings = {"visible":true};
       // app.log("Create object (domain): " + JSON.stringify(obj),myName,6);
       app.controllers[model].__create(obj)
-      .then(result => {
-        if(!result) {
-          req.appData[model] = [];
-        } else {
-          req.appData[model] = result;
-        }
-        return next();
-      })
-      .catch(err => {
-        req.appData[model] = [];
-        req.appData.errors.push(err);
-        return next();
-      });
+        .then(result => {
+          if (!result) {
+            req.appData[model] = []
+          } else {
+            req.appData[model] = result
+          }
+          return next()
+        })
+        .catch(err => {
+          req.appData[model] = []
+          req.appData.errors.push(err)
+          return next()
+        })
     },
-    get : function(req,res,next) {
-      let myName = "get(" + model + ")";
-      req.appData.models.push(model);
-      let obj = app.tools.makeObj(req.query,app.modelDefinitions[model].requiredFields.concat(app.modelDefinitions[model].optionalFields));
-      if(req.params.id) obj.id = req.params.id;
+    get: function (req, res, next) {
+      let myName = 'get(' + model + ')'
+      req.appData.models.push(model)
+      let obj = app.tools.makeObj(req.query, app.modelDefinitions[model].requiredFields.concat(app.modelDefinitions[model].optionalFields))
+      if (req.params.id) obj.id = req.params.id
       // app.log("Search obj: " + JSON.stringify(obj),myName,6);
       let searchObj = {
-        "where" : obj
-      };
+        'where': obj
+      }
       app.controllers[model].__get(searchObj)
-      .then(result => {
-        if(!result) {
-          req.appData[model] = [];
-        } else {
-          req.appData[model] = result;
-        }
-        return next();
-      })
-      .catch(err => {
-        req.appData[model] = [];
-        req.appData.errors.push(err);
-        return next();
-      });
+        .then(result => {
+          if (!result) {
+            req.appData[model] = []
+          } else {
+            req.appData[model] = result
+          }
+          return next()
+        })
+        .catch(err => {
+          req.appData[model] = []
+          req.appData.errors.push(err)
+          return next()
+        })
     },
-    update : function(req,res,next) {
-      let myName = "update(" + model + ")";
-      req.appData.models.push(model);
-      app.log(req.body,myName,6);
-      let obj = app.tools.makeObj(req.body,app.modelDefinitions[model].requiredFields.concat(app.modelDefinitions[model].optionalFields));
+    update: function (req, res, next) {
+      let myName = 'update(' + model + ')'
+      req.appData.models.push(model)
+      app.log(req.body, myName, 6)
+      let obj = app.tools.makeObj(req.body, app.modelDefinitions[model].requiredFields.concat(app.modelDefinitions[model].optionalFields))
       // app.log("Update object: " + JSON.stringify(obj),myName,6);
       let updateObj = {
-        "options":{
-          "where":{"id":req.params.id}
+        'options': {
+          'where': { 'id': req.params.id }
         },
-        "values":obj
-      };
+        'values': obj
+      }
       app.controllers[model].__update(updateObj)
-      .then(result => {
-        if(!result) {
-          req.appData[model] = [];
-        } else {
-          req.appData[model] = result;
-        }
-        return next();
-      })
-      .catch(err => {
-        req.appData[model] = [];
-        req.appData.errors.push(err);
-        return next();
-      });
+        .then(result => {
+          if (!result) {
+            req.appData[model] = []
+          } else {
+            req.appData[model] = result
+          }
+          return next()
+        })
+        .catch(err => {
+          req.appData[model] = []
+          req.appData.errors.push(err)
+          return next()
+        })
     },
-    delete : function(req,res,next) {
-      let myName = "delete(" + model + ")";
-      req.appData.models.push(model);
+    delete: function (req, res, next) {
+      let myName = 'delete(' + model + ')'
+      req.appData.models.push(model)
       let deleteObj = {
-        "where":{
-          "id":req.params.id
+        'where': {
+          'id': req.params.id
         }
-      };
+      }
       // app.log("Delete object: " + JSON.stringify(deleteObj),myName,6);
       app.controllers[model].__delete(deleteObj)
-      .then(result => {
-        if(!result) {
-          req.appData[model] = [];
-        } else {
-          req.appData[model] = result;
-        }
-        return next();
-      })
-      .catch(err => {
-        req.appData[model] = [];
-        req.appData.errors.push(err);
-        return next();
-      });
+        .then(result => {
+          if (!result) {
+            req.appData[model] = []
+          } else {
+            req.appData[model] = result
+          }
+          return next()
+        })
+        .catch(err => {
+          req.appData[model] = []
+          req.appData.errors.push(err)
+          return next()
+        })
     },
-    createDomain : function(req,res,next) {
-      let myName = "createDomain(" + model + ")";
-      let createdDomain;
-      req.appData.models.push(model);
-      app.log(req.body,myName,6);
-      let obj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
-      obj.ownerId = req.session.user.id;
+    createDomain: function (req, res, next) {
+      let myName = 'createDomain(' + model + ')'
+      let createdDomain
+      req.appData.models.push(model)
+      app.log(req.body, myName, 6)
+      let obj = app.tools.pullParams(req.body, app.modelDefinitions[model].requiredFields, app.modelDefinitions[model].optionalFields)
+      obj.ownerId = req.session.user.id
       return app.controllers[model].__create(obj)
       .then(result => {
         // app.log("Created domain: " + JSON.stringify(result),myName,5);
-        createdDomain = result;
+        createdDomain = result
         // Create default roles
-        return app.controllers["roles"].createDefaultRoles(result);
+        return app.controllers['roles'].createDefaultRoles(result)
       })
       .then(roles => {
         // app.log("Roles created: " + JSON.stringify(roles),myName,5);
         // Add ownerId to Admin role...
         let adminRole = roles.filter(role => {
-          return (role.name.indexOf("Admin")>=0);
-        })[0];
-        if(!adminRole) return false;
+          return (role.name.indexOf('Admin')>=0)
+        })[0]
+        if (!adminRole) return false
         // app.log("Found admin role: " + JSON.stringify(adminRole),myName,6);
         // app.log("User: " + JSON.stringify(req.session.user),myName,6);
-        return app.controllers["users"].enrollUserInRoleById(req.session.user.id,adminRole.id);
+        return app.controllers['users'].enrollUserInRoleById(req.session.user.id, adminRole.id)
       })
       .then(() => {
-        app.log("Domain creation complete",myName,6);
-        req.appData.domain = createdDomain;
-        req.appData.view = "domain";
-        return res.redirect("/domains/" + createdDomain.id);
+        app.log('Domain creation complete', myName, 6)
+        req.appData.domain = createdDomain
+        req.appData.view = 'domain'
+        return res.redirect('/domains/' + createdDomain.id)
       })
       .catch(err => {
-        req.appData[model] = [];
-        req.appData.errors.push(err);
-        return next();
-      });
-    },
-    createDomainAndRoles : function(obj,owner) {
-      let myName = "createDomainAndRoles";
-      return app.controllers[model].__create(obj)
-      .then(result => {
-        // app.log("Created domain: " + JSON.stringify(result),myName,5);
-        // Create default roles
-        return app.controllers["roles"].createDefaultRoles(result);
+        req.appData[model] = []
+        req.appData.errors.push(err)
+        return next()
       })
-      .then(roles => {
-        // app.log("Roles created: " + JSON.stringify(roles),myName,5);
+    },
+    createDomainAndRoles: function (obj, owner) {
+      let myName = 'createDomainAndRoles'
+      let createdDomain
+      return app.controllers[model].__create(obj).then(result => {
+        app.log(`Created domain: ${result.name}`, myName, 6)
+        createdDomain = result
+        // Create default roles
+        return app.controllers['roles'].createDefaultRoles(result)
+      }).then(roles => {
+        roles.forEach(role => {
+          app.log(`Role created: ${role.name}`, myName, 6)
+        })
         // Add ownerId to Admin role...
         let adminRole = roles.filter(role => {
-          return (role.name.indexOf("Admin")>=0);
-        })[0];
-        if(!adminRole) return false;
-        // app.log("Found admin role: " + JSON.stringify(adminRole));
-        app.log("User: " + owner.id);
-        return app.controllers["users"].enrollUserInRoleById(owner.id,adminRole.id);
+          return (role.name.indexOf('Admin') >= 0)
+        })[0]
+        if (!adminRole) return false
+        return app.controllers['users'].enrollUserInRole(owner, adminRole)
+      }).then(result => {
+        app.log(`Result: ${result}`, myName, 6)
+        return createdDomain
+      }).catch(err => {
+        app.log(err, myName, 4)
+        return err
       })
-      .then(result => {
-        app.log(result,myName,5);
-        return result;
-      })
-      .catch(err => {
-        app.log(err,myName,4);
-        return err;
-      });
     },
-    getDomainsByUserId : function(userId) {
-      let myName = "getDomainsByUserId";
+    getDomainsByUserId: function (userId) {
+      let myName = 'getDomainsByUserId'
       let searchObj = {
-        where : {
-          "userId" : userId
+        where: {
+          'userId': userId
         },
-        include : [
+        include: [
           {
-            model : app.models["roles"],
-            include : [
-              app.models["domains"]
+            model: app.models['roles'],
+            include: [
+              app.models['domains']
             ]
           }
         ]
       }
-      return app.models["usersroles"].findAll(searchObj);
+      return app.models['usersroles'].findAll(searchObj)
     },
 
-    gets : function(req,res,next) {
-      let myName = "gets (domains)";
-      app.tools.checkAuthorization(["list","all"],req.session.user.id,req.session.user.currentDomain.id)
+    gets: function (req, res, next) {
+      let myName = 'gets (domains)'
+      app.tools.checkAuthorization(['list', 'all'], req.session.user.id, req.session.user.currentDomain.id)
       .then(response => {
-        if(!response) {
-          app.log("User failed authorization check",myName,6);
-          return next();
+        if (!response) {
+          app.log('User failed authorization check', myName, 6)
+          return next()
         }
-        app.log("User is authorized to list domains",myName,6);
-        return app.controllers[model].getDomainsByUserId(req.session.user.id);
+        app.log('User is authorized to list domains', myName, 6)
+        return app.controllers[model].getDomainsByUserId(req.session.user.id)
       })
       .then(domains => {
-        if(domains===null) return res.redirect('/');
-        req.appData.domains = domains;
-        req.appData.view = "domains";
-        return next();
+        if (domains===null) return res.redirect('/')
+        req.appData.domains = domains
+        req.appData.view = 'domains'
+        return next()
       })
       .catch(err => {
-        app.log("Err: " + err.message,myName,3);
-        return res.redirect("/");
-      });
+        app.log('Err: ' + err.message, myName, 3)
+        return res.redirect('/')
+      })
     },
     /*
     get : function(obj) {
@@ -242,188 +236,197 @@ module.exports = function(app,model) {
       })
     },
     */
-    getMyDomains : function(req,res,next) {
-      let myName = "getMyDomains";
-      req.appData.domains = req.session.user.domains;
-      req.appData.view = "domains";
-      return next();
+    getMyDomains: function (req, res, next) {
+      let myName = 'getMyDomains'
+      req.appData.domains = req.session.user.domains
+      req.appData.view = 'domains'
+      return next()
     },
-    getDomains : function(req,res,next) {
-      let myName = "getDomains()";
+    getDomains: function (req, res, next) {
+      let myName = 'getDomains()'
       app.models[model]
       .findAll()
       .then((domains) => {
-        if(domains===null) return res.redirect('/');
-        req.appData.domains = domains;
-        req.appData.view = "domains";
-        return next();
+        if (domains===null) return res.redirect('/')
+        req.appData.domains = domains
+        req.appData.view = 'domains'
+        return next()
       })
       .catch(err => {
-        return res.send(err.message);
-      });
+        return res.send(err.message)
+      })
     },
-    getDomain : function(req,res,next) {
-      let myName = "getDomain";
-      let searchObj;
-      app.log("Getting domain: " + req.params.id);
+    getDomain: function (req, res, next) {
+      let myName = 'getDomain'
+      let searchObj
+      app.log('Getting domain: ' + req.params.id)
       //- how to tell the difference between IDs and nicknames
-      if(Number.isInteger(parseInt(req.params.id))) {
+      if (Number.isInteger(parseInt(req.params.id))) {
         searchObj = {
           where: {
             id: req.params.id
           },
-          include:[app.models["roles"]]
-        };
+          include: [app.models['roles']]
+        }
       } else {
         // Might be a reference to a nickname
         searchObj = {
           where: {
-            "urn":req.params.id
+            'urn': req.params.id
           },
-          include:[
-            app.models["roles"]
+          include: [
+            app.models['roles']
           ]
         }
       }
       app.controllers[model].__get(searchObj)
       .then(domain => {
-        if(domain===null) return res.redirect('/');
-        req.appData.models.push("domain");
-        req.appData.domain = domain[0];
-        req.appData.view = "domain";
+        if (domain===null) return res.redirect('/')
+        req.appData.models.push('domain')
+        req.appData.domain = domain[0]
+        req.appData.view = 'domain'
       })
       .then(() => {
         // loop through related objects
-        app.log("Collecting linked objects",myName,6);
-        let linkedObjectPromise = Promise.resolve();
-        req.appData.linkedObjects = {};
-        for(let link of app.domainlinks) {
-          app.log("Getting linked object: " + link,myName,6);
+        app.log('Collecting linked objects', myName, 6)
+        let linkedObjectPromise = Promise.resolve()
+        req.appData.linkedObjects = {}
+        for (let link of app.domainlinks) {
+          app.log('Getting linked object: ' + link, myName, 6)
           linkedObjectPromise = linkedObjectPromise.then(() => {
-            app.log("Linked object: " + link + " domain ID: " + req.appData.domain.id,myName,6);
-            if(app.controllers[link].hasOwnProperty("getByDomainId")) {
-              return app.controllers[link].getByDomainId(req.appData.domain.id);
+            app.log('Linked object: ' + link + ' domain ID: ' + req.appData.domain.id, myName, 6)
+            if (app.controllers[link].hasOwnProperty('getByDomainId')) {
+              return app.controllers[link].getByDomainId(req.appData.domain.id)
             } else {
-              return [];
+              return []
             }
           })
           .then(objs => {
-            req.appData.linkedObjects[link] = objs;
+            req.appData.linkedObjects[link] = objs
             // app.log(JSON.stringify(req.appData.linkedObjects),myName,6);
             return;
-          });
+          })
         }
-        return linkedObjectPromise;
+        return linkedObjectPromise
       })
       .then(() => {
-        return next();
+        return next()
       })
       .catch(err => {
-        res.send(err.message);
-      });
-    },
-    getDomainById : function(id) {
-      let myName = "getDomainById";
-      let searchObj = {
-        where: {
-          id:id
-        },
-        include:[app.models["roles"]]
-      }
-      return app.controllers[model].__get(searchObj)
-      .then(domain => {
-        return domain;
-      });
-    },
-    getRolesByDomainId : function(domainId) {
-      let myName = "getRolesByDomainId";
-      return new Promise((resolve,reject) => {
-        app.log("Getting all roles with domainId " + domainId,myName,6);
-        app.models[model]
-        .findByPk(domainId,{include:[app.models["roles"]]})
-        .then((domain) => {
-          app.log(domain,myName,6,">>>");
-          resolve(domain.roles);
-        })
-        .catch(err => {
-          return res.send("(" + myName + ") Could not fetch roles for domain ID " + domainId + ": " + err.message);
-        });
+        res.send(err.message)
       })
     },
-    getRolesByDomain : function(domain) {
-      let myName = "getRolesByDomain";
-      return new Promise((resolve,reject) => {
-        app.log("Getting roles associated with '" + domain.name + "' domain",myName,6,"---");
+    getDomainById: function (id) {
+      let myName = 'getDomainById'
+      let searchObj = {
+        where: {
+          id: id
+        },
+        include: [app.models['roles']]
+      }
+      app.log(`Looking for domain with ID: '${id}'`, myName, 7)
+      return app.controllers[model].__get(searchObj)
+    },
+    getDomainByName: function (name) {
+      let myName = 'getDomainByName'
+      let searchObj = {
+        where: {
+          name: name
+        },
+        include: [app.models['roles']]
+      }
+      app.log(`Looking for domain: '${name}'`, myName, 7)
+      return app.controllers[model].__get(searchObj)
+    },
+    getRolesByDomainId: function (domainId) {
+      let myName = 'getRolesByDomainId'
+      return new Promise((resolve, reject) => {
+        app.log('Getting all roles with domainId ' + domainId, myName, 6)
+        app.models[model]
+        .findByPk(domainId, { include: [app.models['roles']] })
+        .then((domain) => {
+          app.log(domain, myName, 6, '>>>')
+          resolve(domain.roles)
+        })
+        .catch(err => {
+          return res.send('(' + myName + ') Could not fetch roles for domain ID ' + domainId + ': ' + err.message)
+        })
+      })
+    },
+    getRolesByDomain: function (domain) {
+      let myName = 'getRolesByDomain'
+      return new Promise((resolve, reject) => {
+        app.log("Getting roles associated with '" + domain.name + "' domain", myName, 6, '---')
         // domain.getRoles({include:[app.models["roles"]]})
         domain.getRoles()
         .then((roles) => {
-          resolve((roles));
+          resolve((roles))
         })
         .catch((err) => {
-          reject(err);
+          reject(err)
         })
       })
     },
-    getUsersByDomainId : function(req,res,next) {
-      let myName = "getUsersByDomainId";
+    getUsersByDomainId: function (req, res, next) {
+      let myName = 'getUsersByDomainId'
       app.models[model]
-      .findByPk(req.params.id,{include:[{model:app.models["roles"],include:[app.models["users"]]}]})
+      .findByPk(req.params.id, { include: [{ model: app.models['roles'], include: [app.models['users']] }] })
       .then((domain) => {
-        if(domain===null) return res.redirect('/');
-        req.appData.domain = domain;
-        req.appData.view = "domainusers";
-        return next();
+        if (domain===null) return res.redirect('/')
+        req.appData.domain = domain
+        req.appData.view = 'domainusers'
+        return next()
       })
       .catch(err => {
-        return res.send(err.message);
-      });
+        return res.send(err.message)
+      })
     },
-    getDomainList : function(req,res,next) {
-      let myName = "getDomainList()";
+    getDomainList: function (req, res, next) {
+      let myName = 'getDomainList()'
       app.models[model]
       .findAll()
       .then(records => {
-        app.log("GOT DOMAIN LIST");
-        return res.send(records);
+        app.log('GOT DOMAIN LIST')
+        return res.send(records)
       })
       .catch(err => {
-        return res.send(err.message);
-      });
+        return res.send(err.message)
+      })
     },
-    fetchDomainIdByName : function(domainName) {
-      let myName = "fetchDomainIdByName()";
+    fetchDomainIdByName: function (domainName) {
+      let myName = 'fetchDomainIdByName()'
       app.models[model]
-      .findOne({where:{name:domainName}})
+      .findOne({ where: { name: domainName } })
       .then(domain => {
-        if(domain===null) return false;
-        return domain.id;
+        if (domain===null) return false
+        return domain.id
       })
       .catch(err => {
-        app.log(err.message,2);
-        return false;
+        app.log(err.message, 2)
+        return false
       })
     },
-    fetchRoleByName : function(domainName,roleName) {
-      let myName = "fetchRoleByName()";
+    fetchRoleByName: function (domainName, roleName) {
+      let myName = 'fetchRoleByName()'
       let searchObj = {
-        where:{
-          name:domainName
+        where: {
+          name: domainName
         },
-        include:[
+        include: [
           {
-            model:app.models["roles"],
-            where:{name:roleName}
+            model: app.models['roles'],
+            where: { name: roleName }
           }
         ]
-      };
+      }
       return app.controllers[model].__get(searchObj)
       .then(domain => {
         // app.log("Found domains/roles: " + JSON.stringify(domain),myName,8);
-        return domain;
+        return domain
       })
       .catch(err => {
-        app.log("Error: " + err.message,myName,4);
-      });
+        app.log('Error: ' + err.message, myName, 4)
+      })
     },
     // fetchRoleByName : function(domainName,roleName,cb) {
     //   let myName = "fetchRoleByName()";
@@ -438,54 +441,42 @@ module.exports = function(app,model) {
     //     cb(err);
     //   });
     // },
-    editDomainForm : function(req,res,next) {
-      let myName = "editDomainForm()";
-      // Does user have rights to edit this user record?
-      // Does user have:
-      //  - 'User Admin' role?
-      //  - 'Super Admin' role?
-      // let requesterObj = app.tools.pullParams(req.session.user,["id","email"]);
-      let prepareEditDomainForm = function(authorized) {
-        if(!authorized) {
-          app.log("User is NOT authorized to edit domain!",myName,6);
-          return res.send("User not authorized for this view");
-        }
-        app.log("User is authorized to edit domain",myName,6);
-        let domainObj = app.tools.pullParams(req.params,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
-        app.log("Getting domain with ID: " + domainObj.id,myName,6);
-        app.models[model]
-        .findByPk(req.params.id)
-        .then(domain => {
-          if(domain===null) {
-            app.log("Couldn't find domain",myName,4);
-            return res.redirect("/domains/");
+    editDomainForm: function (req, res, next) {
+      let myName = 'editDomainForm'
+      return app.tools.checkAuthorization(['edit', 'all'], req.session.user.id, req.params.id)
+        .then(response => {
+          if (!response) {
+            app.log(`User failed authorization check`, myName, 6)
+            return next()
           }
-          req.appData.domain = domain;
-          req.appData.view = "domainsedit";
-          // return res.json(domain);
-          return next();
+          app.log(`User is authorized to edit domain`, myName, 6)
+          return true
+        }).then(result => {
+          return app.controllers[model].getDomainById(req.params.id)
+        }).then(domains => {
+          if (!domains || domains.length < 1) {
+            app.log(`Could not find target domain`, myName, 5)
+            return res.redirect('/domains/')
+          }
+          req.appData.domain = domains[0]
+          req.appData.view = 'domainsedit'
+          return next()
         })
-        .catch(err => {
-          return res.send(myName + ": " + err.message);
-        });
-      };
-      app.controllers["users"].ifUserHasRole("Super Admin",req.session.user,prepareEditDomainForm);
     },
-    editDomain : function(req,res,next) {
-      let myName = "editDomain";
-      let domainObj = app.tools.pullParams(req.body,app.modelDefinitions[model].requiredFields,app.modelDefinitions[model].optionalFields);
-      let requestedDomainId = req.params.id;
+    editDomain: function (req, res, next) {
+      let myName = 'editDomain'
+      let domainObj = app.tools.pullParams(req.body, app.modelDefinitions[model].requiredFields, app.modelDefinitions[model].optionalFields)
+      let requestedDomainId = req.params.id
       // When a checkbox is NOT checked it send NOTHING back to the server so 
       // we have to infer a state when nothing is checked
-      if(!domainObj.hasOwnProperty("public")) domainObj.public = false;
-      if(domainObj.id!=requestedDomainId) return res.send("Didn't request the requested domain");
-      delete domainObj.id;
-      console.log(domainObj);
-      app.models[model]
-      .update(domainObj,{where:{id:req.params.id}})
-      .then((domains) => {
-        return res.redirect("/domains/" + requestedDomainId + "/");
-      });
+      if (!domainObj.hasOwnProperty('public')) domainObj.public = false
+      if (domainObj.id !== requestedDomainId) return res.send('Didn\'t request the requested domain')
+      delete domainObj.id
+      console.log(domainObj)
+      app.models[model].update(domainObj, { where: { id: req.params.id } })
+        .then((domains) => {
+          return res.redirect('/domains/' + requestedDomainId + '/')
+        })
     }
-  };
-};
+  }
+}

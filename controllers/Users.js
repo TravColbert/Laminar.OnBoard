@@ -217,6 +217,16 @@ module.exports = function (app, model) {
           return res.redirect('/')
         })
     },
+    enrollUserInRole: function (user, role) {
+      let myName = 'enrollUserInRole'
+      return user.addRole(role.id).then(() => {
+        app.log(`Enrolled user: ${user.fullname} to role: ${role.name}`, myName, 7)
+        return true
+      }).catch(err => {
+        app.log(`Could not enroll user in role: ${err}`, myName, 4)
+        return false
+      })
+    },
     enrollUserInRoleById: function (userId, roleId) {
       let myName = 'enrollUserInRoleById()'
       app.models[model]
@@ -475,15 +485,26 @@ module.exports = function (app, model) {
           })
       })
     },
-    setCurrentDomain: function (domain, req) {
+    setDefaultDomainId: function (user, domain) {
+      let myName = 'setDefaultDomainId'
+      user.defaultDomainId = domain.id
+      user.save().then(user => {
+        app.log(`Set default domain to '${domain.name}' for user '${user.fullname}'`, myName, 7)
+        return user
+      }).catch(err => {
+        app.log(`Could not set default domain to '${domain.name}' for user '${user.fullname}': ${err}`, myName, 4)
+        return user
+      })
+    },
+    setCurrentDomain: function (user, domain) {
       let myName = 'setCurrentDomain'
       app.log(`Setting 'currentDomain' to: '${domain.name}' id: ${domain.id}`, myName, 6)
       // Is the suggested domain in this user's list of domains?
-      let domainMatch = req.session.user.domains.filter(userDomain => {
+      let domainMatch = user.domains.filter(userDomain => {
         return userDomain.id === domain.id
       })
       if (domainMatch) {
-        req.session.user.currentDomain = domain
+        user.currentDomain = domain
         return true
       }
       return false
@@ -535,13 +556,14 @@ module.exports = function (app, model) {
       app.log(`Switching to domain owning model type: ${modelType}`, myName, 6)
       if (req.appData[modelType]) {
         // Look up domain of the model type if not there
-        app.log(`Object '${modelType}' belongs to domain ${req.appData[modelType].domainId}`, myName, 7)
+        let domainId = (modelType === 'domain') ? req.appData[modelType].id : req.appData[modelType].domainId
+        app.log(`Object '${modelType}' belongs to domain ${domainId}`, myName, 7)
         // console.log(req.session.user)
-        return app.controllers['domains'].getDomainById(req.appData[modelType].domainId)
+        return app.controllers['domains'].getDomainById(domainId)
           .then(domain => {
             if (domain && domain.length > 0) {
               app.log(`Found domain: '${domain[0].name}'`, myName, 7)
-              return app.controllers['users'].setCurrentDomain(domain[0], req)
+              return app.controllers['users'].setCurrentDomain(req.session.user, domain[0])
             } else {
               return false
             }

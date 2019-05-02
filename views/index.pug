@@ -53,32 +53,32 @@ mixin list-user-invites
             //-     span Decline Invite
 
 mixin list-user-domains(domainText)
-  article#domains
-    .hdg.hdg-2 #{domainText}
-    .item-listing
-      if(user.domains)
+  if(user.domains)
+    article#domains
+      .hdg.hdg-2 #{domainText}
+      .item-listing
         each domain in user.domains
-          if domain.name!="Trash" && domain.name!="Default"
-            - let order = (user.defaultDomainId==domain.id) ? "orderfirst" : "ordernormal"
-            .item(class=order)
-              .itemhead #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
-                if(user.defaultDomainId==domain.id)
-                  | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") favorite]
-              .itemdetail #{domain.description}
-                - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
-                if(user.defaultDomainId!=domain.id)
-                  a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
-                    i.material-icons.badge favorite_border
-                    span Make Default
-              if(domain.notes)
-                div Notes:
-                each note in domain.notes
-                  .item-listing
-                    div
-                      i.material-icons receipt
-                    div
-                      .nobreak #{note.name}
-                      .layout-row #{note.description}
+          //- if domain.name!="Trash" && domain.name!="Default"
+          - let order = (user.defaultDomainId==domain.id) ? "orderfirst" : "ordernormal"
+          .item(class=order)
+            .itemhead #[a(href="/domains/" + domain.id + "/") #{domain.name}] 
+              if(user.defaultDomainId==domain.id)
+                | #[i.material-icons.badge(alt="(default account)" title="This is currently your default account") favorite]
+            .itemdetail #{domain.description}
+              - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
+              if(user.defaultDomainId!=domain.id && domain.name!="Trash")
+                a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
+                  i.material-icons.badge favorite_border
+                  span Make Default
+            if(domain.notes)
+              div Notes:
+              each note in domain.notes
+                .item-listing
+                  div
+                    i.material-icons receipt
+                  div
+                    .nobreak #{note.name}
+                    .layout-row #{note.description}
 
 mixin link(options)
   if(options.type=="link")
