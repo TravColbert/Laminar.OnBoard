@@ -28,6 +28,8 @@
   "uploadsDir":"files",
   "makeThumbnails":true,
   "thumbnailsDir":"thumbs",
+  "favicon":"public/img/favicon.ico",
+  "robots":"public/robots.txt",
   "activeDbConnection":"sqlite",
   "dbConnection":{
     "sqlite":{
