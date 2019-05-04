@@ -10,13 +10,14 @@ block aside
             .itemdetail
               label.label(for="domainname") Name:
               .data #{domain.name}
-            .itemdetail
-              label.label(for="domaindescription") Description:
-              .data #{domain.description}
+            if(domain.description && domain.description.length>0)
+              .itemdetail
+                label.label(for="domaindescription") Description:
+                .data #{domain.description}
             - let defaultToDomain = (user.defaultDomainId!=domain.id) ? "/users/" + user.id + "/actions/setdefaultdomain/" + domain.id + "/" : "";
             if(user.defaultDomainId!=domain.id)
               a#domain_make_default_button.btn.tertiary.buttondomaindefault(href= defaultToDomain)
-                i.material-icons stars
+                i.material-icons favorite_border
                 span Make Default
             #domain_edit_button_container.authUI(data-fetch="domain_edit" data-href="/domains/" + domain.id + "/actions/edit/")
         .actions.secondary
