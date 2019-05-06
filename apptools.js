@@ -582,6 +582,9 @@ module.exports = function (app, sequelize) {
     app.log('queueing home page', myName, 5)
     req.appData.sessionId = req.session.id
     req.appData.view = app.locals.homeView
+    if (app.locals.siteDescription) {
+      req.appData.description = app.locals.siteDescription
+    }
 
     let homePagePromises = Promise.resolve()
     homePagePromises = homePagePromises.then(() => {
