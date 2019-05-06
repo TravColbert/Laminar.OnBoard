@@ -363,7 +363,7 @@ module.exports = function (app, sequelize) {
         app.log(`Session user: ${JSON.stringify(req.session.user)}`, myName, 8)
         return res.render(templateFile, req.appData)
     }
-  },
+  }
   obj.makeMessage = function (obj) {
     let myName = 'makeMessage'
     app.log(`${myName}: Making a message for: ${JSON.stringify(obj)}`, myName, 7)
@@ -587,17 +587,16 @@ module.exports = function (app, sequelize) {
     homePagePromises = homePagePromises.then(() => {
       if (app.tools.isAuthenticated(req)) {
         return app.controllers.invites.checkInvites(req.session.user.email)
-        .then(invites => {
-          let numInvites = (invites) ? invites.length : 0
-          app.log('Invites found: ' + numInvites, myName, 6)
-          req.appData.invites = invites
-          return true
-        })
+          .then(invites => {
+            let numInvites = (invites) ? invites.length : 0
+            app.log('Invites found: ' + numInvites, myName, 6)
+            req.appData.invites = invites
+            return true
+          })
       } else {
         return false
       }
-    })
-    .then((result) => {
+    }).then((result) => {
       if (!result) app.log('No invites found')
       app.log('Checking for notes', myName, 6)
       if (app.tools.isAuthenticated(req)) {
@@ -605,8 +604,7 @@ module.exports = function (app, sequelize) {
       } else {
         return app.controllers['notes'].getPublicNotes()
       }
-    })
-    .then(notes => {
+    }).then(notes => {
       req.appData.notes = notes
       // app.log(JSON.stringify(notes),myName,6);
       app.log("Checking for custom 'home' module: " + app.locals.homeModule, myName, 6)
@@ -616,14 +614,13 @@ module.exports = function (app, sequelize) {
       } else {
         return
       }
-    })
-    .then(() => {
+    }).then(() => {
       return next()
-    })
-    .catch((err) => {
+    }).catch((err) => {
       app.log(err.message)
       return res.send(err.message)
     })
+    return homePagePromises
   }
   obj.loginPage = function (req, res, next) {
     let myName = 'loginPage()'
