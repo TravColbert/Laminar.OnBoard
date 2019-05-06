@@ -93,6 +93,13 @@ app.use('/robots.txt', express.static(path.join(cwd, robots)), function (req, re
   app.log(message)
   res.end()
 })
+if (app.locals.sitemap) {
+  app.use('/sitemap.xml', express.static(path.join(cwd, app.locals.sitemap)), function (req, res, next) {
+    let message = `Could not serve static file: ${path.join(cwd, app.locals.sitemap)}`
+    app.log(message)
+    res.end()
+  })
+}
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(session(sessionConfig))

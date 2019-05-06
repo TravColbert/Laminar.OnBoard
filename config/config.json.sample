@@ -30,6 +30,7 @@
   "thumbnailsDir":"thumbs",
   "favicon":"public/img/favicon.ico",
   "robots":"public/robots.txt",
+  "sitemap":"public/sitemap.xml",
   "activeDbConnection":"sqlite",
   "dbConnection":{
     "sqlite":{
