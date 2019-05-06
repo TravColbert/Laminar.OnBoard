@@ -1,6 +1,10 @@
 head
   title= title
   meta(name="viewport" content="width=device-width,initial-scale=1")
+  - if(description)
+    meta(name="description" content=description)
+  - if(keywords)
+    meta(name="keywords" content=keywords)
   link(rel="stylesheet" media="all" href="https://fonts.googleapis.com/icon?family=Material+Icons")
   link(rel="stylesheet" media="all" href="https://fonts.googleapis.com/css?family=KoHo:400,700|Rajdhani:400,600|Titillium+Web")
   link(rel="stylesheet" media="all" href="/css/normalize.css")

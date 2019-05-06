@@ -30,27 +30,6 @@ mixin list-user-invites
         a.btn.secondary(href="/invites/")
           i.material-icons.badge(alt="(invites)" title="Respond to your new invites") card_giftcard
           span See Invites
-            //- .itemhead
-            //-   | New Invite
-            //-   i.material-icons.badge new_releases
-            //- .itemdetail
-            //-   label.label From
-            //-   .data #{invite.fromEmail}
-            //- if(invite.comment)
-            //-   .itemdetail
-            //-     label.label Comment
-            //-     .data #{invite.comment}
-            //- //- .itemdetail
-            //- //-   label.label Note 
-            //- //-   .data You've probably received notification about this invitation. If not you can ignore it for now.
-            //- .itemdetail
-            //-   a.btn.btn-small.primary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
-            //-     i.material-icons check_circle_outline
-            //-     span Accept Invite
-            //- .itemdetail
-            //-   a.btn.btn-small.tertiary.layout-width-1-2(href= "/invites/" + invite.roleAppid + "/" )
-            //-     i.material-icons highlight_off
-            //-     span Decline Invite
 
 mixin list-user-domains(domainText)
   if(user.domains)
@@ -94,10 +73,8 @@ html(lang="en")
     for headoption in headoptions
       +link(headoption)
   body
-    //- canvas#bgcanvas
     include navigation.pug
     main
-      //- block aside
       //- include messages.pug
       block content
       block aside

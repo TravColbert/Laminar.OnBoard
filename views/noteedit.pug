@@ -28,6 +28,10 @@ block content
           .data
             input#description(type="text" name="description" value=note.description)
         .itemdetail
+          label.label(for="keywords") Keywords:
+          .data
+            input#keywords(type="text" name="keywords" value=note.keywords)
+        .itemdetail
           label.label(for="description") Domain:
           .data
             input#domain(type="text" name="domain" disabled value=note.domain.name)
