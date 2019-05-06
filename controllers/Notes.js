@@ -108,6 +108,13 @@ module.exports = function (app, model) {
         .then(notes => {
           app.log(`Found ${notes.length} notes`, myName, 7)
           req.appData.note = notes[0]
+          req.appData.title += ` - ${notes[0].name}`
+          if (notes[0].description) {
+            req.appData.description = `${notes[0].description}`
+          }
+          if (notes[0].keywords) {
+            req.appData.keywords = `${notes[0].keywords}`
+          }
           req.appData.view = 'note'
           return next()
         })
@@ -163,6 +170,13 @@ module.exports = function (app, model) {
           app.log(`Found ${notes.length} notes`, myName, 7)
           if (!notes || notes.length === 0) return res.redirect('/blog/')
           req.appData.note = notes[0]
+          req.appData.title += ` - ${notes[0].name}`
+          if (notes[0].description) {
+            req.appData.description = `${notes[0].description}`
+          }
+          if (notes[0].keywords) {
+            req.appData.keywords = `${notes[0].keywords}`
+          }
           req.appData.view = 'blogentry'
           // Now, get a list of notes...
           if (app.tools.isAuthenticated(req)) {
