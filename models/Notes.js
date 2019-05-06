@@ -11,6 +11,9 @@ module.exports = function (Sequelize, app) {
         type: Sequelize.STRING,
         allowNull: true
       },
+      'keywords': {
+        type: Sequelize.STRING
+      },
       'body': {
         type: Sequelize.TEXT,
         allowNull: true
@@ -24,7 +27,7 @@ module.exports = function (Sequelize, app) {
       }
     },
     requiredFields: ['name'],
-    optionalFields: ['id', 'description', 'body', 'html', 'public', 'appid'],
+    optionalFields: ['id', 'description', 'keywords', 'body', 'html', 'public', 'appid'],
     options: {
       getterMethods: {
         html () {
