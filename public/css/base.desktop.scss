@@ -657,6 +657,12 @@ article.main {
     margin-block-start: 0.5em;
     margin-block-end: 0.5em;
   }
+  a {
+    text-decoration-line: underline;
+    text-underline-position: below;
+    text-decoration-style: dashed;
+    text-decoration-color: $tertiarycolor;
+  }
 }
 
 article > * {
