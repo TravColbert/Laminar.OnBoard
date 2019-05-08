@@ -168,7 +168,7 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
    * SET BASE APP CONFIGURATON
    */
   app.use(
-    // app.tools.ignoreFavicon,
+    app.tools.handleRedirects,
     app.tools.logRequest,
     app.tools.setOriginalUrl,
     app.tools.setAppData,
@@ -179,7 +179,6 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
    * SET SESSION AND ACCOUNT DATA
    */
   app.use(
-    // app.tools.setCurrentDomain,
     app.tools.setUserAccount,
     app.tools.getUserDomains,
     app.tools.setMessage
