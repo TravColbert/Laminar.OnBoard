@@ -4,9 +4,10 @@ footer
       .copyright &copy;2019 Travis Colbert
       .madewith Made with Laminar
     div.navcenter
-      - userName = account || null;
-      //- - if(userName) userName = userName[0].toUpperCase() + userName.slice(1);
-      div Hi &nbsp;#[a(href='/profile/') #{userName}]
+      div 
+        | Hi 
+        if(account)
+          | &nbsp;#[a(href='/profile/') #{account}]
     div.navlinks
       ul
         li
