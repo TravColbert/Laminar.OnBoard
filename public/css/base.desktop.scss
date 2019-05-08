@@ -684,6 +684,7 @@ article > .subhead {
     padding: 0.1em 0.2em;
     text-shadow: none;
     @extend .shadowed;
+    @extend .nowrap;
   }
 }
 
