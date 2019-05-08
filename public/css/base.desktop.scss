@@ -383,7 +383,7 @@ img {
 
 section.home,
 section.login {
-  background-image: url(/img/logo.png);
+  // background-image: url(/img/logo.png);
   background-size: 80%;
   background-repeat: no-repeat;
   background-position-y: center;
@@ -454,11 +454,14 @@ article#login {
     .body {
       margin-top: 57px;
       flex: 1 0 auto;
-      justify-content: space-around;
+      // justify-content: space-around;
+      justify-content: center;
       .apphifriend,
       .appblurb {
-        display: none;
-        visibility: hidden;
+        font-size: 1.5em;
+        margin-top: 0.5em;
+        // display: none;
+        // visibility: hidden;
       }
     }
   }
@@ -490,23 +493,6 @@ article#login {
   }
 }
 
-// article#login {
-//   @media only screen and (max-width: 600px) {
-//     background: rgba(255,255,255,0.8);
-//     justify-content: center;
-//   }
-// }
-
-.badge {
-  @extend .text-shadow;
-  color: $highlighttextcolor;
-}
-
-.forminput {
-  @extend .flexy-row;
-  margin: 8px 0;
-}
-
 article#about > div {
   margin-bottom: 56px;
   // color: rgb(250,250,250);
@@ -525,9 +511,9 @@ article#about > div {
     font-size: 1.5em;
   }
   div {
-    @extend .flexy-row;
+    // @extend .flexy-row;
     flex-wrap: wrap;
-    margin-bottom: 0.25em;
+    // margin-bottom: 0.25em;
     justify-content: center;
     @media only screen and (max-width: 600px) {
       text-align: center;
@@ -556,6 +542,62 @@ article.main {
     border-top: 1px solid $bordercolor;
     border-bottom: 1px solid $bordercolor;
   }
+}
+
+.applabel {
+  font-family: $detailfont;
+  color: white;
+  background-color: $secondarycolor;
+  transform: rotate(-3deg);
+  box-shadow: -1px 8px 10px rgba(0,0,0,0.3);
+  border: 4px solid white;
+  border-radius: 16px;
+  padding: 8px 4px 16px;
+  @extend .shadowed;
+  @extend .nowrap;
+  .hifriend {
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: none;
+    margin: 0;
+    flex-direction: column;
+    .hello {
+      text-transform: capitalize;
+      font-size: 1.1em;
+      font-weight: bolder;
+      letter-spacing: 4px;
+      padding: 0;
+      margin: 0;
+    }
+    .mynameis {
+      text-transform: lowercase;
+      font-weight: lighter;
+      font-size: 0.7em;
+      padding: 0 0 4px;
+      margin: -8px 0 0;
+    }
+  }
+  h1 {
+    font-family: $titlefont;
+    letter-spacing: 4px;
+    text-align: center;
+    text-shadow: none;
+    border-radius: 0;
+    background: white;
+    color: $basecolor;
+    width: 100%;
+    margin: 0;
+    padding: 8px;
+  }
+}
+
+.badge {
+  @extend .text-shadow;
+  color: $highlighttextcolor;
+}
+
+.forminput {
+  @extend .flexy-row;
+  margin: 8px 0;
 }
 
 #articlelist .body {
@@ -690,8 +732,9 @@ article > .subhead {
 
 .appblurb {
   h2 {
+    font-size: 0.8em;
     text-align: center;
-    margin: 0.5em 0;
+    margin: 1.5em 0 0.5em;
   }
 }
 
