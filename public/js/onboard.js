@@ -21,17 +21,17 @@ function goTo (target) {
 }
 
 function dateInputExists () {
-  console.log('Checking for date picker input boxes...')
+  // console.log('Checking for date picker input boxes...')
   let box = document.getElementById('datetimeselect')
   if (box != null) {
-    console.log('...found one')
+    // console.log('...found one')
     return box
   }
   return false
 }
 
 function makeDatePicker(element,dateTime) {
-  console.log("Setting up flatpickr: " + dateTime);
+  // console.log("Setting up flatpickr: " + dateTime);
   if(element) flatpickr(element, {
     enableTime: true,
     altInput: true,
@@ -65,10 +65,10 @@ function wordSwap (id, time) {
 }
 
 function preLoadDateTimeSelectors () {
-  console.log('Setting up date-time picker(s)')
+  // console.log('Setting up date-time picker(s)')
   let dateTimePickers = document.getElementsByClassName('datetimepicker')
   let dateTime = new Date()
-  console.log('Current dateTime: ' + dateTime + ' hour: ' + dateTime.getHours() + ' Minutes: ' + dateTime.getMinutes())
+  // console.log('Current dateTime: ' + dateTime + ' hour: ' + dateTime.getHours() + ' Minutes: ' + dateTime.getMinutes())
   Array.prototype.filter.call(dateTimePickers, (dateTimePicker) => {
     makeDatePicker(dateTimePicker, dateTime)
   })
@@ -78,7 +78,7 @@ function preLoadClosers () {
   let closers = document.querySelectorAll('.closer')
   closers.forEach((v) => {
     let e = document.getElementById(v.dataset.closer)
-    console.log('Found closer for ' + v.dataset.closer)
+    // console.log('Found closer for ' + v.dataset.closer)
     v.addEventListener('click', () => {
       e.checked = false
     })
@@ -86,7 +86,7 @@ function preLoadClosers () {
 }
 
 function fetchIt (url, cb) {
-  console.log('Fetching ' + url)
+  // console.log('Fetching ' + url)
   fetch(url)
     .then((response) => {
       return response.json()
@@ -100,7 +100,7 @@ function fetchIt (url, cb) {
 }
 
 function ready (fn) {
-  if (document.readyState != 'loading') {
+  if (document.readyState !== 'loading') {
     fn()
   } else {
     document.addEventListener('DOMContentLoaded', fn)
@@ -110,5 +110,4 @@ function ready (fn) {
 ready(() => {
   preLoadDateTimeSelectors()
   preLoadClosers()
-  // wordSwap('fulwords', 3000)
 })
