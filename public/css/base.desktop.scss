@@ -82,11 +82,6 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
   top: 30vh;
 }
 
-.semi-transparent {
-  // background: rgba(253,253,255,0.8);
-  // background: rgba(250, 248, 251, 0.9);
-}
-
 .shadowed {
   // box-shadow: 0 3px 8px rgba(0,0,5,0.3);
   box-shadow: $generalshadow $generalshadowcolor;
@@ -134,7 +129,6 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 }
 
 .buttonstyle {
-  @extend .semi-transparent;
   @extend .mini-shadowed;
   border-radius: $borderradius;
   padding: 8px;
@@ -274,7 +268,6 @@ nav {
 
 header {
   @extend .fixed-top;
-  @extend .semi-transparent;
   nav {
     @extend .text-shadow;
   }
@@ -282,11 +275,14 @@ header {
 
 footer {
   @extend .fixed-bottom;
-  @extend .semi-transparent;
   justify-content: flex-end;
   nav {
     height: $bottomnavheight;
   }
+}
+
+p {
+  line-height: normal;
 }
 
 main {
@@ -1107,7 +1103,6 @@ i.large {
   overflow: hidden;
   border-radius: 4px;
   background: #fafafa;
-  // @extend .semi-transparent;
   @media only screen and (min-width: 768px) {
     width: 100%;
   }
