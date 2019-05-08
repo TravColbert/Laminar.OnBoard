@@ -4,6 +4,7 @@
   "host":"0.0.0.0",
   "addr":"www.my-website.com",
   "redirectFrom":"my-website.com",
+  "compression":true,
   "port":443,
   "keyFile":"tls/server.key",
   "certFile":"tls/server.crt",

@@ -5,6 +5,7 @@ const cwd = path.join(__dirname, '/')
 console.log('Script directory is:', cwd)
 const fs = require('fs')
 const https = require('https')
+const compression = require('compression')
 const express = require('express')
 const session = require('express-session')
 const SQLiteStore = require('connect-sqlite3')(session)
@@ -80,6 +81,7 @@ let sessionConfig = {
 app.set('views', path.join(cwd, app.locals.viewsDir))
 app.set('view engine', 'pug')
 app.set('query parser', true)
+if (app.locals.compression) app.use(compression())
 app.use(express.static(path.join(cwd, app.locals.staticDir)))
 let favIcon = app.locals.favicon || 'public/img/laminar_favicon.ico'
 app.use('/favicon.ico', express.static(path.join(cwd, favIcon)), function (req, res, next) {
