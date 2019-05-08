@@ -675,13 +675,22 @@ article > .subhead {
 }
 
 .appmaintitle {
+  h1, 
   .hdg {
+    font-family: $titlefont;
     color: white;
     background-color: $successcolor;
     border-radius: 8px;
     padding: 0.1em 0.2em;
     text-shadow: none;
     @extend .shadowed;
+  }
+}
+
+.appblurb {
+  h2 {
+    text-align: center;
+    margin: 0.5em 0;
   }
 }
 
@@ -881,7 +890,7 @@ code {
 }
 
 h1 {
-  font-size: 1.5em;
+  // font-size: 1.5em;
   font-weight: bold;
 }
 
