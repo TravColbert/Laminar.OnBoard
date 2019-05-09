@@ -3,19 +3,16 @@ header
     #menu-title
       div#app-title
         a(href="/")= title
-      //- label#menu-hamburger(for="show-menu") &#9776;
-    //- block aside
     .navlinks
-      input#show-menu.hidden(type="checkbox" role="button")
+      //- input#show-menu.hidden(type="checkbox" role="button")
       ul
+        input#show-menu.hidden(type="checkbox" role="button")
         each item in menu
           - var link = item.link;
           - var text = item.text;
-          li
+          li.menu-link
             a(href=link)
               i.material-icons.menu-icon #{item.icon}
               .nobreak #{text}
         li
-          a.icon(href="javascript:void(0);")
-            i.material-icons.menu-icon.hamburger-menu menu
-            .nobreak &nbsp;
+          label#menu-hamburger(for="show-menu") &#9776;

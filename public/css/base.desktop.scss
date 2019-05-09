@@ -240,12 +240,16 @@ nav {
         display: flex;
         flex-direction: row;
         margin: 0 8px 0;
-        a {
+        a, label {
           flex-direction: row;
           display: flex;
           align-items: center;
         }
       }
+    }
+    #show-menu:not(:checked) ~ li.menu-link {
+      display: none;
+      visibility: hidden;
     }
   }
   .navleft {
