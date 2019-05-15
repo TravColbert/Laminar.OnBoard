@@ -45,7 +45,9 @@ app.routes = {}
 app.menu = []
 app.linkedObjects = {}
 
-// Prepare navigation object
+// Prepare test vars:
+
+let adminUserDef
 
 // Build app starting with model-hydration
 app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
@@ -72,7 +74,7 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
     })
   }).then(adminUser => {
     if (!adminUser) {
-      let adminUserDef = {
+      adminUserDef = {
         'firstname': 'Administrative',
         'lastname': 'User',
         'email': 'admin@' + app.locals.smtpDomain,
@@ -80,17 +82,23 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
         'disabled': false,
         'password': app.secrets['admin@' + app.locals.smtpDomain]
       }
-      return app.models['users'].create(adminUserDef)
+      return app.controllers['users'].create(adminUserDef)
     }
     return adminUser
   }).then(adminUser => {
     if (adminUser.get('fullname') === 'User, Administrative') {
       app.log(`SUCCESS`)
-      return true
+      app.log('Trying to create the same user twice - should fail')
+      return app.controllers.users.create(adminUserDef)
     }
     app.log(`FAILED`)
-    return false
+    return new Error('User create FAILED')
+  }).then(anotherAdminUser => {
+    app.log(JSON.stringify(anotherAdminUser))
+    if (!anotherAdminUser.get()) {
+      app.log(`SUCCESS`)
+    }
   }).catch(err => {
-    console.log(`Something went wrong:`)
-    console.log(err.message)
+    app.log(`FAILED`)
+    app.log(err.message)
   })
