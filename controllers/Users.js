@@ -1,11 +1,9 @@
-// const fs = require('fs');
 const bcrypt = require('bcrypt')
 
 module.exports = function (app, model) {
   if (!model) return false
   let myName = model + 'Controller'
   let myModel = model
-  // let defaultRoleAtRegistration = "applicant";
   obj = {
     __create: function (obj) {
       let myName = '__create'
@@ -28,41 +26,38 @@ module.exports = function (app, model) {
       let myName = 'authenticate()'
       let loginAccountName = req.body.email.toLowerCase()
       app.log('Authenticating user: ' + loginAccountName, myName, 5)
-      app.models[model].findOne({ where: { email: loginAccountName, verified: true, disabled: false } })
-        .then((user) => {
-          if (user === null) {
-            app.log('User is not found or not verified or not allowed', myName, 4)
-            app.log('Authenticate failed!', myName, 4)
-            // req.appData.view = "login";
-            // return next();
-            return res.redirect('/login/')
-          } else {
+      return app.controllers[model].getUserByObj({ email: loginAccountName, verified: true, disabled: false })
+        .then((users) => {
+          if (users.length > 0) {
+            let user = users[0]
             app.log('Checking passphrase...', myName, 5)
             bcrypt.compare(req.body.password, user.password, (err, match) => {
               if (err) {
-                app.log('Some kind of error decrypting pw', myName, 2)
-                return false
+                return new Error('Authentication error')
               }
               if (match) {
                 app.log('Passwords match for user: ' + user.email, myName, 5)
-                let userObj = {
+                req.session.user = {
                   id: user.id,
                   email: user.email,
                   firstname: user.firstname,
                   lastname: user.lastname,
                   defaultDomainId: user.defaultDomainId
                 }
-                req.session.user = userObj
                 app.log(req.session.user, myName, 6)
                 return next()
               }
               app.log('Authenticate failed!', myName, 4)
-              req.appData.view = 'login'
-              return next()
-            // return res.redirect('/login/');
-            // return cb(new Error("Incorrect username or password"));
+              return res.redirect('/login/')
             })
           }
+          return new Error('Authentication error')
+        })
+        .catch(err => {
+          app.log('User is not found or not verified or not allowed', myName, 4)
+          app.log('Authenticate failed!', myName, 4)
+          app.log(err.message)
+          return res.redirect('/login/')
         })
     },
     cryptPassword: function (password) {
@@ -247,29 +242,13 @@ module.exports = function (app, model) {
         })
     },
     getProfile: function (req, res, next) {
-      let myName = 'getProfile()'
+      let myName = 'getProfile'
       let userObj = app.tools.pullParams(req.session.user, ['id', 'email'])
       if (!userObj) return res.redirect('/')
-      app.log('getting profile for user ID: ' + userObj.id, myName, 7)
-      app.controllers[model]
-        .getUserById(userObj.id)
-      // .findByPk(userObj.id,
-      //   {
-      //     include:[
-      //       {
-      //         model:app.models["roles"],
-      //         as:"roles",
-      //         include:[
-      //           {
-      //             model:app.models["domains"]
-      //           }
-      //         ]
-      //       }
-      //     ]
-      //   })
+      app.log(`getting profile for user ID: ${userObj.id}`, myName, 7)
+      return app.controllers[model].getUserById(userObj.id)
         .then(user => {
           if (user === null) return res.redirect('/')
-          // return res.send(user);
           req.appData.user = user
           req.appData.view = 'profile'
           return next()
@@ -298,22 +277,9 @@ module.exports = function (app, model) {
         })
     },
     getUser: function (req, res, next) {
-      let myName = 'getUser()'
-      let userObj = app.tools.pullParams(req.params, ['id'])
-      // app.models[model]
-      // .findByPk(req.params.id,
-      //   {
-      //     include:[
-      //       {
-      //         model:app.models["roles"],
-      //         include:[
-      //           app.models["domains"]
-      //         ]
-      //       }
-      //     ]
-      //   }
-      //   )
-      app.controllers[model]
+      let myName = 'getUser'
+      app.log(`Getting user with ID: ${req.params.id}`, myName, 7)
+      return app.controllers[model]
         .getUserById(req.params.id)
         .then(user => {
           if (user === null) return res.redirect('/')
@@ -327,32 +293,19 @@ module.exports = function (app, model) {
     },
     getUserById: function (userId) {
       let myName = 'getUserById'
-      // app.log("Hello!!!: " + userId,myName,6);
-      return new Promise((resolve, reject) => {
-        app.log('Getting user by ID: ' + userId, myName, 6)
-        app.models[model]
-          .findByPk(userId,
-            {
-              include: [
-                {
-                  model: app.models['roles'],
-                  as: 'roles',
-                  include: [
-                    {
-                      model: app.models['domains']
-                    }
-                  ]
-                }
-              ]
-            })
-          .then(user => {
-            app.log('Found user: ' + user.fullname, myName, 6)
-            resolve(user)
-          })
-          .catch(err => {
-            app.log(err.message, myName, 4, '!!>')
-            reject(new Error('(' + myName + ') ' + err.message))
-          })
+      app.log('Getting user by ID: ' + userId, myName, 6)
+      return app.models[model].findByPk(userId, {
+        include: [
+          {
+            model: app.models['roles'],
+            as: 'roles',
+            include: [
+              {
+                model: app.models['domains']
+              }
+            ]
+          }
+        ]
       })
     },
     getUserByEmail: function (email) {
@@ -364,6 +317,7 @@ module.exports = function (app, model) {
     },
     getUserByObj: function (obj) {
       let myName = 'getUserByObj'
+      app.log(`Getting user by: ${JSON.stringify(obj)}`, myName, 7)
       return app.controllers[model].__get({ where: obj })
     },
     editUserForm: function (req, res, next) {
