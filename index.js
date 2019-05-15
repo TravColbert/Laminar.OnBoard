@@ -47,7 +47,7 @@ var sequelize = new Sequelize(
 )
 
 // Incorporate our tools file
-app.tools = require('./apptools')(app, sequelize)
+app.tools = require(path.join(cwd, 'apptools'))(app, sequelize)
 
 app.mailjet = require('node-mailjet').connect(app.secrets['mail-api-key'], app.secrets['mail-api-secret'], {
   url: app.locals.smtpServer, // default is the API url
@@ -136,7 +136,6 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
   return app.tools.processFiles(elementFiles, app.tools.readElement)
 }).then(() => {
   // Bind associations and start the models
-  // return app.tools.associateModels()
   return app.tools.readDir(path.join(cwd, app.locals.modelsDir, 'associations'))
 }).then(associationFiles => {
   return app.tools.processFiles(associationFiles, app.tools.readAssociation)
