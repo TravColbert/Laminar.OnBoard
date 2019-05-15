@@ -44,7 +44,7 @@ module.exports = function (app, sequelize) {
   obj.readDir = function (dir, extension) {
     let myName = 'readDir'
     return new Promise((resolve, reject) => {
-      app.log(`Reading dir: ${dir}`, myName, 7, '##>')
+      app.log(`Reading dir: ${dir}`, myName, 8)
       fs.readdir(dir, (err, files) => {
         if (err) {
           reject(new Error(`(${myName}) : ${err.message}`))
@@ -76,7 +76,7 @@ module.exports = function (app, sequelize) {
       if (app.tools.isFileType(file, 'js')) {
         let modelDefintion = require(path.join(__dirname, app.locals.modelsDir, file))(Sequelize, app)
         app.modelDefinitions[modelDefintion.tablename] = modelDefintion
-        app.log(modelDefintion.tablename, myName, 6, '+')
+        app.log(modelDefintion.tablename, myName, 6)
         app.models[modelDefintion.tablename] = sequelize.define(modelDefintion.tablename, modelDefintion.schema, modelDefintion.options)
       }
       resolve(true)
@@ -88,7 +88,7 @@ module.exports = function (app, sequelize) {
       if (app.tools.isFileType(file, 'js')) {
         let fileNameParts = file.split('.')
         let controllerName = fileNameParts[0].toLowerCase()
-        app.log(controllerName, myName, 6, '+')
+        app.log(controllerName, myName, 6)
         app.controllers[controllerName] = require(path.join(__dirname, app.locals.controllersDir, file))(app, controllerName)
       }
       resolve(true)
@@ -111,7 +111,7 @@ module.exports = function (app, sequelize) {
       if (app.tools.isFileType(file, 'js')) {
         let fileNameParts = file.split('.')
         let elementName = fileNameParts[0].toLowerCase()
-        app.log(elementName, myName, 6, '+')
+        app.log(elementName, myName, 6)
         app.elements[elementName] = require(path.join(__dirname, app.locals.elementsDir, file))
       }
       resolve(true)
@@ -123,7 +123,7 @@ module.exports = function (app, sequelize) {
       if (app.tools.isFileType(file, 'js')) {
         let fileNameParts = file.split('.')
         let routeName = fileNameParts[0].toLowerCase()
-        app.log(routeName, myName, 6, '+')
+        app.log(routeName, myName, 6)
         app.routes[routeName] = require(path.join(__dirname, app.locals.routesDir, file))(app)
       }
       resolve(true)
@@ -133,7 +133,7 @@ module.exports = function (app, sequelize) {
     let myName = 'readAssociation'
     return new Promise((resolve, reject) => {
       if (app.tools.isFileType(file, 'js')) {
-        app.log(file, myName, 6, '+')
+        app.log(file, myName, 6)
         let association = require(path.join(__dirname, app.locals.modelsDir, 'associations', file))(app)
       }
       resolve(true)
@@ -211,7 +211,6 @@ module.exports = function (app, sequelize) {
     }).then(() => {
       app.log('Admin user connected to admin role', myName, 6)
       return app.controllers.domains.getDomainByName('Default')
-      // return app.controllers.domains.__get({ where: { name: 'Default' } })
     }).then(domain => {
       if (domain.length === 0) {
         app.log('Creating default domain', myName, 6)
