@@ -1,22 +1,23 @@
 module.exports = function (app, model) {
   if (!model) return false
-  let myModel = model
   return {
     create: function (model, obj) {
       let myName = 'create(default)';
-      return new Promise((resolve, reject) => {
-        if (!app.models.hasOwnProperty(model)) reject(new Error('Model: ' + model + ' does not exist'))
-        // app.log("Creating " + model + ": " + JSON.stringify(obj),myName,6);
-        app.models[model].create(obj)
-          .then(item => {
-          // app.log(JSON.stringify(item),myName,6);
-            resolve(item)
-          })
-          .catch(err => {
-            app.log(err.message, myName, 5)
-            reject(err)
-          })
-      })
+      if (!app.models.hasOwnProperty(model)) return new Error('Model: ' + model + ' does not exist')
+      app.log(`Creating ${model}`, myName, 6)
+      return app.models[model].create(obj)
+      // return new Promise((resolve, reject) => {
+      //   // app.log("Creating " + model + ": " + JSON.stringify(obj),myName,6);
+      //   app.models[model].create(obj)
+      //     .then(item => {
+      //     // app.log(JSON.stringify(item),myName,6);
+      //       resolve(item)
+      //     })
+      //     .catch(err => {
+      //       app.log(err.message, myName, 5)
+      //       reject(err)
+      //     })
+      // })
     },
     get: function (model, obj) {
       let myName = 'get(default)';
