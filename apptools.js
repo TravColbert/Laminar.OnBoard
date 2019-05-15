@@ -183,7 +183,7 @@ module.exports = function (app, sequelize) {
           'password': app.secrets['admin@' + app.locals.smtpDomain]
         }
         // The 'create' method returns an object, not an array!
-        return app.controllers.users.createUser(adminUserDef)
+        return app.controllers.users.create(adminUserDef)
       } else {
         // If the "user.length" check (above) passes then we're looking at an array here!
         return user[0]

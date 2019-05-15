@@ -368,11 +368,10 @@ module.exports = function (app, model) {
           return res.redirect('/users/' + requestedUser + '/')
         })
     },
-    createUser: function (userObj) {
-      let myName = 'createUser'
+    create: function (userObj) {
+      let myName = 'create'
       app.log('Creating user ' + userObj.email, myName, 6, '+')
-      return app.controllers[model]
-        .__create(userObj)
+      return app.controllers[model].__create(userObj)
         .then(user => {
           if (user === null) return new Error('(' + myName + ') Could not create user')
           return user
