@@ -434,7 +434,8 @@ article#features {
 }
 
 article#about,
-article#login {
+article#login,
+article#comment {
   @extend .full-height;
   align-items: stretch;
   justify-content: flex-start;
@@ -442,6 +443,7 @@ article#login {
   text-shadow: 
     $textshadow $textshadowcolor
   ;
+  padding: 0;
   @media only screen and (min-width: 601px) {
     justify-content: center;
   }
@@ -469,20 +471,26 @@ article#login {
       width: 35%;
     }  
   }
-  #login-form {
+  #login-form,
+  #comment-form {
     @extend .flexy-column;
     align-items: stretch;
     padding-bottom: 56px;
     @media only screen and (min-width: 601px) {
       width: 40%;
     }
-    input {
+    input,
+    textarea {
       font-size: 1em;
       width: 100%;
       padding: 4px 0.25em;
     }
+    textarea {
+      height: 6em;
+    }
     input[type="text"],
-    input[type="password"] {
+    input[type="password"],
+    textarea {
       border: 1px solid $bordercolor;
       border-radius: $borderradius;
       background: $sidebarbackgroundcolor;
@@ -964,11 +972,14 @@ h1 {
 }
 
 .btn,
-.button {
+.button,
+input[type=submit],
+input[type=button] {
   @extend .flexy-row;
   @extend .nobreak;
   align-items: center;
   justify-content: center;
+  border: 0;
   border-radius: $borderradius;
   padding: 4px 8px;
   // border: 1px solid $bordercolor;
