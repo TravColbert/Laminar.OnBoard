@@ -300,8 +300,6 @@ main {
     @extend .flexy-column;
     order: 1;
     flex: 1 0 auto;
-    // margin-top: $topnavheight;
-    // margin-bottom: $bottomnavheight;
     width: 60%;
     article {
       padding-top: $topnavheight;
@@ -393,10 +391,10 @@ section.login {
     background-position-y: center;
     background-size: 42%;
   }
-  article {
-    margin-top: (-1 * $topnavheight);
-    margin-bottom: (-1 * $bottomnavheight);
-  }
+  // article {
+  //   margin-top: (-1 * $topnavheight);
+  //   margin-bottom: (-1 * $bottomnavheight);
+  // }
 }
 
 article {
