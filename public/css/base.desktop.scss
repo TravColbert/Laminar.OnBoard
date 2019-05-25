@@ -300,19 +300,14 @@ main {
     @extend .flexy-column;
     order: 1;
     flex: 1 0 auto;
-    margin-top: $topnavheight;
-    margin-bottom: $bottomnavheight;
+    // margin-top: $topnavheight;
+    // margin-bottom: $bottomnavheight;
     width: 60%;
-    // article {
-    //   margin-top: (-1 * $topnavheight);
-    //   margin-bottom: (-1 * $bottomnavheight);
-    // }
-    // article:last-child {
-    //   margin-bottom: 0;
-    // }
+    article {
+      padding-top: $topnavheight;
+      padding-bottom: $bottomnavheight;
+    }
   }
-  // section:not(.home) {
-  // }
 
   section.secondary, 
   section.messages {
