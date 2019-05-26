@@ -1,0 +1,18 @@
+extends index.pug
+
+block content
+  section.home
+    article#comment
+      form#comment-form(action="/comments" method="post")
+        .hdg.hdg-1 Contact
+        .inputcommentname.itemdetail.forminput
+          input#name(type="text" name="name" placeholder="Name" tabindex=0 autofocus)
+        .inputcommentemail.itemdetail.forminput
+          input#email(type="text" name="email" placeholder="Email" tabindex=0)
+        .inputcommentmessage.itemdetail.forminput
+          textarea#text(name="text" placeholder="Message" tabindex=0)
+        .inputcommentsubmit.itemdetail.forminput
+          input#submit.btn.normal(type="submit" value="Send Message")
+
+//- block scripts
+  script(src='/js/bcrypt.min.js')

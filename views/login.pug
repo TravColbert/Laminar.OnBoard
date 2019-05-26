@@ -6,11 +6,11 @@ block content
       form#login-form(action="/login" method="post")
         input#secretsauce(type="hidden" name="secretsauce" value=secretSauce)
         .hdg.hdg-1 Sign In
-        div.forminput
+        .forminput
           input#email(type="text" name="email" placeholder="email address" autofocus)
-        div.forminput
+        .forminput
           input#password(type="password" name="password" placeholder="passphrase")
-        div.forminput
+        .forminput
           input#submit.btn.normal(type="submit" value="Go")
         div Not a user?&nbsp;
           a(href="/register/") Register here.

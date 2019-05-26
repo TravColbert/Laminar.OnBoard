@@ -83,7 +83,6 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 }
 
 .shadowed {
-  // box-shadow: 0 3px 8px rgba(0,0,5,0.3);
   box-shadow: $generalshadow $generalshadowcolor;
 }
 
@@ -124,8 +123,6 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 
 .full-height {
   height: 100vh;
-  // margin-top: (-1 * $topnavheight);
-  // margin-bottom: (-1 * $bottomnavheight);
 }
 
 .buttonstyle {
@@ -300,19 +297,12 @@ main {
     @extend .flexy-column;
     order: 1;
     flex: 1 0 auto;
-    margin-top: $topnavheight;
-    margin-bottom: $bottomnavheight;
     width: 60%;
-    // article {
-    //   margin-top: (-1 * $topnavheight);
-    //   margin-bottom: (-1 * $bottomnavheight);
-    // }
-    // article:last-child {
-    //   margin-bottom: 0;
-    // }
+    article {
+      padding-top: $topnavheight;
+      padding-bottom: $bottomnavheight;
+    }
   }
-  // section:not(.home) {
-  // }
 
   section.secondary, 
   section.messages {
@@ -398,10 +388,10 @@ section.login {
     background-position-y: center;
     background-size: 42%;
   }
-  article {
-    margin-top: (-1 * $topnavheight);
-    margin-bottom: (-1 * $bottomnavheight);
-  }
+  // article {
+  //   margin-top: (-1 * $topnavheight);
+  //   margin-bottom: (-1 * $bottomnavheight);
+  // }
 }
 
 article {
@@ -441,7 +431,8 @@ article#features {
 }
 
 article#about,
-article#login {
+article#login,
+article#comment {
   @extend .full-height;
   align-items: stretch;
   justify-content: flex-start;
@@ -449,6 +440,7 @@ article#login {
   text-shadow: 
     $textshadow $textshadowcolor
   ;
+  padding: 0;
   @media only screen and (min-width: 601px) {
     justify-content: center;
   }
@@ -476,20 +468,26 @@ article#login {
       width: 35%;
     }  
   }
-  #login-form {
+  #login-form,
+  #comment-form {
     @extend .flexy-column;
     align-items: stretch;
     padding-bottom: 56px;
     @media only screen and (min-width: 601px) {
       width: 40%;
     }
-    input {
+    input,
+    textarea {
       font-size: 1em;
       width: 100%;
       padding: 4px 0.25em;
     }
+    textarea {
+      height: 6em;
+    }
     input[type="text"],
-    input[type="password"] {
+    input[type="password"],
+    textarea {
       border: 1px solid $bordercolor;
       border-radius: $borderradius;
       background: $sidebarbackgroundcolor;
@@ -780,6 +778,16 @@ code {
   margin: 4px 8px 4px;
 }
 
+.item-container.comment {
+  @extend .shadowed;
+  padding: 0.5em;
+  border-radius: 0.25em;
+  margin: 0.5em;
+  .data {
+    font-weight: bold;
+  }
+}
+
 .itemhead {
   @extend .flexy-row;
   align-items: center;
@@ -789,7 +797,6 @@ code {
 
 .itemdetail {
   @extend .flexy-column;
-  // margin: 8px 8px 4px;
 }
 
 .itemdetail:first-child {
@@ -799,7 +806,6 @@ code {
   }
   .data {
     font-size: 1.1em;
-    // font-weight: bold;
   }
 }
 
@@ -884,15 +890,10 @@ code {
 .preview {
   height: auto;
   width: 100%;
-  // width: auto;
-  // max-height: 100%;
 }
 
 .clickable:hover {
   cursor: pointer;
-  // .data {
-  //   color: $tertiarycolor;
-  // }
   div {
     color: $tertiarycolor;
   }
@@ -971,11 +972,14 @@ h1 {
 }
 
 .btn,
-.button {
+.button,
+input[type=submit],
+input[type=button] {
   @extend .flexy-row;
   @extend .nobreak;
   align-items: center;
   justify-content: center;
+  border: 0;
   border-radius: $borderradius;
   padding: 4px 8px;
   // border: 1px solid $bordercolor;
@@ -1030,10 +1034,6 @@ h1 {
       color: $textcolor;
     }
   }
-}
-
-.feature .description {
-
 }
 
 .huge-icon {
