@@ -40,6 +40,8 @@ module.exports = function (app, model) {
         .then(comment => {
           if (!comment) throw new Error('Comment not created')
           app.log(`Comment created: ${comment.id}`, myName, 6)
+          req.appData.view = 'commentregistered'
+          req.appData.comment = comment
           return next()
         }).catch(error => {
           app.log(`Error: ${error.message}`, myName, 3)

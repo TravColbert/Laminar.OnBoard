@@ -83,7 +83,6 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 }
 
 .shadowed {
-  // box-shadow: 0 3px 8px rgba(0,0,5,0.3);
   box-shadow: $generalshadow $generalshadowcolor;
 }
 
@@ -124,8 +123,6 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 
 .full-height {
   height: 100vh;
-  // margin-top: (-1 * $topnavheight);
-  // margin-bottom: (-1 * $bottomnavheight);
 }
 
 .buttonstyle {
@@ -781,6 +778,16 @@ code {
   margin: 4px 8px 4px;
 }
 
+.item-container.comment {
+  @extend .shadowed;
+  padding: 0.5em;
+  border-radius: 0.25em;
+  margin: 0.5em;
+  .data {
+    font-weight: bold;
+  }
+}
+
 .itemhead {
   @extend .flexy-row;
   align-items: center;
@@ -790,7 +797,6 @@ code {
 
 .itemdetail {
   @extend .flexy-column;
-  // margin: 8px 8px 4px;
 }
 
 .itemdetail:first-child {
@@ -800,7 +806,6 @@ code {
   }
   .data {
     font-size: 1.1em;
-    // font-weight: bold;
   }
 }
 
@@ -885,15 +890,10 @@ code {
 .preview {
   height: auto;
   width: 100%;
-  // width: auto;
-  // max-height: 100%;
 }
 
 .clickable:hover {
   cursor: pointer;
-  // .data {
-  //   color: $tertiarycolor;
-  // }
   div {
     color: $tertiarycolor;
   }
@@ -1034,10 +1034,6 @@ input[type=button] {
       color: $textcolor;
     }
   }
-}
-
-.feature .description {
-
 }
 
 .huge-icon {
