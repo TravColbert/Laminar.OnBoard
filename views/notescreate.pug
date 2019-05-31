@@ -3,7 +3,7 @@ extends index.pug
 block aside
   aside.sidebar
     article.noteactions
-      .hdg.hdg-2 Note Actions
+      h2 Note Actions
       .actions.secondary
         input#submit.btn.normal.buttonconfirm(type="submit" value="Create" form="note-create")
         a.btn.cancel.buttoncancel(href="/notes/") Cancel
@@ -11,7 +11,7 @@ block aside
 block content
   section.notes
     article.main
-      .hdg.hdg-2 Create Note
+      h2 Create Note
       form#note-create.create-note-form(action="/notes/" method="post")
         input(id="user" type="hidden" name="userId" value=user.id)
         //- input(id="domain" type="hidden" name="domainId" value=user.currentDomain.id)

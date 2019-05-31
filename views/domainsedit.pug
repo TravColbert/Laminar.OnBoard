@@ -3,7 +3,7 @@ extends index.pug
 block aside
   aside.sidebar
     article.domainactions 
-      .hdg.hdg-2 Domain Actions
+      h2 Domain Actions
       .actions.secondary
         input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm" form="domain-edit")
         a.btn.cancel(href="/domains/" + domain.id) Cancel
@@ -11,7 +11,7 @@ block aside
 block content
   section.domainedit
     article.main
-      .hdg.hdg-2 Edit Domain
+      h2 Edit Domain
       div
         form#domain-edit(action="/domains/" + domain.id + "/" method="post")
           input(id="id" type="hidden" name="id" value=domain.id)
@@ -35,20 +35,3 @@ block content
                 i.material-icons.toggle.toggleoff toggle_off
               label.togglepublictrue(for="public")
                 i.material-icons.toggle.toggleon toggle_on
-    //- article.secondary
-    //-   .hdg.hdg-1 Domain Actions
-    //-   .domainsubmit.itemdetail
-    //-     label.label Actions
-    //-     .data.layout-row
-    //-       input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")
-    //-       a.btn.cancel(href="/domains/" + domain.id) Cancel
-    //-   .description
-    //-     .infotext.hdg.hdg-3 Edit Domain View
-    //-     .infotext You can edit a domain with this view.
-    //-     .infotext Modify the details for the domain.
-    //-     .infotext.hdg.hdg-3 Name
-    //-     .infotext Enter the user's email address here. This should be a valid email address
-    //-     .infotext.example
-    //-       .infotext.heading Examples:
-    //-       .infotext tommy@test.com
-    //-     .infotext.important This is a required field.

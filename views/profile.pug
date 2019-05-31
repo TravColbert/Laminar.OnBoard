@@ -1,7 +1,5 @@
 extends index.pug
 
-
-//- No actions yet
 block aside
   - console.log(domains)
   - console.log(roles)
@@ -13,7 +11,7 @@ block aside
 block content
   section.profile
     article.main
-      .hdg.hdg-2.profilename My Profile: #{user.fullname}
+      h2.profilename My Profile: #{user.fullname}
       .item-listing
         .itemdetail
           label.label User: #{user.fullname}

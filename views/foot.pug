@@ -1,17 +1,17 @@
 footer
   nav(role=navigation)
-    div.navleft
+    .navleft
       .copyright &copy;2019 Travis Colbert
       .madewith Made with Laminar
-    div.navcenter
+    .navcenter
       div 
         | Hi 
         if(account)
           | &nbsp;#[a(href='/profile/') #{account}]
-    div.navlinks
+    .navlinks
       ul
         li
-          a(href="comments/")
+          a(href="/comments/")
             i.material-icons.menu-icon mail_outline
         //- each item in menu
         //-   - var link = item.link;

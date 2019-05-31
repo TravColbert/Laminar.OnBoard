@@ -5,7 +5,7 @@ block aside
     .sticky-50.flexy-column
       if(user)
         article.noteactions
-          .hdg.hdg-2 Actions
+          h2 Actions
           #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
           #note_edit_button_container.editnote.authUI(data-fetch="note_edit" data-href="/notes/" + note.id + "/actions/edit/")
         +list-user-invites()
@@ -25,7 +25,7 @@ block aside
 block content
   section.note
     article.main
-      .hdg.hdg-2.articletitle #{note.name}
+      h2.articletitle #{note.name}
       .article-listing
         .itemdetail
           .articledescription #{note.description}

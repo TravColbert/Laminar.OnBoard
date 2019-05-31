@@ -3,11 +3,7 @@ extends index.pug
 block aside
   aside.sidebar
     article.noteactions
-      .hdg.hdg-2 Note Actions
-      //- .nav
-      //-   .navitem One item
-      //-   .navitem Two 
-      //-   .navitem Three
+      h2 Note Actions
       .actions.secondary
         input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm" form="note-edit")
         a.btn.cancel(href="/users/" + user.id) Cancel
@@ -16,7 +12,7 @@ block aside
 block content
   section
     article.main
-      .hdg.hdg-2 Edit Note: #{note.id}
+      h2 Edit Note: #{note.id}
       form#note-edit(action="/notes/" + note.id + "/" method="post")
         input(id="id" type="hidden" name="id" value= note.id)
         .itemdetail
@@ -35,10 +31,6 @@ block content
           label.label(for="description") Domain:
           .data
             input#domain(type="text" name="domain" disabled value=note.domain.name)
-        //- .inputnotedomain.itemdetail
-        //-   label.label Domain:
-        //-   .data
-        //-     +select-domains(domains,user.currentDomain.id)
         .itemdetail
           label.label Visibility:
           .data
@@ -51,18 +43,3 @@ block content
           label.label(for="body") Body:
           .data
             textarea#body(cols="30" rows="10" name="body") #{note.body}
-        //- .notesubmit.itemdetail
-        //-   label.label Actions:
-        //-   .data.layout-row
-        //-     input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")
-        //-     a.btn.cancel(href="/users/" + user.id) Cancel
-      //- .description.layout-col.layout-xs-hidden.layout-sm-hidden.layout-md-hidden.layout-sd-width-3-8.layout-lg-width-3-8.layout-xl-width-4-8
-      //-   .infotext.section-hdg.section-hdg-3 Edit Note View
-      //-   .infotext You can edit a note with this view.
-      //-   .infotext Modify the details for the user.
-      //-   .infotext.section-hdg.section-hdg-3 Email
-      //-   .infotext Enter the user's email address here. This should be a valid email address
-      //-   .infotext.example.layout-col
-      //-     .infotext.heading Examples:
-      //-     .infotext tommy@test.com
-      //-   .infotext.important This is a required field.

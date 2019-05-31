@@ -4,7 +4,7 @@ block aside
   aside.sidebar
     .sticky-50.flexy-column
       article.domainactions
-        .hdg.hdg-2 Actions
+        h2 Actions
         .actions.primary
           .item-listing
             .itemdetail
@@ -21,7 +21,7 @@ block aside
                 span Make Default
             #domain_edit_button_container.authUI(data-fetch="domain_edit" data-href="/domains/" + domain.id + "/actions/edit/")
         .actions.secondary
-          .hdg.hdg-2 Roles
+          h2 Roles
           .item-listing
             each role in domain.roles
               - let targetLoc = "/roles/" + role.id + "/";
@@ -35,8 +35,8 @@ block aside
 block content
   section.domain
     article.main
-      .hdg.hdg-2 Domain: #{domain.name} 
-      .hdg.hdg-3 Items
+      h2 Domain: #{domain.name} 
+      h3 Items
       div
         .item-container
           - objectTypes = Object.keys(linkedObjects);

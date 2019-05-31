@@ -5,7 +5,7 @@ block aside
     .sticky-50.flexy-column
       if(user)
         article.fileactions
-          .hdg.hdg-2 Actions
+          h2 Actions
           #file_add_button_container.addfile.authUI(data-fetch="file_add" data-href="/actions/create/file/")
           #file_edit_button_container.editfile.authUI(data-fetch="file_edit" data-href="/files/" + file.id + "/actions/edit/")
         +list-user-invites()
@@ -25,7 +25,7 @@ block aside
 block content
   section.file
     article.main
-      .hdg.hdg-2.articletitle File: #{file.name}
+      h2.articletitle File: #{file.name}
       .item
         .itemdetail
           label.label Description:

@@ -178,6 +178,15 @@ header, footer {
   }
 }
 
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, .hdg {
+  font-family: $titlefont;
+  white-space: nowrap;
+}
+
 a {
   color: $textcolor;
 }
@@ -344,6 +353,9 @@ aside.sidebar {
   }
   article:not(:last-child) {
     margin-bottom: 8px;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
   }
 }
 
@@ -737,6 +749,7 @@ article > .subhead {
     font-size: 0.8em;
     text-align: center;
     margin: 1.5em 0 0.5em;
+    white-space: inherit;
   }
 }
 
@@ -915,33 +928,30 @@ code {
   margin-bottom: 8px;
 }
 
-.hdg {
-  font-family: $titlefont;
-  white-space: nowrap;
-}
-
+h1,
 .hdg-1 {
   @extend .text-shadow;
   font-size: 1.6em;
   margin-bottom: 8px;
 }
 
+h2,
 .hdg-2 {
   @extend .text-shadow;
   font-size: 1.8em;
   margin-bottom: 0.25em;
 }
 
+h3,
 .hdg-3 {
   @extend .text-shadow;
   font-size: 1.5em;
   margin-bottom: 8px;
 }
 
-h1 {
-  // font-size: 1.5em;
-  font-weight: bold;
-}
+// h1 {
+//   font-weight: bold;
+// }
 
 .data > input,
 .data > textarea {

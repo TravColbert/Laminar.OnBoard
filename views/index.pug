@@ -13,7 +13,7 @@ mixin login-or-register(loginText,registerText)
 
 mixin create-or-see-domains(domainName)
   article#createorseedomains
-    .hdg.hdg-2 Domain Actions
+    h2 Domain Actions
     .item-listing
       a.btn.secondary(href="/domains/")
         i.material-icons list_alt
@@ -25,7 +25,7 @@ mixin create-or-see-domains(domainName)
 mixin list-user-invites
   if(invites && invites.length>0)
     article#invites
-      .hdg.hdg-2 New Invites!
+      h2 New Invites!
       .item-listing
         a.btn.secondary(href="/invites/")
           i.material-icons.badge(alt="(invites)" title="Respond to your new invites") card_giftcard
@@ -34,7 +34,7 @@ mixin list-user-invites
 mixin list-user-domains(domainText)
   if(user.domains)
     article#domains
-      .hdg.hdg-2 #{domainText}
+      h2 #{domainText}
       .item-listing
         each domain in user.domains
           //- if domain.name!="Trash" && domain.name!="Default"
