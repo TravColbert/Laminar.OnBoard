@@ -3,7 +3,7 @@ extends index.pug
 block aside
   aside.sidebar
     article.roleactions
-      .hdg.hdg-2 Role Actions
+      h2 Role Actions
       .actions.secondary
         #role_add_button_container.addrole.authUI(data-fetch="role_add" data-href="/actions/create/roles/")
         //- #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
@@ -11,8 +11,7 @@ block aside
 block content
   section.role
     article.main
-      .hdg.hdg-2 Role
-      .section-hdg.section-hdg-1 Roles (#{roles.length})
+      h2 Roles (#{roles.length})
       .item-listing
         ul
           each item in roles

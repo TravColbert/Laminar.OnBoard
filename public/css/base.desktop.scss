@@ -178,6 +178,16 @@ header, footer {
   }
 }
 
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, .hdg {
+  font-family: $titlefont;
+  white-space: nowrap;
+  font-weight: normal;
+}
+
 a {
   color: $textcolor;
 }
@@ -913,15 +923,6 @@ code {
   font-family: $titlefont;
   align-items: center;
   margin-bottom: 8px;
-}
-
-.hdg {
-  font-family: $titlefont;
-  white-space: nowrap;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
 }
 
 h1,

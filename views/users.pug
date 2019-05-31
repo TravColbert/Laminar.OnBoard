@@ -4,12 +4,12 @@ block aside
   aside.sidebar
     .sticky-50.flexy-column
       article.noteactions
-        .hdg.hdg-2 User Actions
+        h2 User Actions
         .actions.secondary
           #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/actions/create/users/")
 
 block content
   section.users
     article.main
-      .hdg.hdg-2 Users (#{users.length})
+      h2 Users (#{users.length})
       +list-users(users)

@@ -3,7 +3,7 @@ extends index.pug
 block aside
   aside.sidebar
     article.fileactions
-      .hdg.hdg-2 File Actions
+      h2 File Actions
       .actions.secondary
         input#upload.btn.normal.buttonconfirm(type="submit" value="Upload" form="file-create")
         a.btn.cancel.buttoncancel(href="/files/") Cancel
@@ -11,7 +11,7 @@ block aside
 block content
   section.files
     article.main
-      .hdg.hdg-2 Upload File
+      h2 Upload File
       form#file-create.create-file-form(action="/files/" method="post" encType="multipart/form-data")
         input(id="user" type="hidden" name="userId" value=user.id)
         .inputfile.itemdetail

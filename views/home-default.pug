@@ -6,7 +6,7 @@ block aside
       if(user)
         +list-user-invites()
         article#links
-          .hdg.hdg-2 Links
+          h2 Links
           .item
             a.documentlink(href="#features") Home
           .item
@@ -21,7 +21,7 @@ block aside
         +create-or-see-domains("Domain")
       if(!user)
         article#links
-          .hdg.hdg-2 Links
+          h2 Links
           .item
             a.documentlink(href="#") Home
           .item
@@ -35,7 +35,7 @@ block aside
           .item
             a.documentlink(href="#features") Documentation
         article#getstarted
-          .hdg.hdg-2 Get Started!
+          h2 Get Started!
           +login-or-register("Login with your account to begin using your cool app!","Register with your email address to create an account.")
 
 block content
@@ -50,9 +50,9 @@ block content
         //- span.apponboard OnBoard
       .mainblurb Lean,&nbsp;&nbsp;Secure&nbsp;&nbsp;Application&nbsp;&nbsp;Framework
     article#features
-      .hdg-1 Build secure, custom, collaborative web applications easily!
-      .hdg-3 Laminar helps you build websites and applications using Node, Express and any database backend you want.
-      .feature.hdg-3 Check out these features:
+      h1 Build secure, custom, collaborative web applications easily!
+      h3 Laminar helps you build websites and applications using Node, Express and any database backend you want.
+      h3.feature Check out these features:
       .app-features
         div.feature
           div.heading
@@ -91,7 +91,7 @@ block content
 
     article#welcome
       if(user)
-        .hdg-2 Welcome, #{user.email}!
+        h2 Welcome, #{user.email}!
         .app-features
           div.feature
             div
@@ -110,7 +110,7 @@ block content
               i.material-icons.big-icon security
             div Everything's secure! Your web app is locked-down and sealed tight by default. Only you and your collaborators can see your data.
       else
-        .hdg-2 It Works!
+        h2 It Works!
         .app-features
           div.feature
             div

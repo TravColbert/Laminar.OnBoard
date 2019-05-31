@@ -2,7 +2,7 @@ extends index.pug
 
 block aside
   aside.sidebar
-    .title Role Actions
+    h2 Role Actions
     .nav
       .navitem One item
       .navitem Two 
@@ -14,7 +14,7 @@ block aside
 
 block content
   section
-    .section-hdg.section-hdg-1 Create Role in #{domain.name}
+    h2 Create Role in #{domain.name}
     .item-listing
       form#role-create(action="/roles/" method="post")
         input(id="domainid" type="hidden" name="domainid" value=domain.id)

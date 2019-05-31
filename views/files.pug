@@ -4,7 +4,7 @@ block aside
   aside.sidebar
     .sticky-50.flexy-column
       article.noteactions
-        .hdg.hdg-2 File Actions
+        h2 File Actions
         .actions.secondary
           #file_add_button_container.addfile.authUI(data-fetch="file_add" data-href="/actions/create/files/")
 
@@ -13,5 +13,5 @@ block content
     article.main
       - let filesCount = (files) ? files.length : 0
       if(filesCount)
-        .hdg.hdg-2 Files 
+        h2 Files 
         +list-files(files)

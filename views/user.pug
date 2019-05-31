@@ -3,11 +3,7 @@ extends index.pug
 block aside
   aside.sidebar
     article.useractions
-      .hdg.hdg-2 User Actions
-      //- .nav
-      //-   .navitem One item
-      //-   .navitem Two 
-      //-   .navitem Three
+      h2 User Actions
       .actions.secondary
         #user_edit_button_container.edituser.layout-row.layout-justify-between.authUI(data-fetch="user_edit" data-href="/users/edit")
         #user_add_button_container.adduser.layout-row.layout-justify-between.authUI(data-fetch="user_add" data-href="/users/add")
@@ -15,7 +11,7 @@ block aside
 block content
   section.user
     article.main
-      .hdg.hdg-2 User: #{user.fullname}
+      h2 User: #{user.fullname}
       .item-listing
         .itemdetail
           label.label(for="email") Email:
