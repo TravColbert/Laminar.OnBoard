@@ -421,7 +421,7 @@ module.exports = function (app, sequelize) {
   }
   obj.checkAuthentication = function (req, res, next) {
     let myName = 'checkAuthentication'
-    if (!obj.isAuthenticated(req)) return res.redirect('/login')
+    if (!obj.isAuthenticated(req)) return res.redirect('/login/')
     // app.log('session user id is set...', myName, 6)
     // app.log('found all session info: ' + req.session.user.email, myName, 6)
     // app.log('final confirmation that ' + req.session.user.email + ' user id (' + req.session.user.id + ') exists', myName, 6)
@@ -431,7 +431,7 @@ module.exports = function (app, sequelize) {
         app.log(`Number of matching user records: ${count}`, myName, 7)
         if (count === 1) return next()
         app.log(`Incorrect number of user records returned - this is a problem`, myName, 3)
-        return res.redirect('/login')
+        return res.redirect('/login/')
       })
     // return res.redirect("/login");
   }

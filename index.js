@@ -222,7 +222,7 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
   })
 }).then(() => {
   app.get('/profile/', app.tools.checkAuthentication, app.controllers['users'].getProfile)
-  app.post('/authorizedelements/:element', app.tools.checkAuthentication, app.tools.getElement)
+  app.post('/authorizedelements/:element/', app.tools.checkAuthentication, app.tools.getElement)
   app.get('/', app.tools.homePage)
 }).then(() => {
   app.use(
