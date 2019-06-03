@@ -301,22 +301,6 @@ module.exports = function (app, sequelize) {
     app.log('app end time: ' + req.appData.stopTime, myName, 5)
     return next()
   }
-  // obj.ignoreFavicon = function (req, res, next) {
-  //   let myName = 'ignoreFavicon()'
-  //   app.log(`Found request for favicon`, myName, 7)
-  //   if (req.url == '/favicon.ico') {
-  //     if (!app.locals.favicon) {
-  //       app.log('ignoring favicon', myName, 5)
-  //       res.writeHead(200, { 'Content-Type': 'image/x-icon' })
-  //       res.end()
-  //     }
-  //     app.log(`Attempting to send favicon explicitly`, myName, 7)
-  //     let fileToSend = app.locals.favicon || 'public/img/laminar_favicon.ico'
-  //     res.sendFile(path.join(app.cwd, fileToSend))
-  //   } else {
-  //     return next()
-  //   }
-  // }
   obj.handleRedirects = function (req, res, next) {
     let myName = 'handleRedirects'
     if (app.locals.redirectFrom && (req.get('Host') === app.locals.redirectFrom)) {
