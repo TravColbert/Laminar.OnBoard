@@ -17,7 +17,7 @@ block content
   section
     .section-hdg.section-hdg-1 Domain #{domain.name}
     .item-listing
-      form#domain-edit(action="/domain/edit" method="post")
+      form#domain-edit(action="/domain/edit/" method="post")
         input(id="domainid" type="hidden" name="domainid" value=domain.id)
         .itemdetail
           label.label(for="domainname") Name:

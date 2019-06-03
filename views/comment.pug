@@ -3,7 +3,7 @@ extends index.pug
 block content
   section.home
     article#comment
-      form#comment-form(action="/comments" method="post")
+      form#comment-form(action="/comments/" method="post")
         h1 Contact
         .inputcommentname.itemdetail.forminput
           input#name(type="text" name="name" placeholder="Name" tabindex=0 autofocus)
