@@ -729,6 +729,14 @@ module.exports = function (app, sequelize) {
     if (req.xhr) app.log(`Probably a client library request (e.g. JQuery) (XHR=${!!(req.xhr)})`, myName, 4)
     return next()
   }
+  obj.enforceStrictRouting = function (req, res, next) {
+    let myName = 'enforceStrictRouting'
+    if (app.get('strict routing') && req.url.slice(-1) !== '/') {
+      app.log(`Enforcing strict routing. Redirecting to: ${req.protocol}://${req.hostname}${req.url}/`, myName, 7)
+      return res.redirect(301, `${req.protocol}://${req.hostname}${req.url}/`)
+    }
+    return next()
+  }
   obj.setOriginalUrl = function (req, res, next) {
     let myName = 'setOriginalUrl()'
     app.log('got a request of type: ' + req.protocol + ' :' + req.method + ' TO: ' + req.originalUrl + ' URL: ' + req.url, myName, 7)

@@ -81,6 +81,7 @@ let sessionConfig = {
 app.set('views', path.join(cwd, app.locals.viewsDir))
 app.set('view engine', 'pug')
 app.set('query parser', true)
+app.set('strict routing', true)
 if (app.locals.compression) app.use(compression())
 app.use(express.static(path.join(cwd, app.locals.staticDir)))
 let favIcon = app.locals.favicon || 'public/img/laminar_favicon.ico'
@@ -171,6 +172,7 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
   app.use(
     app.tools.handleRedirects,
     app.tools.logRequest,
+    app.tools.enforceStrictRouting,
     app.tools.setOriginalUrl,
     app.tools.setAppData,
     app.tools.timeStart
