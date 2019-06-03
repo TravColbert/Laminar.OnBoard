@@ -331,7 +331,7 @@ module.exports = function (app, sequelize) {
   }
   obj.render = function (req, res) {
     let myName = 'render'
-    let templateFile = req.appData.view || app.locals.homeView
+    let templateFile = req.appData.view || app.locals['404Page']
     app.log('Query Params: ' + JSON.stringify(req.query), myName, 7, ' >>> ')
     let format = req.query.format || 'html'
     switch (format.toLowerCase()) {
@@ -628,7 +628,6 @@ module.exports = function (app, sequelize) {
     let myName = 'logoutPage()'
     app.log('queueing log-out', myName, 5)
     app.controllers['users'].logout(req, res, next)
-    // req.logout();
     return res.redirect('/')
   }
   /**
@@ -829,9 +828,10 @@ module.exports = function (app, sequelize) {
   obj.errorHandler = function (err, req, res, next) {
     let myName = 'errorHandler()'
     if (!err) return next()
-    app.log(err, myName, 2, '!')
+    app.log(err, myName, 3, '!')
     // responseString += "!!" + err;
-    return res.redirect('/')
+    // return res.redirect('/')
+    return obj.showPage(app.locals['404Page'])
   }
   app.log = function (string, caller, debugLevel, prefix) {
     caller = caller || this.name

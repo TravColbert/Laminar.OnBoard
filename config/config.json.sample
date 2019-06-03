@@ -16,6 +16,7 @@
   "smtpDomain":"yourdomain.net",
   "homeView":"home-default",
   "homeModule":false,
+  "404Page":"404-default",
   "loginPage":"/login",
   "sessionTimeoutHours":4,
   "logLevel":6,
