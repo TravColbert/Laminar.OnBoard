@@ -301,22 +301,6 @@ module.exports = function (app, sequelize) {
     app.log('app end time: ' + req.appData.stopTime, myName, 5)
     return next()
   }
-  // obj.ignoreFavicon = function (req, res, next) {
-  //   let myName = 'ignoreFavicon()'
-  //   app.log(`Found request for favicon`, myName, 7)
-  //   if (req.url == '/favicon.ico') {
-  //     if (!app.locals.favicon) {
-  //       app.log('ignoring favicon', myName, 5)
-  //       res.writeHead(200, { 'Content-Type': 'image/x-icon' })
-  //       res.end()
-  //     }
-  //     app.log(`Attempting to send favicon explicitly`, myName, 7)
-  //     let fileToSend = app.locals.favicon || 'public/img/laminar_favicon.ico'
-  //     res.sendFile(path.join(app.cwd, fileToSend))
-  //   } else {
-  //     return next()
-  //   }
-  // }
   obj.handleRedirects = function (req, res, next) {
     let myName = 'handleRedirects'
     if (app.locals.redirectFrom && (req.get('Host') === app.locals.redirectFrom)) {
@@ -437,7 +421,7 @@ module.exports = function (app, sequelize) {
   }
   obj.checkAuthentication = function (req, res, next) {
     let myName = 'checkAuthentication'
-    if (!obj.isAuthenticated(req)) return res.redirect('/login')
+    if (!obj.isAuthenticated(req)) return res.redirect('/login/')
     // app.log('session user id is set...', myName, 6)
     // app.log('found all session info: ' + req.session.user.email, myName, 6)
     // app.log('final confirmation that ' + req.session.user.email + ' user id (' + req.session.user.id + ') exists', myName, 6)
@@ -447,7 +431,7 @@ module.exports = function (app, sequelize) {
         app.log(`Number of matching user records: ${count}`, myName, 7)
         if (count === 1) return next()
         app.log(`Incorrect number of user records returned - this is a problem`, myName, 3)
-        return res.redirect('/login')
+        return res.redirect('/login/')
       })
     // return res.redirect("/login");
   }
@@ -743,6 +727,14 @@ module.exports = function (app, sequelize) {
     app.log(`Fresh: ${!!(req.fresh)}`, myName, 4)
     app.log(`Original URL: ${req.originalUrl}`, myName, 4)
     if (req.xhr) app.log(`Probably a client library request (e.g. JQuery) (XHR=${!!(req.xhr)})`, myName, 4)
+    return next()
+  }
+  obj.enforceStrictRouting = function (req, res, next) {
+    let myName = 'enforceStrictRouting'
+    if (app.get('strict routing') && req.url.slice(-1) !== '/') {
+      app.log(`Enforcing strict routing. Redirecting to: ${req.protocol}://${req.hostname}${req.url}/`, myName, 7)
+      return res.redirect(301, `${req.protocol}://${req.hostname}${req.url}/`)
+    }
     return next()
   }
   obj.setOriginalUrl = function (req, res, next) {
