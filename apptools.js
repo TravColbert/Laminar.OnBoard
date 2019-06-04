@@ -331,28 +331,32 @@ module.exports = function (app, sequelize) {
   }
   obj.render = function (req, res) {
     let myName = 'render'
-    let templateFile = req.appData.view || app.locals['404Page']
-    app.log('Query Params: ' + JSON.stringify(req.query), myName, 7, ' >>> ')
-    let format = req.query.format || 'html'
-    switch (format.toLowerCase()) {
-      case 'json':
-        app.log('Rendering in JSON', myName, 6)
-        let returnObj = {}
-        req.appData.models.forEach(model => {
-          app.log(`Loading model ${model} in JSON return data`, myName, 6)
-          // console.log(req.appData[model]);
-          returnObj[model] = req.appData[model]
-          returnObj['errors'] = req.appData.errors
-        })
-        return res.json(returnObj)
-      default:
-        app.log('Rendering template: ' + templateFile, myName, 6)
-        if (app.headOptions) {
-          req.appData.headoptions = app.headOptions
-          // app.log(req.appData.headoptions);
-        }
-        app.log(`Session user: ${JSON.stringify(req.session.user)}`, myName, 8)
-        return res.render(templateFile, req.appData)
+    if (!req.appData.view) {
+      obj.show404(req, res)
+    } else {
+      let templateFile = req.appData.view
+      app.log('Query Params: ' + JSON.stringify(req.query), myName, 7, ' >>> ')
+      let format = req.query.format || 'html'
+      switch (format.toLowerCase()) {
+        case 'json':
+          app.log('Rendering in JSON', myName, 6)
+          let returnObj = {}
+          req.appData.models.forEach(model => {
+            app.log(`Loading model ${model} in JSON return data`, myName, 6)
+            // console.log(req.appData[model]);
+            returnObj[model] = req.appData[model]
+            returnObj['errors'] = req.appData.errors
+          })
+          return res.json(returnObj)
+        default:
+          app.log('Rendering template: ' + templateFile, myName, 6)
+          if (app.headOptions) {
+            req.appData.headoptions = app.headOptions
+            // app.log(req.appData.headoptions);
+          }
+          app.log(`Session user: ${JSON.stringify(req.session.user)}`, myName, 8)
+          return res.render(templateFile, req.appData)
+      }
     }
   }
   obj.makeMessage = function (obj) {
@@ -629,6 +633,12 @@ module.exports = function (app, sequelize) {
     app.log('queueing log-out', myName, 5)
     app.controllers['users'].logout(req, res, next)
     return res.redirect('/')
+  }
+  obj.show404 = function (req, res) {
+    let myName = 'show404'
+    let fourOFourPath = path.join('./', app.locals.viewsDir, app.locals['404Page'])
+    app.log(`Showing 404: ${fourOFourPath}`, myName, 3)
+    return res.status(404).render(app.locals['404Page'], req.appData)
   }
   /**
    * This function is meant to be used in route lines
