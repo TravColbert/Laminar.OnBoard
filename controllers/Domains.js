@@ -136,7 +136,7 @@ module.exports = function (app, model) {
         // app.log("Roles created: " + JSON.stringify(roles),myName,5);
         // Add ownerId to Admin role...
         let adminRole = roles.filter(role => {
-          return (role.name.indexOf('Admin')>=0)
+          return (role.name.indexOf('Admin') >= 0)
         })[0]
         if (!adminRole) return false
         // app.log("Found admin role: " + JSON.stringify(adminRole),myName,6);
@@ -211,7 +211,7 @@ module.exports = function (app, model) {
         return app.controllers[model].getDomainsByUserId(req.session.user.id)
       })
       .then(domains => {
-        if (domains===null) return res.redirect('/')
+        if (domains === null) return res.redirect('/')
         req.appData.domains = domains
         req.appData.view = 'domains'
         return next()
@@ -244,23 +244,22 @@ module.exports = function (app, model) {
     },
     getDomains: function (req, res, next) {
       let myName = 'getDomains()'
-      app.models[model]
-      .findAll()
-      .then((domains) => {
-        if (domains===null) return res.redirect('/')
-        req.appData.domains = domains
-        req.appData.view = 'domains'
-        return next()
-      })
-      .catch(err => {
-        return res.send(err.message)
-      })
+      app.models[model].findAll()
+        .then((domains) => {
+          if (domains === null) return res.redirect('/')
+          req.appData.domains = domains
+          req.appData.view = 'domains'
+          return next()
+        })
+        .catch(err => {
+          return res.send(err.message)
+        })
     },
     getDomain: function (req, res, next) {
       let myName = 'getDomain'
       let searchObj
       app.log('Getting domain: ' + req.params.id)
-      //- how to tell the difference between IDs and nicknames
+      // how to tell the difference between IDs and nicknames
       if (Number.isInteger(parseInt(req.params.id))) {
         searchObj = {
           where: {
@@ -280,41 +279,40 @@ module.exports = function (app, model) {
         }
       }
       app.controllers[model].__get(searchObj)
-      .then(domain => {
-        if (domain===null) return res.redirect('/')
-        req.appData.models.push('domain')
-        req.appData.domain = domain[0]
-        req.appData.view = 'domain'
-      })
-      .then(() => {
-        // loop through related objects
-        app.log('Collecting linked objects', myName, 6)
-        let linkedObjectPromise = Promise.resolve()
-        req.appData.linkedObjects = {}
-        for (let link of app.domainlinks) {
-          app.log('Getting linked object: ' + link, myName, 6)
-          linkedObjectPromise = linkedObjectPromise.then(() => {
-            app.log('Linked object: ' + link + ' domain ID: ' + req.appData.domain.id, myName, 6)
-            if (app.controllers[link].hasOwnProperty('getByDomainId')) {
-              return app.controllers[link].getByDomainId(req.appData.domain.id)
-            } else {
-              return []
-            }
-          })
-          .then(objs => {
-            req.appData.linkedObjects[link] = objs
-            // app.log(JSON.stringify(req.appData.linkedObjects),myName,6);
-            return;
-          })
-        }
-        return linkedObjectPromise
-      })
-      .then(() => {
-        return next()
-      })
-      .catch(err => {
-        res.send(err.message)
-      })
+        .then(domain => {
+          if (domain === null) return res.redirect('/')
+          req.appData.models.push('domain')
+          req.appData.domain = domain[0]
+          req.appData.view = 'domain'
+        })
+        .then(() => {
+          // loop through related objects
+          app.log('Collecting linked objects', myName, 6)
+          let linkedObjectPromise = Promise.resolve()
+          req.appData.linkedObjects = {}
+          for (let link of app.domainlinks) {
+            linkedObjectPromise = linkedObjectPromise.then(() => {
+              app.log('Getting linked object: ' + link + ' domain ID: ' + req.appData.domain.id, myName, 6)
+              if (app.controllers[link].hasOwnProperty('getByDomainId')) {
+                return app.controllers[link].getByDomainId(req.appData.domain.id)
+              } else {
+                return []
+              }
+            })
+            .then(objs => {
+              req.appData.linkedObjects[link] = objs
+              // app.log(JSON.stringify(req.appData.linkedObjects),myName,6);
+              return
+            })
+          }
+          return linkedObjectPromise
+        })
+        .then(() => {
+          return next()
+        })
+        .catch(err => {
+          res.send(err.message)
+        })
     },
     getDomainById: function (id) {
       let myName = 'getDomainById'
@@ -372,7 +370,7 @@ module.exports = function (app, model) {
       app.models[model]
       .findByPk(req.params.id, { include: [{ model: app.models['roles'], include: [app.models['users']] }] })
       .then((domain) => {
-        if (domain===null) return res.redirect('/')
+        if (domain === null) return res.redirect('/')
         req.appData.domain = domain
         req.appData.view = 'domainusers'
         return next()
@@ -398,7 +396,7 @@ module.exports = function (app, model) {
       app.models[model]
       .findOne({ where: { name: domainName } })
       .then(domain => {
-        if (domain===null) return false
+        if (domain === null) return false
         return domain.id
       })
       .catch(err => {
