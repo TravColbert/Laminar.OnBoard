@@ -1,5 +1,7 @@
 extends index.pug
 
+include mixins-agenda.pug
+
 block aside
   aside.sidebar
     .sticky-50.flexy-column
@@ -36,10 +38,12 @@ block content
   section.domain
     article.main
       h2 Domain: #{domain.name} 
-      h3 Items
-      div
-        .item-container
-          - objectTypes = Object.keys(linkedObjects);
-          each objectType in objectTypes
-            - objectTypeList = "list-" + objectType;
-            +#{objectTypeList}(linkedObjects[objectType])
+      //- h3 Items
+      //- div
+      //-   .item-container
+      - objectTypes = Object.keys(linkedObjects);
+      each objectType in objectTypes
+        - objectTypeList = "list-" + objectType;
+        - let objectTypeLabel = objectType[0].toUpperCase() + objectType.slice(1)
+        h3 #{objectTypeLabel}
+        +#{objectTypeList}(linkedObjects[objectType])
