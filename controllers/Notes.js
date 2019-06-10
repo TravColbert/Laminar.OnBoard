@@ -49,8 +49,8 @@ module.exports = function (app, model) {
       let myName = 'gets (notes)'
       let getsPromise = Promise.resolve()
       getsPromise = getsPromise.then(() => {
-        if (app.tools.isAuthenticated(req)) {
-          return app.controllers[model].getNotesByUserId(req.session.user.id)
+        if (app.tools.isAuthenticated()) {
+          return app.controllers[model].getNotesByUserId(app.session.user.id)
         } else {
           return app.controllers[model].getPublicNotes()
         }
@@ -81,7 +81,7 @@ module.exports = function (app, model) {
           }
         ]
       }
-      if (!app.tools.isAuthenticated(req)) {
+      if (!app.tools.isAuthenticated()) {
         // User is not authenticated...
         // The note and domain must be 'public'
         searchObj.where.public = true
@@ -141,7 +141,7 @@ module.exports = function (app, model) {
           }
         ]
       }
-      if (!app.tools.isAuthenticated(req)) {
+      if (!app.tools.isAuthenticated()) {
         app.log(`User not authenticated - showing public entries only`, myName, 6)
         // User is not authenticated...
         // The note must be 'public'
@@ -179,8 +179,8 @@ module.exports = function (app, model) {
           }
           req.appData.view = 'blogentry'
           // Now, get a list of notes...
-          if (app.tools.isAuthenticated(req)) {
-            return app.controllers[model].getNotesByUserId(req.session.user.id)
+          if (app.tools.isAuthenticated()) {
+            return app.controllers[model].getNotesByUserId(app.session.user.id)
           } else {
             return app.controllers[model].getPublicNotes()
           }

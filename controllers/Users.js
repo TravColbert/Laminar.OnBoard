@@ -506,28 +506,53 @@ module.exports = function (app, model) {
     },
     switchToDomainByType: function (modelType, req) {
       let myName = 'switchToDomainByType'
+      // modelType = req.appData[modelType]
+
       app.log(`Switching to domain owning model type: ${modelType}`, myName, 6)
-      if (req.appData[modelType]) {
-        // Look up domain of the model type if not there
-        let domainId = (modelType === 'domain') ? req.appData[modelType].id : req.appData[modelType].domainId
+      // app.log(JSON.stringify(req.session.user), myName, 8)
+      let domainId = null
+      if (modelType) {
+        app.log(JSON.stringify(req.appData[modelType]), myName, 8)
+        domainId = (modelType === 'domain') ? req.appData[modelType].id : req.appData[modelType].domainId
         app.log(`Object '${modelType}' belongs to domain ${domainId}`, myName, 7)
-        // console.log(req.session.user)
-        return app.controllers['domains'].getDomainById(domainId)
-          .then(domain => {
-            if (domain && domain.length > 0) {
-              app.log(`Found domain: '${domain[0].name}'`, myName, 7)
-              return app.controllers['users'].setCurrentDomain(req.session.user, domain[0])
-            } else {
-              return false
-            }
-          })
-          .then(result => {
-          // console.log(req.session.user)
-            return result
-          })
       }
-      app.log(`No model detected in request`, myName, 6)
-      return false
+      return app.controllers['domains'].getDomainById(domainId)
+        .then(domain => {
+          if (domain && domain.length > 0) {
+            app.log(`Found domain: '${domain[0].name}'`, myName, 7)
+            return app.controllers['users'].setCurrentDomain(req.session.user, domain[0])
+          } else {
+            return false
+          }
+        })
+        .catch(() => {
+          return false
+        })
+        // .then(result => {
+        // // console.log(req.session.user)
+        //   return result
+        // })
+      // if (req.appData[modelType]) {
+      //   // Look up domain of the model type if not there
+      //   let domainId = (modelType === 'domain') ? req.appData[modelType].id : req.appData[modelType].domainId
+      //   app.log(`Object '${modelType}' belongs to domain ${domainId}`, myName, 7)
+      //   // console.log(req.session.user)
+      //   return app.controllers['domains'].getDomainById(domainId)
+      //     .then(domain => {
+      //       if (domain && domain.length > 0) {
+      //         app.log(`Found domain: '${domain[0].name}'`, myName, 7)
+      //         return app.controllers['users'].setCurrentDomain(req.session.user, domain[0])
+      //       } else {
+      //         return false
+      //       }
+      //     })
+      //     .then(result => {
+      //     // console.log(req.session.user)
+      //       return result
+      //     })
+      // }
+      // app.log(`No model detected in request`, myName, 6)
+      // return false
     },
     logout: function (req, res, next) {
       req.session.destroy((err) => {

@@ -128,8 +128,8 @@ module.exports = function (app, model) {
       app.log('Getting files', myName, 6)
       getPromise
         .then(() => {
-          if (app.tools.isAuthenticated(req)) {
-            return app.controllers[model].getByUserId(req.session.user.id, false)
+          if (app.tools.isAuthenticated()) {
+            return app.controllers[model].getByUserId(app.session.user.id, false)
           } else {
             return app.controllers[model].getPublic()
           }
