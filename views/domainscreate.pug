@@ -22,7 +22,7 @@ block content
         .inputdomainname.itemdetail
           label.label(for="name") Domain Name:
           .data
-            input#name(type="text" name="name" placeholder="name of domain" autofocus pattern="[A-Za-z- ]{6,}")
+            input#name(type="text" name="name" placeholder="name of domain" autofocus pattern="[0-9A-Za-z- ]{6,}")
         .inputdomaindescription.itemdetail
           label.label(for="description") Description:
           .data
@@ -36,9 +36,9 @@ block content
           .data
             input#public.hidden(type="checkbox" name="public" value="true")
             label.togglepublicfalse(for="public")
-              i.material-icons.toggle.toggleoff toggle_off
+              i.material-icons.toggle.toggleoff(alt="off") toggle_off
             label.togglepublictrue(for="public")
-              i.material-icons.toggle.toggleon toggle_on
+              i.material-icons.toggle.toggleon(alt="on") toggle_on
 
 block scripts
   script(src='/js/domainscreate.js')
