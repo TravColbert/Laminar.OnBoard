@@ -2,25 +2,20 @@ extends index.pug
 
 block aside
   aside.sidebar
-    .sticky-50.flexy-column
-      article.inviteactions
+    article.inviteactions
+      h2 Actions
+      input#submit.btn.normal.buttonconfirm(type="submit" form="invitationacceptform" value="Confirm")
+      a.btn.cancel.buttoncancel(href="/" + model + "/") Cancel
 
 block content
   section.invite
     article.main
       h2 Accept Invitation
       .item-listing
-        form(action="/invites/" + roleAppid + "/" method="post")
+        form#invitationacceptform(action="/invites/" + roleAppid + "/" method="post")
           input(id="userEmail" type="hidden" name="userEmail" value= userEmail)
           .itemdetail
             label.label(for="pin") PIN:
             #pin.data 
               input(id="pin" type="text" name="pin")
-          .itemdetail
-            .label Actions:
-            .data
-              input#submit.btn.normal.buttonconfirm(type="submit" value="Confirm")
-          .itemdetail
-            .data
-              a.btn.cancel.buttoncancel(href="/" + model + "/") Cancel
-
+            .subdetail One of the administrators of this domain should have given you a PIN so you can accept this invitation. Contact that user to get the PIN and enter it here.
