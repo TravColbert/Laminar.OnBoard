@@ -276,15 +276,15 @@ module.exports = function (app, sequelize) {
       // app.log(modelName,myName,6);
       syncPromises = syncPromises.then(() => {
         return models[modelName].sync()
-        .then((model) => {
-          let modelName = model.getTableName()
-          app.log(modelName + ' started', myName, 6)
-          return (modelName)
-        })
-        .catch(err => {
-          app.log(err.message, myName, 4, '!')
-          return (err)
-        })
+          .then((model) => {
+            let modelName = model.getTableName()
+            app.log(modelName + ' started', myName, 6)
+            return (modelName)
+          })
+          .catch(err => {
+            app.log(err.message, myName, 4, '!')
+            return (err)
+          })
       })
     })
     return syncPromises
@@ -683,11 +683,11 @@ module.exports = function (app, sequelize) {
     } else {
       targetDomainId = req.session.user.defaultDomainId
     }
-    app.tools.checkAuthorization([action, 'all'], req.session.user.id, targetDomainId)
+    return app.tools.checkAuthorization([action, 'all'], req.session.user.id, targetDomainId)
       .then((response) => {
         if (!response) {
           app.log('User failed authorization check', myName, 6)
-          return resolve([])
+          return []
         }
         app.log('User is authorized to show form: ' + model + action, myName, 6)
         app.models['domains']
@@ -702,6 +702,10 @@ module.exports = function (app, sequelize) {
             // req.appData.user = req.session.user;
             req.appData.roles = roles
             req.appData.view = model + action
+            if (req.query) {
+              app.log(`Sending query string: ${JSON.stringify(req.query)}`, myName, 8)
+              req.appData.query = req.query
+            }
             app.log('Model is: ' + model, myName, 6)
             if (app.controllers[model].hasOwnProperty(action + 'Form'))
               return app.controllers[model][action + 'Form'](req, res)
@@ -711,7 +715,6 @@ module.exports = function (app, sequelize) {
           .then((data) => {
             if (data) req.appData[model + action] = data
             req.appData.domains = req.session.user.domains
-            // app.log(JSON.stringify(req.appData.domains), myName, 8)
             return next()
           })
       })
@@ -755,11 +758,26 @@ module.exports = function (app, sequelize) {
     if (req.xhr) app.log(`Probably a client library request (e.g. JQuery) (XHR=${!!(req.xhr)})`, myName, 4)
     return next()
   }
+  obj.stringifyQueryObj = function (queryObj) {
+    let myName = 'stringifyQueryObj'
+    let params = Object.keys(queryObj)
+    if (params.length === 0) return ''
+    app.log(`Stringifying: ${JSON.stringify(queryObj)}`, myName, 8)
+    let returnString = '?'
+    for (let param in queryObj) {
+      returnString += `${param}=${queryObj[param]}`
+    }
+    return returnString
+  }
   obj.enforceStrictRouting = function (req, res, next) {
     let myName = 'enforceStrictRouting'
-    if (app.get('strict routing') && req.url.slice(-1) !== '/') {
-      app.log(`Enforcing strict routing. Redirecting to: ${req.protocol}://${req.hostname}${req.url}/`, myName, 7)
-      return res.redirect(301, `${req.protocol}://${req.hostname}${req.url}/`)
+    if (app.get('strict routing') && req.path.slice(-1) !== '/') {
+      let queryString
+      if (req.hasOwnProperty('query')) {
+        queryString = app.tools.stringifyQueryObj(req.query)
+      }
+      app.log(`Enforcing strict routing. Redirecting to: ${req.protocol}://${req.hostname}${req.path}/${queryString}`, myName, 7)
+      return res.redirect(301, `${req.protocol}://${req.hostname}${req.path}/${queryString}`)
     }
     return next()
   }
