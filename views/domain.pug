@@ -38,9 +38,6 @@ block content
   section.domain
     article.main
       h2 Domain: #{domain.name} 
-      //- h3 Items
-      //- div
-      //-   .item-container
       - objectTypes = Object.keys(linkedObjects);
       each objectType in objectTypes
         - objectTypeList = "list-" + objectType;
