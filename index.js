@@ -124,114 +124,134 @@ const navigation = require('./navigation')(app)
 
 // Build app starting with model-hydration
 app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
-.then(modelFiles => {
-  return app.tools.processFiles(modelFiles, app.tools.readModel)
-}).then(() => {
-  // Hydrate controllers
-  return app.tools.readDir(path.join(cwd, app.locals.controllersDir))
-}).then(controllerFiles => {
-  return app.tools.processFiles(controllerFiles, app.tools.readController)
-}).then(() => {
-  return app.tools.readDir(path.join(cwd, app.locals.elementsDir), '.js')
-}).then(elementFiles => {
-  return app.tools.processFiles(elementFiles, app.tools.readElement)
-}).then(() => {
-  // Bind associations and start the models
-  return app.tools.readDir(path.join(cwd, app.locals.modelsDir, 'associations'))
-}).then(associationFiles => {
-  return app.tools.processFiles(associationFiles, app.tools.readAssociation)
-}).then(() => {
-  return app.tools.startModels(app.models)
-}).then(() => {
-  return app.tools.setupBasePermissions()
-}).then(() => {
-  // Run and post-startup model tasks (e.g. creating records)
-  return app.tools.readDir(path.join(cwd, app.locals.modelsDir, 'modelstartups'), '.js')
-}).then(modelStartupFiles => {
-  return app.tools.processFiles(modelStartupFiles, app.tools.readModelStartup)
-}).then(() => {
-  // Collect menu elements
-  return app.tools.readDir(path.join(app.cwd, app.locals.navDir), '.json')
-}).then(menuFiles => {
-  return app.tools.processFiles(menuFiles, app.tools.readMenu)
-}).then(() => {
-  // Parse headoptions file, if available
-  fs.readFile(path.join(cwd, 'config', 'headoptions.json'), (err, data) => {
-    if (err) {
-      app.log('No headoptions file found')
-    } else {
-      app.log('Head options: ' + data, myName, 6)
-      app.headOptions = JSON.parse(data)
-    }
+  .then(modelFiles => {
+    return app.tools.processFiles(modelFiles, app.tools.readModel)
   })
-  return;
-}).then(() => {
-  /**
-   * SET BASE APP CONFIGURATON
-   */
-  app.use(
-    app.tools.handleRedirects,
-    app.tools.logRequest,
-    app.tools.enforceStrictRouting,
-    app.tools.setOriginalUrl,
-    app.tools.setAppData,
-    app.tools.timeStart
-  )
-
-  /**
-   * SET SESSION AND ACCOUNT DATA
-   */
-  app.use(
-    app.tools.setUserAccount,
-    app.tools.getUserDomains,
-    app.tools.setMessage
-  )
-
-  /**
-   * START BUILDING THE INTERFACE
-   */
-  app.use(
-    navigation.getMenu
-  )
-}).then(() => {
-  /**
-   * ROUTE DEFINITIONS
-   *
-   * These are derived from route files placed in the routesDir directory
-   * Any route definitions found there will be defined here and mounted
-   * The mount point will be the name of the route file.
-   * There are some 'standard' routes:
-   * /login : standard routes to allow loging-in
-   * /logout : standard routes for logging-out
-   * /register : a simple user-registration system that allows new users to
-   *  be created and submitted for approval.
-   * /roles : a role-management system.
-   * /authtest : can be used to simply test authentication
-   * /actions : a basic way of requesting forms used to work on : /create/user
-   *
-   * All of these routes can be excluded or replaced.
-   */
-  return app.tools.readDir(path.join(cwd, app.locals.routesDir))
-}).then(routeFiles => {
-  return app.tools.processFiles(routeFiles, app.tools.readRoute)
-}).then(() => {
-  app.log(`Total routes: ${Object.keys(app.routes).length}`, myName, 6)
-  let routeNames = Object.keys(app.routes)
-  routeNames.forEach(name => {
-    app.use(`/${name}/`, app.routes[name])
+  .then(() => {
+    // Hydrate controllers
+    return app.tools.readDir(path.join(cwd, app.locals.controllersDir))
   })
-}).then(() => {
-  app.get('/profile/', app.tools.checkAuthentication, app.controllers['users'].getProfile)
-  app.post('/authorizedelements/:element/', app.tools.checkAuthentication, app.tools.getElement)
-  app.get('/', app.tools.homePage)
-}).then(() => {
-  app.use(
-    app.tools.timeEnd,
-    app.tools.render
-  )
-}).catch(err => {
-  app.log(err.message)
-})
+  .then(controllerFiles => {
+    return app.tools.processFiles(controllerFiles, app.tools.readController)
+  })
+  .then(() => {
+    return app.tools.readDir(path.join(cwd, app.locals.elementsDir), '.js')
+  })
+  .then(elementFiles => {
+    return app.tools.processFiles(elementFiles, app.tools.readElement)
+  })
+  .then(() => {
+    // Bind associations and start the models
+    return app.tools.readDir(path.join(cwd, app.locals.modelsDir, 'associations'))
+  })
+  .then(associationFiles => {
+    return app.tools.processFiles(associationFiles, app.tools.readAssociation)
+  })
+  .then(() => {
+    return app.tools.startModels(app.models)
+  })
+  .then(() => {
+    return app.tools.setupBasePermissions()
+  })
+  .then(() => {
+    // Run and post-startup model tasks (e.g. creating records)
+    return app.tools.readDir(path.join(cwd, app.locals.modelsDir, 'modelstartups'), '.js')
+  })
+  .then(modelStartupFiles => {
+    return app.tools.processFiles(modelStartupFiles, app.tools.readModelStartup)
+  })
+  .then(() => {
+    // Collect menu elements
+    return app.tools.readDir(path.join(app.cwd, app.locals.navDir), '.json')
+  })
+  .then(menuFiles => {
+    return app.tools.processFiles(menuFiles, app.tools.readMenu)
+  })
+  .then(() => {
+    // Parse headoptions file, if available
+    return fs.readFile(path.join(cwd, 'config', 'headoptions.json'), (err, data) => {
+      if (err) {
+        app.log('No headoptions file found')
+      } else {
+        app.log('Head options: ' + data, myName, 6)
+        app.headOptions = JSON.parse(data)
+      }
+    })
+    // return
+  })
+  .then(() => {
+    /**
+     * SET BASE APP CONFIGURATON
+     */
+    app.use(
+      app.tools.handleRedirects,
+      app.tools.logRequest,
+      app.tools.enforceStrictRouting,
+      app.tools.setOriginalUrl,
+      app.tools.setAppData,
+      app.tools.timeStart
+    )
+
+    /**
+     * SET SESSION AND ACCOUNT DATA
+     */
+    app.use(
+      app.tools.setUserAccount,
+      app.tools.getUserDomains,
+      app.tools.setMessage
+    )
+
+    /**
+     * START BUILDING THE INTERFACE
+     */
+    app.use(
+      navigation.getMenu
+    )
+  })
+  .then(() => {
+    /**
+     * ROUTE DEFINITIONS
+     *
+     * These are derived from route files placed in the routesDir directory
+     * Any route definitions found there will be defined here and mounted
+     * The mount point will be the name of the route file.
+     * There are some 'standard' routes:
+     * /login : standard routes to allow loging-in
+     * /logout : standard routes for logging-out
+     * /register : a simple user-registration system that allows new users to
+     *  be created and submitted for approval.
+     * /roles : a role-management system.
+     * /authtest : can be used to simply test authentication
+     * /actions : a basic way of requesting forms used to work on : /create/user
+     *
+     * All of these routes can be excluded or replaced.
+     */
+    return app.tools.readDir(path.join(cwd, app.locals.routesDir))
+  })
+  .then(routeFiles => {
+    return app.tools.processFiles(routeFiles, app.tools.readRoute)
+  })
+  .then(() => {
+    app.log(`Total routes: ${Object.keys(app.routes).length}`, myName, 6)
+    let routeNames = Object.keys(app.routes)
+    routeNames.forEach(name => {
+      app.use(`/${name}/`, app.routes[name])
+    })
+  })
+  .then(() => {
+    app.get('/profile/', app.tools.checkAuthentication, app.controllers['users'].getProfile)
+    app.post('/authorizedelements/:element/', app.tools.checkAuthentication, app.tools.getElement)
+    app.get('/', app.tools.homePage)
+  })
+  .then(() => {
+    app.use(
+      app.tools.timeEnd,
+      app.tools.render
+    )
+  })
+  .catch(err => {
+    app.log(err.message)
+  })
 
 /**
  * START THE SERVER
