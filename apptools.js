@@ -276,15 +276,15 @@ module.exports = function (app, sequelize) {
       // app.log(modelName,myName,6);
       syncPromises = syncPromises.then(() => {
         return models[modelName].sync()
-        .then((model) => {
-          let modelName = model.getTableName()
-          app.log(modelName + ' started', myName, 6)
-          return (modelName)
-        })
-        .catch(err => {
-          app.log(err.message, myName, 4, '!')
-          return (err)
-        })
+          .then((model) => {
+            let modelName = model.getTableName()
+            app.log(modelName + ' started', myName, 6)
+            return (modelName)
+          })
+          .catch(err => {
+            app.log(err.message, myName, 4, '!')
+            return (err)
+          })
       })
     })
     return syncPromises
@@ -413,22 +413,37 @@ module.exports = function (app, sequelize) {
       }
     }
   }
-  obj.isAuthenticated = function (req) {
+  // obj.isAuthenticated = function (req) {
+  //   let myName = 'isAuthenticated'
+  //   app.log('Checking if session is authenticated', myName, 6)
+  //   if (!req.session.cookie) return false
+  //   app.log('session cookie exists...', myName, 6)
+  //   if (!req.session.user) return false
+  //   app.log('session user object exists...', myName, 6)
+  //   if (!req.session.user.email) return false
+  //   app.log('session user email exists...', myName, 6)
+  //   if (!req.session.user.id) return false
+  //   app.log('session user appears to be intact. Authenticated.', myName, 5)
+  //   return true
+  // }
+  obj.isAuthenticated = function () {
     let myName = 'isAuthenticated'
     app.log('Checking if session is authenticated', myName, 6)
-    if (!req.session.cookie) return false
+    if (!app.session) return false
+    app.log('session object exists...', myName, 6)
+    if (!app.session.cookie) return false
     app.log('session cookie exists...', myName, 6)
-    if (!req.session.user) return false
+    if (!app.session.user) return false
     app.log('session user object exists...', myName, 6)
-    if (!req.session.user.email) return false
+    if (!app.session.user.email) return false
     app.log('session user email exists...', myName, 6)
-    if (!req.session.user.id) return false
-    app.log('session user appears to be intact. Moving on...', myName, 5)
+    if (!app.session.user.id) return false
+    app.log('session user appears to be intact. Authenticated.', myName, 5)
     return true
   }
   obj.checkAuthentication = function (req, res, next) {
     let myName = 'checkAuthentication'
-    if (!obj.isAuthenticated(req)) return res.redirect('/login/')
+    if (!obj.isAuthenticated()) return res.redirect('/login/')
     // app.log('session user id is set...', myName, 6)
     // app.log('found all session info: ' + req.session.user.email, myName, 6)
     // app.log('final confirmation that ' + req.session.user.email + ' user id (' + req.session.user.id + ') exists', myName, 6)
@@ -457,38 +472,40 @@ module.exports = function (app, sequelize) {
       query.users = { id: userId }
       query.domains = (domainId) ? { id: domainId } : null   // Admin user doesn't have a default domain ATM
       app.models['roles']
-      .findAll({
-        where: query.roles || null,
-        include: [
-          {
-            model: app.models['users'],
-            where: query.users || null
-          },
-          {
-            model: app.models['domains'],
-            where: query.domains || null
-          }
-        ]
-      })
-      .then((roles) => {
-        if (roles === null || roles.length === 0) return resolve(false)
-        app.log(roles.length + " roles found permitting '" + capability + "'", myName, 6)
-        return resolve(true)
-      })
-      .catch(err => {
-        app.log('error looking up authorizations: ' + err.message, myName, 2)
-        return reject(err)
-      })
+        .findAll({
+          where: query.roles || null,
+          include: [
+            {
+              model: app.models['users'],
+              where: query.users || null
+            },
+            {
+              model: app.models['domains'],
+              where: query.domains || null
+            }
+          ]
+        })
+        .then((roles) => {
+          if (roles === null || roles.length === 0) return resolve(false)
+          app.log(roles.length + " roles found permitting '" + capability + "'", myName, 6)
+          return resolve(true)
+        })
+        .catch(err => {
+          app.log('error looking up authorizations: ' + err.message, myName, 2)
+          return reject(err)
+        })
     })
   }
   obj.setUserAccount = function (req, res, next) {
     var myName = 'setUserAccount()'
     app.log('setting user account data...', myName, 6)
+    app.session = null
     if (req.session.user) {
       app.log('Session found: user: ' + req.session.user.email + ' id: ' + req.session.user.id, myName, 6)
       req.appData.user = req.session.user
       req.appData.account = req.session.user.email
       req.appData.accountNum = req.session.user.id
+      app.session = req.session
     } else {
       app.log(`No user session detected`, myName, 6)
     }
@@ -502,61 +519,61 @@ module.exports = function (app, sequelize) {
       return next()
     }
     return app.controllers['users'].getUserById(req.session.user.id)
-    .then((user) => {
-      return app.controllers['users'].compileDomainList(user)
-    })
-    .then((domains) => {
-      for (let domain of domains) {
-        app.log(`Adding domain to user's domain list: ${domain.name}`, myName, 7)
-      }
-      req.session.user.domains = domains
-      return next()
-    })
-    .catch((err) => {
-      app.log('Error finding list of domains for this user: ' + err.message, myName, 2)
-      return res.send("This is the reason we can't continue: " + err.message)
-    })
+      .then((user) => {
+        return app.controllers['users'].compileDomainList(user)
+      })
+      .then((domains) => {
+        for (let domain of domains) {
+          app.log(`Adding domain to user's domain list: ${domain.name}`, myName, 7)
+        }
+        req.session.user.domains = domains
+        return next()
+      })
+      .catch((err) => {
+        app.log('Error finding list of domains for this user: ' + err.message, myName, 2)
+        return res.send("This is the reason we can't continue: " + err.message)
+      })
   }
   obj.triggerDomainSwitchBy = function (modelType) {
     return function (req, res, next) {
       let myName = `switchDomainByType(${modelType})`
       app.log(`Switching domain by model type: ${modelType}`, myName, 6)
       return app.controllers['users'].switchToDomainByType(modelType, req)
-      .then(result => {
-        app.log(`${myName} got a ${result} result`, myName, 6)
-        return next()
-      })
+        .then(result => {
+          app.log(`${myName} got a ${result} result`, myName, 6)
+          return next()
+        })
     }
   }
-  obj.setCurrentDomain = function (req, res, next) {
-    let myName = 'setCurrentDomain'
-    app.log('Setting current domain', myName, 6)
-    if (!req.session.user) {
-      app.log('No user session. Moving on...', myName, 6)
-      return next()
-    }
-    let targetDomainId
-    if (req.session.user.hasOwnProperty('switchDomain')) {
-      app.log(`Found a switch-domain request for: ${req.session.user.switchDomain}`, myName, 6)
-      targetDomainId = req.session.user.switchDomain
-    } else if (req.session.user.defaultDomainId !== null) {
-      app.log(`No switch-domain request found. Looking for a defaultDomain: ${req.session.user.defaultDomainId}`, myName, 6)
-      targetDomainId = req.session.user.defaultDomainId
-    } else {
-      app.log(`No default domain set. Chosing the first on the list: ${req.session.user.domains[0].id}`, myName, 6)
-      targetDomainId = req.session.user.domains[0].id
-    }
-    app.log(`Target domain is: ${targetDomainId}`, myName, 6)
-    let switchTo = req.session.user.domains.filter(v => {
-      return (v.id === targetDomainId)
-    })
-    if (switchTo && switchTo[0].id) {
-      app.log(`Switching to this: ${switchTo[0].name} (${switchTo[0].id})`, myName, 6)
-      req.session.user.currentDomain = switchTo[0]
-    }
-    app.log(`Session's current domain is ==> ${req.session.user.currentDomain.name}`, myName, 6)
-    return next()
-  }
+  // obj.setCurrentDomain = function (req, res, next) {
+  //   let myName = 'setCurrentDomain'
+  //   app.log('Setting current domain', myName, 6)
+  //   if (!req.session.user) {
+  //     app.log('No user session. Moving on...', myName, 6)
+  //     return next()
+  //   }
+  //   let targetDomainId
+  //   if (req.session.user.hasOwnProperty('switchDomain')) {
+  //     app.log(`Found a switch-domain request for: ${req.session.user.switchDomain}`, myName, 6)
+  //     targetDomainId = req.session.user.switchDomain
+  //   } else if (req.session.user.defaultDomainId !== null) {
+  //     app.log(`No switch-domain request found. Looking for a defaultDomain: ${req.session.user.defaultDomainId}`, myName, 6)
+  //     targetDomainId = req.session.user.defaultDomainId
+  //   } else {
+  //     app.log(`No default domain set. Chosing the first on the list: ${req.session.user.domains[0].id}`, myName, 6)
+  //     targetDomainId = req.session.user.domains[0].id
+  //   }
+  //   app.log(`Target domain is: ${targetDomainId}`, myName, 6)
+  //   let switchTo = req.session.user.domains.filter(v => {
+  //     return (v.id === targetDomainId)
+  //   })
+  //   if (switchTo && switchTo[0].id) {
+  //     app.log(`Switching to this: ${switchTo[0].name} (${switchTo[0].id})`, myName, 6)
+  //     req.session.user.currentDomain = switchTo[0]
+  //   }
+  //   app.log(`Session's current domain is ==> ${req.session.user.currentDomain.name}`, myName, 6)
+  //   return next()
+  // }
   obj.switchToDomain = function (req, res, next) {
     let myName = 'switchToDomain()'
     app.log('Request to set current domain to: ' + req.params.domainId, myName, 6)
@@ -586,8 +603,8 @@ module.exports = function (app, sequelize) {
 
     let homePagePromises = Promise.resolve()
     homePagePromises = homePagePromises.then(() => {
-      if (app.tools.isAuthenticated(req)) {
-        return app.controllers.invites.checkInvites(req.session.user.email)
+      if (app.tools.isAuthenticated()) {
+        return app.controllers.invites.checkInvites(app.session.user.email)
           .then(invites => {
             let numInvites = (invites) ? invites.length : 0
             app.log('Invites found: ' + numInvites, myName, 6)
@@ -600,8 +617,8 @@ module.exports = function (app, sequelize) {
     }).then((result) => {
       if (!result) app.log('No invites found')
       app.log('Checking for notes', myName, 6)
-      if (app.tools.isAuthenticated(req)) {
-        return app.controllers['notes'].getNotesByUserId(req.session.user.id)
+      if (app.tools.isAuthenticated()) {
+        return app.controllers['notes'].getNotesByUserId(app.session.user.id)
       } else {
         return app.controllers['notes'].getPublicNotes()
       }
@@ -669,11 +686,11 @@ module.exports = function (app, sequelize) {
     } else {
       targetDomainId = req.session.user.defaultDomainId
     }
-    app.tools.checkAuthorization([action, 'all'], req.session.user.id, targetDomainId)
+    return app.tools.checkAuthorization([action, 'all'], req.session.user.id, targetDomainId)
       .then((response) => {
         if (!response) {
           app.log('User failed authorization check', myName, 6)
-          return resolve([])
+          return []
         }
         app.log('User is authorized to show form: ' + model + action, myName, 6)
         app.models['domains']
@@ -688,6 +705,10 @@ module.exports = function (app, sequelize) {
             // req.appData.user = req.session.user;
             req.appData.roles = roles
             req.appData.view = model + action
+            if (req.query) {
+              app.log(`Sending query string: ${JSON.stringify(req.query)}`, myName, 8)
+              req.appData.query = req.query
+            }
             app.log('Model is: ' + model, myName, 6)
             if (app.controllers[model].hasOwnProperty(action + 'Form'))
               return app.controllers[model][action + 'Form'](req, res)
@@ -697,7 +718,6 @@ module.exports = function (app, sequelize) {
           .then((data) => {
             if (data) req.appData[model + action] = data
             req.appData.domains = req.session.user.domains
-            // app.log(JSON.stringify(req.appData.domains), myName, 8)
             return next()
           })
       })
@@ -741,11 +761,26 @@ module.exports = function (app, sequelize) {
     if (req.xhr) app.log(`Probably a client library request (e.g. JQuery) (XHR=${!!(req.xhr)})`, myName, 4)
     return next()
   }
+  obj.stringifyQueryObj = function (queryObj) {
+    let myName = 'stringifyQueryObj'
+    let params = Object.keys(queryObj)
+    if (params.length === 0) return ''
+    app.log(`Stringifying: ${JSON.stringify(queryObj)}`, myName, 8)
+    let returnString = '?'
+    for (let param in queryObj) {
+      returnString += `${param}=${queryObj[param]}`
+    }
+    return returnString
+  }
   obj.enforceStrictRouting = function (req, res, next) {
     let myName = 'enforceStrictRouting'
-    if (app.get('strict routing') && req.url.slice(-1) !== '/') {
-      app.log(`Enforcing strict routing. Redirecting to: ${req.protocol}://${req.hostname}${req.url}/`, myName, 7)
-      return res.redirect(301, `${req.protocol}://${req.hostname}${req.url}/`)
+    if (app.get('strict routing') && req.path.slice(-1) !== '/') {
+      let queryString
+      if (req.hasOwnProperty('query')) {
+        queryString = app.tools.stringifyQueryObj(req.query)
+      }
+      app.log(`Enforcing strict routing. Redirecting to: ${req.protocol}://${req.hostname}${req.path}/${queryString}`, myName, 7)
+      return res.redirect(301, `${req.protocol}://${req.hostname}${req.path}/${queryString}`)
     }
     return next()
   }

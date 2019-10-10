@@ -44,7 +44,7 @@ mixin list-articles(notes)
           .data on: #{date.toLocaleDateString()}
         .itemdetail.articledomain.articlemeta
           .data category: #{note.domain.name}
-    //- - }
+
 
 mixin list-files(files)
   .item-listing.files
@@ -71,7 +71,7 @@ mixin list-users(users)
   .item-listing.users
     each user in users
       - let targetLoc = "/users/" + user.id + "/";
-      item.clickable(onclick="goTo('" + targetLoc + "')")
+      .item.clickable(onclick="goTo('" + targetLoc + "')")
         .itemdetail.layout-col
           .label User:
           .data #[a(href="/users/" + user.id + "/") #{user.fullname}]

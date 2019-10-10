@@ -69,9 +69,6 @@ include mixins.pug
 
 html(lang="en")
   include head.pug
-  if(headoptions)
-    for headoption in headoptions
-      +link(headoption)
   body
     include navigation.pug
     main

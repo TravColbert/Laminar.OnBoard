@@ -1,34 +1,28 @@
 extends index.pug
 
+mixin userpill(title,link,icon)
+  - if(!link) link="#"
+  .pill.clickable(onclick="goTo('" + link + "')")
+    .pillicon.tertiary
+      if(icon)
+        i.material-icons #{icon}
+    .pilllabel.nobreak= title
+
 block aside
   aside.sidebar
-    h2 Role Actions
-    .actions.secondary
-      form(action="/roles/" + role.id + "/actions/adduser/" method="post")
-        label.label Add/Invite User Email:
-        .data.layout-col
-          input(id="inviteduser" type="text" name="inviteduser")
-        label.label PIN:
-        .data.layout-col
-          input(id="pin" type="text" name="pin" value= pin)
-          .subdata The person you invite to this role must provide this PIN. Please communicate this PIN to them so they can accept the invitation.
-        label.label Comment (optional):
-        .data.layout-col
-          input(id="comment" type="text" name="comment")
-          .subdata Notes on the invite (optional)
-        label.label Actions:
-        .data.layout-row
-          input.btn.primary.buttonconfirm(type="submit" id="submit" value="Confirm")
-          //- #role_add_user_button_container.authUI(data-fetch="role_add_user" data-href="/roles/" + role.id + "/actions/adduser/")
-          //- a.btn.submit(href="/roles/" + role.id + "/adduser/") Add User
-          //- .data.layout-row
-          a.btn.cancel(href="/roles/") Cancel
+    article.roleactions
+      h2 Actions
+      input.btn.primary.buttonconfirm(type="submit" form="roleadduserform" id="submit" value="Confirm")
+      //- #role_add_user_button_container.authUI(data-fetch="role_add_user" data-href="/roles/" + role.id + "/actions/adduser/")
+      //- a.btn.submit(href="/roles/" + role.id + "/adduser/") Add User
+      //- .data.layout-row
+      a.btn.cancel(href="/roles/") Cancel
       //- #note_add_button_container.addnote.authUI(data-fetch="note_add" data-href="/actions/create/notes/")
 
 block content
-  section
-    h2 Add/Invite User to Role
-    div
+  section.roleadduser
+    article.main
+      h2 Current Role Details
       .itempanel
         .itembanner
           .itemhead Role: #{role.name}
@@ -46,8 +40,28 @@ block content
               each scope,capability in role.capabilities
                 .data #{capability} : #{scope}
           //- #role_edit_button_container.authUI(data-fetch="role_edit" data-href="/roles/" + role.id + "/actions/edit/")
-        .item-listing
-          .itemdetail
-            label.label Users Currently In This Role
+      h2 Current Users
+      .item-listing
+        .itemdetail
+          label.label Users Currently In This Role
+          div
             each user in role.users
-              .data #{user.fullname}
+              +userpill(user.fullname,`/users/${user.id}/`,"face")
+            //- .data #{user.fullname}
+      h2 Add/Invite User to Role
+      form#roleadduserform(action="/roles/" + role.id + "/actions/adduser/" method="post")
+        .inputroleuseremail.itemdetail
+          label.label Add/Invite User Email:
+          .data
+            input(id="inviteduser" type="text" name="inviteduser")
+        .inputroleuser.itemdetail
+          label.label PIN:
+          .data
+            input(id="pin" type="text" name="pin" value= pin)
+            .subdata The person you invite to this role must provide this PIN. Please communicate this PIN to them so they can accept the invitation.
+        .itemrolenote.itemdetail
+          label.label Comment (optional):
+          .data
+            input(id="comment" type="text" name="comment")
+            .subdata Notes on the invite (optional)
+

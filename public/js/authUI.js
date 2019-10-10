@@ -17,7 +17,7 @@ let requestElement = function (parentElement) {
   }
 
   if (parentElement.dataset.hasOwnProperty('params')) requestObj.body = JSON.stringify({ params: parentElement.dataset.params })
-  return fetch('/authorizedelements/' + parentElement.dataset.fetch, requestObj)
+  return fetch(`/authorizedelements/${parentElement.dataset.fetch}/`, requestObj)
     .then(function (response) {
       return response.json()
     })
