@@ -354,6 +354,9 @@ module.exports = function (app, sequelize) {
             req.appData.headoptions = app.headOptions
             // app.log(req.appData.headoptions);
           }
+          if (app.locals.siteDescription) {
+            req.appData.description = app.locals.siteDescription
+          }
           app.log(`Session user: ${JSON.stringify(req.session.user)}`, myName, 8)
           return res.render(templateFile, req.appData)
       }
@@ -577,9 +580,9 @@ module.exports = function (app, sequelize) {
     app.log('queueing home page', myName, 5)
     req.appData.sessionId = req.session.id
     req.appData.view = app.locals.homeView
-    if (app.locals.siteDescription) {
-      req.appData.description = app.locals.siteDescription
-    }
+    // if (app.locals.siteDescription) {
+    //   req.appData.description = app.locals.siteDescription
+    // }
 
     let homePagePromises = Promise.resolve()
     homePagePromises = homePagePromises.then(() => {
