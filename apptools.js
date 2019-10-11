@@ -354,7 +354,7 @@ module.exports = function (app, sequelize) {
             req.appData.headoptions = app.headOptions
             // app.log(req.appData.headoptions);
           }
-          req.appData.description = app.appData.description || app.locals.siteDescription
+          req.appData.description = req.appData.description || app.locals.siteDescription
           // if (app.locals.siteDescription) {
           //   req.appData.description = app.locals.siteDescription
           // }
