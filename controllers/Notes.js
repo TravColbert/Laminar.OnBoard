@@ -272,6 +272,7 @@ module.exports = function (app, model) {
     },
     showBlog: function (req, res, next) {
       // req.appData.view = 'blogs-list'
+      req.appData.title += ' - Blog Articles'
       req.appData.view = 'home-blog'
       return next()
     },
