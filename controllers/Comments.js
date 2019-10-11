@@ -26,6 +26,7 @@ module.exports = function (app, model) {
     commentPage: function (req, res, next) {
       let myName = 'commentPage'
       app.log('Queueing default comment page', myName, 7)
+      req.appData.title += ' - Leave a Comment'
       req.appData.view = 'comment'
       return next()
     },
