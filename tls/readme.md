@@ -19,17 +19,31 @@ One option is to use Certbot to get SSL keys through Let's Encrypt.
 
 If you have control over your DNS records you may find that the easiest way to get your SSL certs is by using the DNS challenge method.  
 
+Another method to get your cert is through the **webroot** method
+
 ### Command
 
 After having installed certbot you can run the command:
 
 ```
-sudo certbot -d yourdnsname.dom --manual --preferred-challenges dns certonly
+sudo certbot -d yourdnsname.com --manual --preferred-challenges dns certonly
 ```
 
 This will start a script that will attempt to authorize you by ensuring that you have control over the DNS records for the domain name you intend to create SSL certs for.
 
 When you start the script it will ask you to create a TXT record in your DNS server with some specific text. Once this is done, continue with the script.
+
+If the script was able to query the TXT record you created then it will download your new certs and keys into the /etc/letsencrypt directory.
+
+### **webroot** Method Command
+
+The webroot method is easy if your web server is configured properly. Here is the certbot command:
+
+```
+sudo certbot certonly --webroot -w /var/www/html -d yourdnsname.com -d www.yourdnsname.com
+```
+
+The above command will generate a certificate for both the base DNS domain name and the subdomain *www*. We've found this to be important if you want SEO and browsers to work right.
 
 If the script was able to query the TXT record you created then it will download your new certs and keys into the /etc/letsencrypt directory.
 
