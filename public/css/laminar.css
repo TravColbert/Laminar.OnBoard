@@ -239,7 +239,6 @@ nav .navlinks {
   flex: 1 1 auto;
   font-weight: 600;
   justify-content: flex-end;
-  width: 30%;
 }
 nav .navlinks ul {
   background: rgba(255, 255, 255, 0.95);
@@ -950,14 +949,14 @@ code {
 
 h1,
 .hdg-1 {
-  font-size: 1.6em;
+  font-size: 1.8em;
   margin-bottom: 8px;
 }
 
 h2,
 .hdg-2 {
-  font-size: 1.8em;
-  margin-bottom: 0.25em;
+  font-size: 1.7em;
+  margin-bottom: 8px;
 }
 
 h3,
