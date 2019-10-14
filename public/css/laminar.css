@@ -6,7 +6,7 @@
 .button,
 input[type=submit],
 input[type=button], .mediaitem, .mainblurb, .maintitle, .mainwelcome, .itemhead, .articlemetadata, #articlelist .body, .forminput, article#cta,
-article#skills, main, nav .navlinks ul, header nav, footer nav, .flexy-column, .app-features .feature, .item, .itembanner, .itemdetail, .item-container, .subitem-listing, .item-listing, article > .subhead, article#about #login-form,
+article#skills, main, nav .navlinks ul, nav #menu-title .title, header nav, footer nav, .flexy-column, .app-features .feature, .item, .itembanner, .itemdetail, .item-container, .subitem-listing, .item-listing, article > .subhead, article#about #login-form,
 article#about #comment-form,
 article#login #login-form,
 article#login #comment-form,
@@ -36,7 +36,7 @@ body {
 .button,
 input[type=submit],
 input[type=button], .mediaitem, .mainblurb, .maintitle, .mainwelcome, .itemhead, .articlemetadata, #articlelist .body, .forminput, article#cta,
-article#skills, main, nav .navlinks ul, header nav, footer nav {
+article#skills, main, nav .navlinks ul, nav #menu-title .title, header nav, footer nav {
   flex-direction: row;
 }
 
@@ -99,7 +99,8 @@ code, .appmaintitle h1,
 .btn,
 .button,
 input[type=submit],
-input[type=button] {
+input[type=button],
+nav #menu-title {
   white-space: nowrap;
 }
 
@@ -208,20 +209,22 @@ nav a {
   color: inherit;
 }
 nav #menu-title {
+  color: #4f437d;
   display: flex;
   flex-direction: row;
   font-family: "KoHo", Arial, Helvetica, sans-serif;
   font-size: 2em;
-  color: #4f437d;
+  overflow: hidden;
 }
-@media all and (min-width: 601px) {
-  nav #menu-title {
-    flex: 1 0 auto;
-  }
-}
-nav #menu-title #app-title {
+nav #menu-title .title {
   align-items: center;
   padding-bottom: 0.08em;
+}
+nav #menu-title #page-title {
+  overflow: hidden;
+}
+nav #menu-title #page-title::before {
+  content: " - ";
 }
 nav .navcenter {
   display: flex;
@@ -233,9 +236,10 @@ nav .navcenter div {
 }
 nav .navlinks {
   display: flex;
-  width: 30%;
-  justify-content: flex-end;
+  flex: 1 1 auto;
   font-weight: 600;
+  justify-content: flex-end;
+  width: 30%;
 }
 nav .navlinks ul {
   justify-content: flex-end;

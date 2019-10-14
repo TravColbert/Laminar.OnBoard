@@ -1,8 +1,10 @@
 header
   nav(role=navigation)
     #menu-title
-      div#app-title
+      div#app-title.title
         a(href="/")= title
+      if(pageTitle)
+        div#page-title.title= pageTitle
     .navlinks
       ul
         input#show-menu.hidden(type="checkbox" role="button")

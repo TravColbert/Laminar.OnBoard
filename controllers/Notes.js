@@ -108,7 +108,8 @@ module.exports = function (app, model) {
         .then(notes => {
           app.log(`Found ${notes.length} notes`, myName, 7)
           req.appData.note = notes[0]
-          req.appData.title += ` - ${notes[0].name}`
+          // req.appData.title += ` - ${notes[0].name}`
+          req.appData.pageTitle = notes[0].name
           if (notes[0].description) {
             req.appData.description = `${notes[0].description}`
           }
@@ -170,7 +171,8 @@ module.exports = function (app, model) {
           app.log(`Found ${notes.length} notes`, myName, 7)
           if (!notes || notes.length === 0) return res.redirect('/blog/')
           req.appData.note = notes[0]
-          req.appData.title += ` - ${notes[0].name}`
+          // req.appData.title += ` - ${notes[0].name}`
+          req.appData.pageTitle = notes[0].name
           if (notes[0].description) {
             req.appData.description = `${notes[0].description}`
           }
@@ -272,7 +274,8 @@ module.exports = function (app, model) {
     },
     showBlog: function (req, res, next) {
       // req.appData.view = 'blogs-list'
-      req.appData.title += ' - Blog Articles'
+      // req.appData.title += ' - Blog Articles'
+      req.appData.pageTitle = 'Blog Articles'
       req.appData.view = 'home-blog'
       return next()
     },

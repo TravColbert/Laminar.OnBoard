@@ -1,5 +1,7 @@
 head
-  title= title
+  - let titleText = title
+  - if(pageTitle) titleText += ' - ' + pageTitle
+  title= titleText
   meta(name="viewport" content="width=device-width,initial-scale=1")
   - if(description)
     meta(name="description" content=description)
