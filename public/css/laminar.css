@@ -202,7 +202,7 @@ nav {
   max-width: 1024px;
   margin: 0;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.95);
 }
 nav a {
   text-decoration: none;
@@ -242,6 +242,7 @@ nav .navlinks {
   width: 30%;
 }
 nav .navlinks ul {
+  background: rgba(255, 255, 255, 0.95);
   justify-content: flex-end;
   list-style-type: none;
   margin: 0;
