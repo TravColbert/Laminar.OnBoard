@@ -747,7 +747,7 @@ article.main .articlemetadata {
 }
 .articlebody figure.noborder img {
   background: none;
-  box-shadow: 0;
+  box-shadow: none;
 }
 .articlebody h1 {
   font-size: 1.2em;
