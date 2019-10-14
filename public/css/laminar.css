@@ -745,6 +745,10 @@ article.main .articlemetadata {
   background: #fafafa;
   border-radius: 2px;
 }
+.articlebody figure.noborder img {
+  background: none;
+  box-shadow: 0;
+}
 .articlebody h1 {
   font-size: 1.2em;
 }
