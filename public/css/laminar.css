@@ -221,7 +221,11 @@ nav #menu-title .title {
   padding-bottom: 0.08em;
 }
 nav #menu-title #page-title {
+  display: block;
+  margin: auto;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 nav #menu-title #page-title::before {
   content: " - ";
