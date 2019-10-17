@@ -594,6 +594,7 @@ module.exports = function (app, sequelize) {
     app.log('queueing home page', myName, 5)
     req.appData.sessionId = req.session.id
     req.appData.view = app.locals.homeView
+    req.appData.pageTitle = (app.locals.homeDefaultTitle) ? app.locals.homeDefaultTitle : null
 
     let homePagePromises = Promise.resolve()
     homePagePromises = homePagePromises.then(() => {
