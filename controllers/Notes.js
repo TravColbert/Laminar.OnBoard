@@ -192,6 +192,75 @@ module.exports = function (app, model) {
           return next()
         })
     },
+    getBlogBySlug: function (req, res, next) {
+      let myName = 'getBlogBySlug'
+      // The main difference here is that we assume that we aren't authenticated.
+      // We also check to see if 1) the domain is marked public and 2) the note
+      // is marked public
+      let searchObj = {
+        where: {
+          slug: req.params.slug
+        },
+        order: [
+          ['updatedAt', 'DESC']
+        ],
+        include: [
+          {
+            model: app.models['users'],
+            as: 'user'
+          }
+        ]
+      }
+      if (!app.tools.isAuthenticated()) {
+        app.log(`User not authenticated - showing public entries only`, myName, 6)
+        // User is not authenticated...
+        // The note must be 'public'
+        searchObj.where.public = true
+        searchObj.include.push(
+          {
+            model: app.models['domains'],
+            where: {
+              public: true
+            },
+            as: 'domain'
+          }
+        )
+      } else {
+        app.log(`User authenticated - showing all entries`, myName, 6)
+        searchObj.include.push(
+          {
+            model: app.models['domains'],
+            as: 'domain'
+          }
+        )
+      }
+
+      app.controllers[model].__get(searchObj)
+        .then(notes => {
+          app.log(`Found ${notes.length} notes`, myName, 7)
+          if (!notes || notes.length === 0) return res.redirect('/blog/')
+          req.appData.note = notes[0]
+          // req.appData.title += ` - ${notes[0].name}`
+          req.appData.pageTitle = notes[0].name
+          if (notes[0].description) {
+            req.appData.description = `${notes[0].description}`
+          }
+          if (notes[0].keywords) {
+            req.appData.keywords = `${notes[0].keywords}`
+          }
+          req.appData.view = 'blogentry'
+          // Now, get a list of notes...
+          if (app.tools.isAuthenticated()) {
+            return app.controllers[model].getNotesByUserId(app.session.user.id)
+          } else {
+            return app.controllers[model].getPublicNotes()
+          }
+        })
+        .then(notes => {
+          req.appData.notes = notes
+          return next()
+        })
+    },
     getPublicNotes: function () {
       let myName = 'getPublicNotes'
       let searchObj = {
