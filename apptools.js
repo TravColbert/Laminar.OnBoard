@@ -586,7 +586,7 @@ module.exports = function (app, sequelize) {
     let myName = 'currentUserHasDomain'
     // app.log(req.session.user,myName,6,"-->");
     return req.session.user.domains.filter(domain => {
-      return domain.id == domainId
+      return domain.id === domainId
     }).length > 0
   }
   obj.homePage = function (req, res, next) {
@@ -595,6 +595,7 @@ module.exports = function (app, sequelize) {
     req.appData.sessionId = req.session.id
     req.appData.view = app.locals.homeView
     req.appData.pageTitle = (app.locals.homeDefaultTitle) ? app.locals.homeDefaultTitle : null
+    req.appData.keywords = (app.locals.homeDefaultKeywords) ? app.locals.homeDefaultKeywords : null
 
     let homePagePromises = Promise.resolve()
     homePagePromises = homePagePromises.then(() => {
