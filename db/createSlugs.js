@@ -1,24 +1,34 @@
 #!/usr/bin/node
+const path = require('path')
+console.log(`Current directory: ${process.cwd()}`)
+const cwd = path.join(__dirname, '../')
+console.log('Script directory is:', cwd)
+const fs = require('fs')
 const Sequelize = require('sequelize')
-var sequelize = new Sequelize("onboard","onboard","pwfordb",{
-  host: "localhost",
-  dialect: "sqlite",
-  storage: "traviscolbert.db",
-  logging: false 
-})
 
 var app = {}
-app.tools = require('../apptools')(app, sequelize)
-app.locals = {
-  logLevel: 6
-}
+app.locals = JSON.parse(fs.readFileSync(path.join(cwd, 'config/config.json')))
+app.secrets = JSON.parse(fs.readFileSync(path.join(cwd, 'config/secrets.json')))
 app.debug = require('debug')('laminar')
 
+var sequelize = new Sequelize(
+  app.locals.dbConnection[app.locals.activeDbConnection].database,
+  app.locals.dbConnection[app.locals.activeDbConnection].user,
+  app.secrets.dbConnection[app.locals.activeDbConnection].password,
+  {
+    host: app.locals.dbConnection[app.locals.activeDbConnection].host,
+    dialect: app.locals.activeDbConnection,
+    // For SQLite only :
+    storage: cwd + app.locals.dbConnection[app.locals.activeDbConnection].storage,
+    // Logging:
+    logging: app.locals.dbConnection[app.locals.activeDbConnection].logging
+  }
+)
+
+app.tools = require('../apptools')(app, sequelize)
+
 var notesDefinition = require('../models/Notes.js')(Sequelize, app)
-
 var notesModel = sequelize.define(notesDefinition.tablename, notesDefinition.schema)
-
-console.log("Hi!")
 
 let createSlug = function (str) {
   app.log(`sluggifying: ${str}`, null, 6)
