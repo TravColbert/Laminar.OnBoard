@@ -15,11 +15,12 @@ mixin list-notes(notes)
 mixin list-blogs(notes)
   .item-listing.blogs
     each note in notes
-      - let targetLoc = "/blog/" + note.id + "/";
+      - let targetLoc = "/blog/" + note.slug + "/";
       .item.clickable(onclick="goTo('" + targetLoc + "')")
         .itemdetail
           .label Name:
-          .data #{note.name}
+          .data
+            a(href="/blog/" + note.slug + "/") #{note.name}
         - let description = note.description || null
         if description
           .itemdetail
@@ -32,7 +33,8 @@ mixin list-articles(notes)
       - let targetLoc = "/blog/" + note.id + "/";
       .item.clickable(onclick="goTo('" + targetLoc + "')")
         .itemdetail.articletitle
-          .data #{note.name}
+          .data 
+            a(href="/blog/" + note.slug + "/") #{note.name}
         - let description = note.description || null
         if description
           .itemdetail.articledescription
