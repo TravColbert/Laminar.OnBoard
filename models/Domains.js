@@ -44,7 +44,7 @@ module.exports = function (Sequelize, app) {
       },
       hooks: {
         beforeCreate: (domain) => {
-          let myName = 'domain_model:beforeCreate()';
+          let myName = 'domain_model:beforeCreate()'
           app.log('Generating app-wide ID for domain', myName, 6)
           domain.appid = app.tools.generateString()
         }
@@ -66,13 +66,13 @@ module.exports = function (Sequelize, app) {
           .then(function (count) {
             if (count === 0) {
               app.log('Domain does not exist in DB. Creating...')
-            db.create(initialRecords[c])
+              db.create(initialRecords[c])
                 .then((record) => {
                   app.log("Inserted '" + record.name + "' domain")
-            })
-          } else {
+                })
+            } else {
               app.log("Domain '" + initialRecords[c].name + "' exists in DB - no need to create it.")
-          }
+            }
           })
       }
     }
