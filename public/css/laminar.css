@@ -82,10 +82,7 @@ code, .appmaintitle h1,
   text-shadow: 0 0 6px #fafafa, 0 1px 3px rgba(77, 75, 85, 0.25);
 }
 
-.text-shadow, h3,
-.hdg-3, h2,
-.hdg-2, h1,
-.hdg-1, .articlebody, .articleblurb, .articledescription, .articletitle, .badge, header nav {
+.text-shadow, .badge {
   text-shadow: 0 1px 3px rgba(77, 75, 85, 0.25);
 }
 
@@ -187,7 +184,7 @@ h1, h2, h3, h4, h5, h6, .hdg {
 }
 
 a {
-  color: #4d4b55;
+  color: inherit;
 }
 
 a:hover {
