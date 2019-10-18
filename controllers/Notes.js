@@ -342,10 +342,9 @@ module.exports = function (app, model) {
         })
     },
     showBlog: function (req, res, next) {
-      // req.appData.view = 'blogs-list'
-      // req.appData.title += ' - Blog Articles'
       req.appData.pageTitle = 'Blog Articles'
       req.appData.view = 'home-blog'
+      req.appData.description = 'Enjoy reading my recent blog articles'
       return next()
     },
     editNoteForm: function (req, res, next) {
