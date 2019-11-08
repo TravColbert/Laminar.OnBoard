@@ -410,19 +410,6 @@ module.exports = function (app, sequelize) {
       }
     }
   }
-  // obj.isAuthenticated = function (req) {
-  //   let myName = 'isAuthenticated'
-  //   app.log('Checking if session is authenticated', myName, 6)
-  //   if (!req.session.cookie) return false
-  //   app.log('session cookie exists...', myName, 6)
-  //   if (!req.session.user) return false
-  //   app.log('session user object exists...', myName, 6)
-  //   if (!req.session.user.email) return false
-  //   app.log('session user email exists...', myName, 6)
-  //   if (!req.session.user.id) return false
-  //   app.log('session user appears to be intact. Authenticated.', myName, 5)
-  //   return true
-  // }
   obj.isAuthenticated = function () {
     let myName = 'isAuthenticated'
     app.log('Checking if session is authenticated', myName, 6)
