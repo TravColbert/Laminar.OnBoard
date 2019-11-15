@@ -350,6 +350,8 @@ module.exports = function (app, model) {
     getNotesByDomainName: function (req, res, next) {
       let myName = 'getNotesByDomainName'
 
+      if (req.appData.note) return next()
+
       app.log('Trying to get notes by domain name', myName, 7)
 
       let searchObj = {
