@@ -238,7 +238,7 @@ module.exports = function (app, model) {
       app.controllers[model].__get(searchObj)
         .then(notes => {
           app.log(`Found ${notes.length} notes`, myName, 7)
-          if (!notes || notes.length === 0) return res.redirect('/blog/')
+          if (!notes || notes.length === 0) throw new Error('no notes found')
           req.appData.note = notes[0]
           // req.appData.title += ` - ${notes[0].name}`
           req.appData.pageTitle = notes[0].name
@@ -259,6 +259,12 @@ module.exports = function (app, model) {
         .then(notes => {
           req.appData.notes = notes
           return next()
+        })
+        .catch(err => {
+          if (err.message === 'no notes found') {
+            app.log('No notes found: moving on to domain name route', myName, 7)
+            next('route')
+          }
         })
     },
     getPublicNotes: function () {
@@ -338,6 +344,57 @@ module.exports = function (app, model) {
         .then(notes => {
           req.appData.notes = notes
           req.appData.view = 'notes-list'
+          return next()
+        })
+    },
+    getNotesByDomainName: function (req, res, next) {
+      let myName = 'getNotesByDomainName'
+
+      app.log('Trying to get notes by domain name', myName, 7)
+
+      let searchObj = {
+        order: [
+          ['updatedAt', 'DESC']
+        ],
+        include: [
+          {
+            model: app.models['users'],
+            as: 'user'
+          }
+        ]
+      }
+      if (!app.tools.isAuthenticated()) {
+        app.log(`User not authenticated - showing public entries only`, myName, 6)
+        // User is not authenticated...
+        // The note must be 'public'
+        searchObj.where = { public: true }
+        searchObj.include.push(
+          {
+            model: app.models['domains'],
+            where: {
+              public: true,
+              name: req.params.domainName
+            },
+            as: 'domain'
+          }
+        )
+      } else {
+        app.log(`User authenticated - showing all entries`, myName, 6)
+        searchObj.include.push(
+          {
+            model: app.models['domains'],
+            as: 'domain'
+          }
+        )
+      }
+
+      app.controllers[model].__get(searchObj)
+        .then(notes => {
+          app.log(`Found ${notes.length} notes`, myName, 7)
+          if (!notes || notes.length === 0) return res.redirect('/blog/')
+
+          req.appData.view = 'home-blog'
+          req.appData.notes = notes
           return next()
         })
     },
