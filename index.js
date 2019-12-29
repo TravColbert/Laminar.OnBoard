@@ -177,7 +177,6 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
         app.headOptions = JSON.parse(data)
       }
     })
-    // return
   })
   .then(() => {
     /**
