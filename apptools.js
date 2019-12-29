@@ -583,6 +583,7 @@ module.exports = function (app, sequelize) {
     req.appData.view = app.locals.homeView
     req.appData.pageTitle = (app.locals.homeDefaultTitle) ? app.locals.homeDefaultTitle : null
     req.appData.keywords = (app.locals.homeDefaultKeywords) ? app.locals.homeDefaultKeywords : null
+    req.appData.pageClass = 'splash'
 
     let homePagePromises = Promise.resolve()
     homePagePromises = homePagePromises.then(() => {
@@ -628,6 +629,7 @@ module.exports = function (app, sequelize) {
     app.log('queueing login page', myName, 5)
     // let salt = bcrypt.genSaltSync(10);
     req.appData.view = 'login'
+    req.appData.pageClass = 'splash'
     req.appData.secretSauce = obj.generateString(12)
     return next()
   }
@@ -636,6 +638,13 @@ module.exports = function (app, sequelize) {
     app.log('queueing log-out', myName, 5)
     app.controllers['users'].logout(req, res, next)
     return res.redirect('/')
+  }
+  obj.signupPage = function (req, res, next) {
+    let myName = 'signupPage()'
+    app.log('queueing sign-up page', myName, 5)
+    req.appData.view = 'register'
+    req.appData.pageClass = 'splash'
+    return next()
   }
   obj.show404 = function (req, res) {
     let myName = 'show404'
