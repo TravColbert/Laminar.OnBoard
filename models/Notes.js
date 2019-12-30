@@ -60,7 +60,7 @@ module.exports = function (Sequelize, app) {
     options: {
       getterMethods: {
         html () {
-          let converter = new showdown.Converter()
+          let converter = new showdown.Converter({tables: true})
           return converter.makeHtml(this.body)
         }
       },
