@@ -49,6 +49,26 @@ function calculatedatetimestring(dateTimeString) {
   
 }
 
+function swapHidden(e1Selector, e2Selector, class1, class2) {
+  let e1 = document.querySelector(e1Selector)
+  let e2 = document.querySelector(e2Selector)
+  class1 = class1 || "hidden"
+  class2 = class2 || "show"
+  if (!e1 || !e2) return false
+  if (e1.classList.contains(class1)) {
+    e1.classList.remove(class1)
+    e1.classList.add(class2)
+    e2.classList.add(class1)
+    e2.classList.remove(class2)
+  } else {
+    e1.classList.add(class1)
+    e1.classList.remove(class2)
+    e2.classList.remove(class1)
+    e2.classList.add(class2)
+  }
+  return true
+}
+
 function wordSwap (id, time) {
   let words = [
     'delight',
