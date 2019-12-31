@@ -7,4 +7,3 @@ module.exports = function (app) {
   router.post('/', app.controllers['users'].registerUser)
   return router
 }
-
