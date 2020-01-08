@@ -392,6 +392,7 @@ aside {
 aside.sidebar {
   display: none;
   visibility: hidden;
+  background: rgba(255,255,255,0.7);
   @media all and (min-width: 601px) {
     display: flex;
     visibility: visible;  
