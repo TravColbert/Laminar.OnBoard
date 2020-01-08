@@ -363,16 +363,8 @@ main.splash {
   @media all and (min-width: 601px) {
     background-image: url(/img/logo.png);
     background-position: 89% center;
-    background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: 42%;
-  }
-  @media all and (min-width: 1024px) {
-    width: 1024px;
-  }
-  @media all and (min-width: 1229px) {
-    background-position: 78% center;
-    background-size: 29%;
   }
 }
 
@@ -667,7 +659,8 @@ article.main {
   margin: 8px 0;
 }
 
-#articlelist .body {
+#articlelist .body,
+#projects .body {
   @extend .flexy-row;
   flex-wrap: wrap;
 }
@@ -1133,6 +1126,10 @@ input[type=button] {
 .show {
   opacity: 1;
   height: auto;
+}
+
+.gallery .item {
+  min-height: 100px;
 }
 
 input#public:checked ~ .togglepublicfalse {
