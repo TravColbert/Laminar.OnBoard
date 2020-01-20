@@ -39,7 +39,7 @@
 // settings.$navbackgroundcolor: rgba(255,255,255,0.95);
 // settings.$sidebarbackgroundcolor: rgba(0,0,0,0.01);
 
-@use 'base.settings' as settings;
+@use 'laminar.settings' as settings;
 
 .bold {
   font-weight: bolder;
