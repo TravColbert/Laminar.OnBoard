@@ -350,9 +350,10 @@ module.exports = function (app, sequelize) {
           return res.json(returnObj)
         default:
           app.log('Rendering template: ' + templateFile, myName, 6)
-          if (app.headOptions) {
-            req.appData.headoptions = app.headOptions
-          }
+          // if (app.headOptions) {
+          //   req.appData.headoptions = app.headOptions
+          // }
+          req.appData.headoptions = app.headOptions
           req.appData.description = req.appData.description || app.locals.siteDescription
           app.log(`Session user: ${JSON.stringify(req.session.user)}`, myName, 8)
           return res.render(templateFile, req.appData)
@@ -648,6 +649,7 @@ module.exports = function (app, sequelize) {
   }
   obj.show404 = function (req, res) {
     let myName = 'show404'
+    app.log(`404 triggered`, myName, 3)
     let fourOFourPath = path.join('./', app.locals.viewsDir, app.locals['404Page'])
     app.log(`Showing 404: ${fourOFourPath}`, myName, 3)
     return res.status(404).render(app.locals['404Page'], req.appData)
@@ -659,7 +661,7 @@ module.exports = function (app, sequelize) {
    */
   obj.showPage = function (view) {
     return function (req, res, next) {
-      let myName = 'showPage' + view
+      let myName = 'showPage:' + view
       app.log(`Setting home view to ${view}`, myName, 6)
       req.appData.view = view
       return next()
