@@ -16,6 +16,8 @@
   "smtpDomain":"yourdomain.net",
   "homeView":"home-default",
   "homeModule":false,
+  "homeDefaultTitle":"Home Page for this Awesome App!",
+  "homeDefaultKeywords":"seo is great, seo, seo words, keywords for seo",
   "404Page":"404-default",
   "loginPage":"/login",
   "sessionTimeoutHours":4,
