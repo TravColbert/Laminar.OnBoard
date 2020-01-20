@@ -171,7 +171,8 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
     // Parse headoptions file, if available
     return fs.readFile(path.join(cwd, 'config', 'headoptions.json'), (err, data) => {
       if (err) {
-        app.log('No headoptions file found')
+        app.log('No headoptions file found', myName, 5)
+        app.headOptions = []
       } else {
         app.log('Head options: ' + data, myName, 6)
         app.headOptions = JSON.parse(data)
