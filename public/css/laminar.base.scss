@@ -1,43 +1,4 @@
-// $topheight: 40px;
-$topnavheight: 56px;
-$bottomnavheight: 48px;
-$sidebarwidth: 30%;
-// $mainwidth: 70%;
-// $mainmaxwidthpx: 1024px;
-// $sidebarmaxwidthpx: 307px;
-$titlefont: 'KoHo', Arial, Helvetica, sans-serif;
-$generalfont: 'Rajdhani', Arial, Helvetica, sans-serif;
-$detailfont: 'Titillium Web', Arial, Helvetica, sans-serif;
-
-$basecolor: rgb(79,67,125);
-$primarycolor: rgb(77,157,224);
-$secondarycolor: rgb(48,191,149);
-$tertiarycolor: rgb(187,54,240);
-
-$successcolor: rgb(121,241,205);
-$warncolor: rgb(250,169,22);
-$dangercolor: rgb(225,85,84);
-$disabledcolor: rgb(132,130,143);
-
-$generalshadow: 0 1px 3px;
-$generalshadowcolor: rgba(77,75,85,0.25);
-$textshadow: $generalshadow;
-$textcolor: rgb(77,75,85);
-$textshadowcolor: $generalshadowcolor;
-$highlighttextcolor: $basecolor;
-$secondaryhighlighttextcolor: rgba(79,67,125,0.5);
-$linktextcolor: $secondarycolor;
-$minortextcolor: rgb(162,160,173);
-$codetextcolor: rgb(205,204,211);
-$codebackgroundcolor: $textcolor; 
-$codeinlinebackgroundcolor: rgb(248,232,255);
-
-$primarybuttoncolor: $successcolor;
-
-$bordercolor: rgba(235,233,243,1);
-$borderradius: 2px;
-$navbackgroundcolor: rgba(255,255,255,0.95);
-$sidebarbackgroundcolor: rgba(0,0,0,0.01);
+@use 'laminar.settings' as settings;
 
 .bold {
   font-weight: bolder;
@@ -84,15 +45,15 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 }
 
 .shadowed {
-  box-shadow: $generalshadow $generalshadowcolor;
+  box-shadow: settings.$generalshadow settings.$generalshadowcolor;
 }
 
 .text-soften {
-  text-shadow: 0 0 6px rgba(250,250,250,7), $textshadow $textshadowcolor;
+  text-shadow: 0 0 6px rgba(250,250,250,7), settings.$textshadow settings.$textshadowcolor;
 }
 
 .text-shadow {
-  text-shadow: $textshadow $textshadowcolor;
+  text-shadow: settings.$textshadow settings.$textshadowcolor;
 }
 
 .mini-shadowed {
@@ -128,7 +89,7 @@ $sidebarbackgroundcolor: rgba(0,0,0,0.01);
 
 .buttonstyle {
   @extend .mini-shadowed;
-  border-radius: $borderradius;
+  border-radius: settings.$borderradius;
   padding: 8px;
   margin-bottom: 8px;
 }
@@ -148,8 +109,8 @@ body {
   margin: 0;
   width: 100%;
   font-size: 16px;
-  font-family: $generalfont;
-  color: $textcolor;
+  font-family: settings.$generalfont;
+  color: settings.$textcolor;
   background-color: rgb(255,255,255);
   // background-image: linear-gradient(to bottom right, rgb(240,250,250), rgb(210,215,215));
   background-size: cover;
@@ -185,7 +146,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 h1, h2, h3, h4, h5, h6, .hdg {
-  font-family: $titlefont;
+  font-family: settings.$titlefont;
 }
 
 a {
@@ -193,7 +154,7 @@ a {
 }
 
 a:hover {
-  color: $tertiarycolor;
+  color: settings.$tertiarycolor;
 }
 
 ul, ol {
@@ -207,23 +168,23 @@ ol li {
 
 nav {
   position: fixed;
-  height: $topnavheight;
-  max-height: $topnavheight;
+  height: settings.$topnavheight;
+  max-height: settings.$topnavheight;
   width: 100%;
   max-width: 1024px;
   margin: 0;
   justify-content: space-between;
-  background: $navbackgroundcolor;
+  background: settings.$navbackgroundcolor;
   a {
     text-decoration: none;
     color: inherit;
   }
   #menu-title {
     @extend .nobreak;
-    color: $highlighttextcolor;
+    color: settings.$highlighttextcolor;
     display: flex;
     flex-direction: row;
-    font-family: $titlefont;
+    font-family: settings.$titlefont;
     font-size: 2em;
     overflow: hidden;
     .title {
@@ -257,7 +218,7 @@ nav {
     justify-content: flex-end;
     ul {
       @extend .flexy-row;
-      background: $navbackgroundcolor;
+      background: settings.$navbackgroundcolor;
       justify-content: flex-end;
       list-style-type: none;
       margin: 0;
@@ -320,7 +281,7 @@ footer {
   @extend .fixed-bottom;
   justify-content: flex-end;
   nav {
-    height: $bottomnavheight;
+    height: settings.$bottomnavheight;
   }
 }
 
@@ -346,8 +307,8 @@ main {
     flex: 1 0 auto;
     width: 60%;
     article {
-      padding-top: $topnavheight;
-      padding-bottom: $bottomnavheight;
+      padding-top: settings.$topnavheight;
+      padding-bottom: settings.$bottomnavheight;
     }
   }
 
@@ -359,22 +320,23 @@ main {
   }
 }
 
-main.splash {
+main.splash section:first-child article:first-child {
   @media all and (min-width: 601px) {
+    background-attachment: local;
     background-image: url(/img/logo.png);
     background-position: 89% center;
     background-repeat: no-repeat;
-    background-size: 42%;
+    background-size: 38%;
   }
 }
 
 aside {
   @extend .flexy-column;
-  width: $sidebarwidth;
+  width: settings.$sidebarwidth;
   min-width: 300px;
   z-index: 50;
   order: 2;
-  margin-top: $topnavheight;
+  margin-top: settings.$topnavheight;
   justify-content: flex-end;
   @media all and (min-width: 601px) {
     justify-content: flex-start;
@@ -410,7 +372,7 @@ aside > *:first-child {
 }
 
 aside > *:last-child {
-  margin-bottom: $bottomnavheight;
+  margin-bottom: settings.$bottomnavheight;
 }
 
 a {
@@ -423,11 +385,11 @@ a {
 }
 
 .link {
-  color: $basecolor;
+  color: settings.$basecolor;
   cursor: pointer;
   text-underline-position: under;
   text-decoration-line: underline;
-  text-decoration-color: $secondarycolor; 
+  text-decoration-color: settings.$secondarycolor; 
   z-index: 99;
 }
 
@@ -459,9 +421,9 @@ article#herowelcome {
   @extend .full-height;
   align-items: stretch;
   justify-content: center;
-  color: $textcolor !important;
+  color: settings.$textcolor !important;
   font-size: 1em;
-  margin-top: (-1 * $topnavheight);
+  margin-top: (-1 * settings.$topnavheight);
 }
 article#welcome,
 article#features {
@@ -486,9 +448,6 @@ article#comment {
   align-items: stretch;
   justify-content: flex-start;
   font-size: 1.6em;
-  // text-shadow: 
-  //   $textshadow $textshadowcolor
-  // ;
   padding: 0;
   @media all and (min-width: 601px) {
     justify-content: center;
@@ -534,15 +493,15 @@ article#comment {
     input[type="text"],
     input[type="password"],
     textarea {
-      border: 1px solid $bordercolor;
-      border-radius: $borderradius;
-      background: $sidebarbackgroundcolor;
+      border: 1px solid settings.$bordercolor;
+      border-radius: settings.$borderradius;
+      background: settings.$sidebarbackgroundcolor;
     }
   }
 }
 
 article#about > div {
-  margin-bottom: 56px;
+  margin-top: settings.$topnavheight;
   font-size: 1em;
   align-items: center;
   @media all and (min-width: 601px) {
@@ -568,7 +527,7 @@ article#about > div {
 }
 
 article#aboutme {
-  background: rgba(255,255,255,0.85);
+  background: rgba(200,230,200,0.85);
   .body {
     justify-content: start;
     text-align: justify;
@@ -593,15 +552,15 @@ article.main {
     padding: 0.25em 0;
   }
   .articlemetadata {
-    border-top: 1px solid $bordercolor;
-    border-bottom: 1px solid $bordercolor;
+    border-top: 1px solid settings.$bordercolor;
+    border-bottom: 1px solid settings.$bordercolor;
   }
 }
 
 .applabel {
-  font-family: $detailfont;
+  font-family: settings.$detailfont;
   color: white;
-  background-color: $secondarycolor;
+  background-color: settings.$secondarycolor;
   transform: rotate(-3deg);
   box-shadow: -1px 4px 10px rgba(0,0,0,0.3);
   border: 4px solid white;
@@ -631,13 +590,13 @@ article.main {
     }
   }
   h1 {
-    font-family: $titlefont;
+    font-family: settings.$titlefont;
     letter-spacing: 4px;
     text-align: center;
     text-shadow: none;
     border-radius: 0;
     background: white;
-    color: $basecolor;
+    color: settings.$basecolor;
     width: 100%;
     margin: 0;
     padding: 8px;
@@ -652,7 +611,7 @@ article.main {
 
 .badge {
   @extend .text-shadow;
-  color: $highlighttextcolor;
+  color: settings.$highlighttextcolor;
 }
 
 .forminput {
@@ -669,14 +628,14 @@ article.main {
 .label {
   font-size: 0.8em;
   font-weight: normal;
-  color: $minortextcolor;
-  font-family: $detailfont;
+  color: settings.$minortextcolor;
+  font-family: settings.$detailfont;
   font-style: italic;
 }
 .articletitle {
-  font-family: $titlefont;
+  font-family: settings.$titlefont;
   font-weight: bold;
-  color: $linktextcolor;
+  color: settings.$linktextcolor;
 }
 .articledescription {
   font-size: 0.8em;
@@ -737,7 +696,7 @@ article.main {
     align-items: center;
     // padding: 8px;
     // background: #fafafa;
-    border-radius: $borderradius;
+    border-radius: settings.$borderradius;
     // @extend .shadowed;
   }
   figure.noborder {
@@ -768,7 +727,7 @@ article.main {
     text-decoration-line: underline;
     text-underline-position: below;
     text-decoration-style: dashed;
-    text-decoration-color: $tertiarycolor;
+    text-decoration-color: settings.$tertiarycolor;
   }
 }
 
@@ -788,9 +747,9 @@ article > .subhead {
 .appmaintitle {
   h1, 
   .hdg {
-    font-family: $titlefont;
+    font-family: settings.$titlefont;
     color: white;
-    background-color: $successcolor;
+    background-color: settings.$successcolor;
     border-radius: 8px;
     padding: 0.1em 0.2em;
     text-shadow: none;
@@ -812,17 +771,17 @@ article > .subhead {
 pre.snippet, 
 code {
   // @extend .shadowed;
-  background: $codeinlinebackgroundcolor;
+  background: settings.$codeinlinebackgroundcolor;
   border-radius: 4px;
-  color: $tertiarycolor;
+  color: settings.$tertiarycolor;
   font-size: 0.8em;
   overflow-x: auto;
   padding: 0.2em 0.6em;
 }
 
 pre code {
-  background: $codebackgroundcolor;
-  color: $codetextcolor;
+  background: settings.$codebackgroundcolor;
+  color: settings.$codetextcolor;
   display: block;
   padding: 1em;
 }
@@ -831,7 +790,7 @@ pre code {
 .item-listing {
   @extend .flexy-column;
   > div:not(:last-child) {
-    border-bottom: 1px solid $bordercolor;
+    border-bottom: 1px solid settings.$bordercolor;
   }
 }
 
@@ -886,8 +845,8 @@ pre code {
 
 .itemdetail:not(:first-child) {
   .label {
-    color: $minortextcolor;
-    font-family: $detailfont;
+    color: settings.$minortextcolor;
+    font-family: settings.$detailfont;
     font-style: italic;
   }
 }
@@ -904,13 +863,13 @@ pre code {
 .item.primary {
   width: 100%;
   font-size: 1.65em;
-  border-bottom: 1px dotted $bordercolor;
+  border-bottom: 1px dotted settings.$bordercolor;
   padding: 0.5em 0;
 }
 
 .item.secondary {
   font-size: 1.25em;
-  border-bottom: 1px dotted $bordercolor;
+  border-bottom: 1px dotted settings.$bordercolor;
   padding-bottom: 0.5em;
   @media all and (min-width: 601px) {
     width: 50%;
@@ -928,7 +887,7 @@ pre code {
 .maintitle {
   @extend .flexy-row;
   font-size: 4.5em;
-  font-family: $titlefont;
+  font-family: settings.$titlefont;
   justify-content: center;
 }
 
@@ -937,7 +896,7 @@ pre code {
   font-size: 1.3em;
   letter-spacing: 0.3em;
   justify-content: center;
-  color: $tertiarycolor;
+  color: settings.$tertiarycolor;
 }
 
 .mediaitem {
@@ -972,22 +931,22 @@ pre code {
 .clickable:hover {
   cursor: pointer;
   div {
-    color: $tertiarycolor;
+    color: settings.$tertiarycolor;
   }
-  background: $sidebarbackgroundcolor;
+  background: settings.$sidebarbackgroundcolor;
 }
 
 .applaminar {
-  color: $primarycolor !important;
+  color: settings.$primarycolor !important;
 }
 
 .apponboard {
-  color: $basecolor !important;
+  color: settings.$basecolor !important;
 }
 
 .heading {
   font-size: 1.1em;
-  font-family: $titlefont;
+  font-family: settings.$titlefont;
   align-items: center;
   margin-bottom: 8px;
 }
@@ -1016,7 +975,7 @@ h3,
   padding: 0.25em;
   padding-right: 1em;
   border-radius: 1em;
-  border: 1px solid $bordercolor;
+  border: 1px solid settings.$bordercolor;
   align-items: center;
 }
 
@@ -1043,12 +1002,12 @@ input[type=button] {
   align-items: center;
   justify-content: center;
   border: 0;
-  border-radius: $borderradius;
+  border-radius: settings.$borderradius;
   padding: 4px 8px;
-  // border: 1px solid $bordercolor;
-  // border: 3px solid $primarybuttoncolor;
-  background-color: $primarybuttoncolor;
-  font-family: $generalfont;
+  // border: 1px solid settings.$bordercolor;
+  // border: 3px solid settings.$primarybuttoncolor;
+  background-color: settings.$primarybuttoncolor;
+  font-family: settings.$generalfont;
   font-weight: 100;
   font-size: inherit;
   text-decoration: none;
@@ -1089,12 +1048,12 @@ input[type=button] {
   @extend .flexy-column;
   padding: 8px;
   flex: 1 0 45%;
-  border-radius: $borderradius;
-  background: $sidebarbackgroundcolor;
+  border-radius: settings.$borderradius;
+  background: settings.$sidebarbackgroundcolor;
   .heading {
-    color: $basecolor;
+    color: settings.$basecolor;
     i {
-      color: $textcolor;
+      color: settings.$textcolor;
     }
   }
 }
@@ -1110,7 +1069,7 @@ input[type=button] {
 .read-more {
   font-style: italic;
   font-weight: 100;
-  color: $linktextcolor;
+  color: settings.$linktextcolor;
 }
 
 .hidable {

@@ -1,0 +1,38 @@
+$topnavheight: 56px;
+$subnavheight: 30px;
+$bottomnavheight: 48px;
+$sidebarwidth: 30%;
+
+$titlefont: 'KoHo', Arial, Helvetica, sans-serif;
+$generalfont: 'Rajdhani', Arial, Helvetica, sans-serif;
+$detailfont: 'Titillium Web', Arial, Helvetica, sans-serif;
+
+$basecolor: rgb(79,67,125);
+$primarycolor: rgb(77,157,224);
+$secondarycolor: rgb(48,191,149);
+$tertiarycolor: rgb(187,54,240);
+
+$successcolor: rgb(121,241,205);
+$warncolor: rgb(250,169,22);
+$dangercolor: rgb(225,85,84);
+$disabledcolor: rgb(132,130,143);
+
+$generalshadow: 0 1px 3px;
+$generalshadowcolor: rgba(77,75,85,0.25);
+$textshadow: $generalshadow;
+$textcolor: rgb(77,75,85);
+$textshadowcolor: $generalshadowcolor;
+$highlighttextcolor: $basecolor;
+$secondaryhighlighttextcolor: rgba(79,67,125,0.5);
+$linktextcolor: $secondarycolor;
+$minortextcolor: rgb(162,160,173);
+$codetextcolor: rgb(205,204,211);
+$codebackgroundcolor: $textcolor; 
+$codeinlinebackgroundcolor: rgb(248,232,255);
+
+$primarybuttoncolor: $successcolor;
+
+$bordercolor: rgba(235,233,243,1);
+$borderradius: 2px;
+$navbackgroundcolor: rgba(255,255,255,0.95);
+$sidebarbackgroundcolor: rgba(0,0,0,0.01);
