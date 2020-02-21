@@ -631,6 +631,7 @@ module.exports = function (app, sequelize) {
     // let salt = bcrypt.genSaltSync(10);
     req.appData.view = 'login'
     req.appData.pageClass = 'splash'
+    req.appData.noindex = true
     req.appData.secretSauce = obj.generateString(12)
     return next()
   }
@@ -645,6 +646,7 @@ module.exports = function (app, sequelize) {
     app.log('queueing sign-up page', myName, 5)
     req.appData.view = 'register'
     req.appData.pageClass = 'splash'
+    req.appData.noindex = true
     return next()
   }
   obj.show404 = function (req, res) {
