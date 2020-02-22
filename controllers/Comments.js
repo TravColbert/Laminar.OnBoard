@@ -29,6 +29,7 @@ module.exports = function (app, model) {
       req.appData.pageTitle = 'Leave a Comment'
       req.appData.view = 'comment'
       req.appData.pageClass = 'splash'
+      req.appData.noindex = true
       return next()
     },
     add: function (req, res, next) {

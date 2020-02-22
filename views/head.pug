@@ -6,6 +6,8 @@ head
     meta(name="description" content=description)
   - if(keywords)
     meta(name="keywords" content=keywords)
+  - if(noindex)
+    meta(name="robots" content="noindex")
   link(rel="stylesheet" media="all" href="https://fonts.googleapis.com/icon?family=Material+Icons")
   link(rel="stylesheet" media="all" href="https://fonts.googleapis.com/css?family=KoHo:400,700|Rajdhani:400,600|Titillium+Web")
   link(rel="stylesheet" media="all" href="/css/normalize.min.css")

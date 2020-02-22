@@ -1,8 +1,5 @@
 Sitemap: https://traviscolbert.net/sitemap.xml
 User-agent: *
 Disallow: /public/
-Disallow: /login/
-Disallow: /register/
 Disallow: /profile/
-Disallow: /comments/
 
