@@ -32,6 +32,7 @@
   "modulesDir":"modules",
   "elementsDir":"elements",
   "uploadsDir":"files",
+  "prehead":false,
   "makeThumbnails":true,
   "thumbnailsDir":"thumbs",
   "favicon":"public/img/favicon.ico",
