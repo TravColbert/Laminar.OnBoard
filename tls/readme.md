@@ -51,6 +51,10 @@ If the script was able to query the TXT record you created then it will download
 
 Put the fullchain.pem and privkey.pem into the **tls/** folder of your Laminar installation.
 
+### Renewing your keys
+
+Remember to renew your keys by running ```certbot renew```
+
 ## Creating Your SSL keys:
 
 To create these files:
