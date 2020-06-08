@@ -4,6 +4,7 @@ console.log(`Current directory: ${process.cwd()}`)
 const cwd = path.join(__dirname, '/')
 console.log('Script directory is:', cwd)
 const fs = require('fs')
+const constants = require('crypto').constants;
 const https = require('https')
 const compression = require('compression')
 const express = require('express')
@@ -27,7 +28,8 @@ if (app.locals.port !== '443') app.locals.url += ':' + app.locals.port
 
 const options = {
   key: fs.readFileSync(path.join(cwd, app.locals.keyFile)),
-  cert: fs.readFileSync(path.join(cwd, app.locals.certFile))
+  cert: fs.readFileSync(path.join(cwd, app.locals.certFile)),
+  secureOptions: constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1
 }
 
 // Setup our ORM (Sequelize)
