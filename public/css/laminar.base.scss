@@ -218,7 +218,7 @@ nav {
     justify-content: flex-end;
     ul {
       @extend .flexy-row;
-      background: settings.$navbackgroundcolor;
+      // background: settings.$navbackgroundcolor;
       justify-content: flex-end;
       list-style-type: none;
       margin: 0;
@@ -441,9 +441,10 @@ article#features {
 
 article#about,
 article#aboutme,
+article#comment,
 article#login,
 article#page404,
-article#comment {
+article#whaticando {
   @extend .full-height;
   align-items: stretch;
   justify-content: flex-start;
@@ -493,9 +494,9 @@ article#comment {
     input[type="text"],
     input[type="password"],
     textarea {
+      background: settings.$sidebarbackgroundcolor;
       border: 1px solid settings.$bordercolor;
       border-radius: settings.$borderradius;
-      background: settings.$sidebarbackgroundcolor;
     }
   }
 }
@@ -785,7 +786,6 @@ pre code {
   display: block;
   padding: 1em;
 }
-
 
 .item-listing {
   @extend .flexy-column;
