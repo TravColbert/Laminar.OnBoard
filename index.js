@@ -85,7 +85,8 @@ app.set('view engine', 'pug')
 app.set('query parser', true)
 app.set('strict routing', true)
 if (app.locals.compression) app.use(compression())
-app.use(express.static(path.join(cwd, app.locals.staticDir)))
+let staticOptions = (app.locals.staticOptions) || {}
+app.use(express.static(path.join(cwd, app.locals.staticDir),staticOptions))
 let favIcon = app.locals.favicon || 'public/img/laminar_favicon.ico'
 app.use('/favicon.ico', express.static(path.join(cwd, favIcon)), function (req, res, next) {
   let message = `Could not serve static file: ${path.join(cwd, favIcon)}`
