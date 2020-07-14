@@ -85,7 +85,7 @@ app.set('view engine', 'pug')
 app.set('query parser', true)
 app.set('strict routing', true)
 if (app.locals.compression) app.use(compression())
-let staticOptions = (app.locals.staticOptions) || {}
+let staticOptions = app.locals.staticOptions || {}
 app.use(express.static(path.join(cwd, app.locals.staticDir),staticOptions))
 let favIcon = app.locals.favicon || 'public/img/laminar_favicon.ico'
 app.use('/favicon.ico', express.static(path.join(cwd, favIcon)), function (req, res, next) {
