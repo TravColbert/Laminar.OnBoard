@@ -39,6 +39,9 @@
   "favicon":"public/img/favicon.ico",
   "robots":"public/robots.txt",
   "sitemap":"public/sitemap.xml",
+  "staticOptions":{
+    "maxAge":"1d"
+  },
   "activeDbConnection":"sqlite",
   "dbConnection":{
     "sqlite":{
