@@ -36,9 +36,14 @@
   "prehead":false,
   "makeThumbnails":true,
   "thumbnailsDir":"thumbs",
-  "favicon":"public/img/favicon.ico",
+  "favicon":"public/img/favicon-laminar.ico",
   "robots":"public/robots.txt",
   "sitemap":"public/sitemap.xml",
+  "logOptions":{
+    "log":"/var/log/syslog",
+    "access":"/var/log/laminar-access.log",
+    "error":"/var/log/laminar-error.log"
+  },
   "staticOptions":{
     "maxAge":"1d"
   },
