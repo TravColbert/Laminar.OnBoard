@@ -21,7 +21,8 @@ module.exports = function (app, sequelize) {
       debugLevel = debugLevel || 0
       prefix = prefix || ''
       if (debugLevel <= app.locals.logLevel) {
-        return app.debug('(%s) %s %s', caller, prefix, string)
+        if(caller=="access") return app.logStdAccess.log(string)
+        return app.logStdOut.log('(%s) %s %s', caller, prefix, string)
       }
       return false
     },
@@ -44,7 +45,7 @@ module.exports = function (app, sequelize) {
   obj.readDir = function (dir, extension) {
     let myName = 'readDir'
     return new Promise((resolve, reject) => {
-      app.log(`Reading dir: ${dir}`, myName, 8)
+      app.log(`Reading dir: ${dir}`, myName, 5)
       fs.readdir(dir, (err, files) => {
         if (err) {
           reject(new Error(`(${myName}) : ${err.message}`))
@@ -52,7 +53,7 @@ module.exports = function (app, sequelize) {
           // Filter extensions here
           let fileList
           if (extension) {
-            app.log(`Filtering by extension: ${extension}`, myName, 8)
+            app.log(`Filtering by extension: ${extension}`, myName, 6)
             fileList = files.filter(file => {
               return (path.extname(file) === extension)
             })
@@ -60,10 +61,10 @@ module.exports = function (app, sequelize) {
             fileList = files
           }
           if (fileList == undefined || fileList === null || fileList.length < 1) {
-            app.log('Didn\'t find any files. Sending an empty list', myName, 7)
+            app.log(`Didn\'t find any files. Sending empty list`, myName, 6)
             resolve([])
           } else {
-            app.log(`Found files: ${fileList}`, myName, 7)
+            app.log(`Found files: ${fileList}`, myName, 6)
             resolve(fileList)
           }
         }
@@ -76,7 +77,7 @@ module.exports = function (app, sequelize) {
       if (app.tools.isFileType(file, 'js')) {
         let modelDefintion = require(path.join(__dirname, app.locals.modelsDir, file))(Sequelize, app)
         app.modelDefinitions[modelDefintion.tablename] = modelDefintion
-        app.log(modelDefintion.tablename, myName, 6)
+        app.log(modelDefintion.tablename, myName, 5)
         app.models[modelDefintion.tablename] = sequelize.define(modelDefintion.tablename, modelDefintion.schema, modelDefintion.options)
       }
       resolve(true)
@@ -88,7 +89,7 @@ module.exports = function (app, sequelize) {
       if (app.tools.isFileType(file, 'js')) {
         let fileNameParts = file.split('.')
         let controllerName = fileNameParts[0].toLowerCase()
-        app.log(controllerName, myName, 6)
+        app.log(controllerName, myName, 5)
         app.controllers[controllerName] = require(path.join(__dirname, app.locals.controllersDir, file))(app, controllerName)
       }
       resolve(true)
@@ -99,7 +100,7 @@ module.exports = function (app, sequelize) {
     return new Promise((resolve, reject) => {
       if (app.tools.isFileType(file, 'json')) {
         let menuPath = path.join(__dirname, app.locals.navDir, file)
-        app.log(`Menu filename: ${menuPath}`, myName, 7)
+        app.log(`Menu filename: ${menuPath}`, myName, 5)
         app.menu = app.menu.concat(require(menuPath)['main'])
       }
       resolve(true)
@@ -111,7 +112,7 @@ module.exports = function (app, sequelize) {
       if (app.tools.isFileType(file, 'js')) {
         let fileNameParts = file.split('.')
         let elementName = fileNameParts[0].toLowerCase()
-        app.log(elementName, myName, 6)
+        app.log(elementName, myName, 5)
         app.elements[elementName] = require(path.join(__dirname, app.locals.elementsDir, file))
       }
       resolve(true)
@@ -123,7 +124,7 @@ module.exports = function (app, sequelize) {
       if (app.tools.isFileType(file, 'js')) {
         let fileNameParts = file.split('.')
         let routeName = fileNameParts[0].toLowerCase()
-        app.log(routeName, myName, 6)
+        app.log(routeName, myName, 5)
         app.routes[routeName] = require(path.join(__dirname, app.locals.routesDir, file))(app)
       }
       resolve(true)
@@ -133,7 +134,7 @@ module.exports = function (app, sequelize) {
     let myName = 'readAssociation'
     return new Promise((resolve, reject) => {
       if (app.tools.isFileType(file, 'js')) {
-        app.log(file, myName, 6)
+        app.log(file, myName, 5)
         let association = require(path.join(__dirname, app.locals.modelsDir, 'associations', file))(app)
       }
       resolve(true)
@@ -143,7 +144,7 @@ module.exports = function (app, sequelize) {
     let myName = 'readModelStartup'
     return new Promise((resolve, reject) => {
       if (app.tools.isFileType(file, 'js')) {
-        app.log('Requiring ' + file, myName, 6)
+        app.log('Requiring ' + file, myName, 5)
         let modelStartup = require('./' + app.locals.modelsDir + '/modelstartups/' + file)(app)
       }
       resolve(true)
@@ -153,7 +154,7 @@ module.exports = function (app, sequelize) {
     let myName = 'processFiles'
     let routeReadPromises = Promise.resolve()
     files.forEach(file => {
-      app.log(`Processing file: ${file}`, myName, 8)
+      app.log(`Processing file: ${file}`, myName, 6)
       routeReadPromises = routeReadPromises.then(data => {
         return cb(file)
       })
@@ -270,10 +271,8 @@ module.exports = function (app, sequelize) {
   }
   obj.startModels = function (models) {
     let myName = 'startModels'
-    app.log('Starting models...', myName, 6)
     let syncPromises = Promise.resolve()
     Object.keys(models).forEach(modelName => {
-      // app.log(modelName,myName,6);
       syncPromises = syncPromises.then(() => {
         return models[modelName].sync()
           .then((model) => {
@@ -282,7 +281,7 @@ module.exports = function (app, sequelize) {
             return (modelName)
           })
           .catch(err => {
-            app.log(err.message, myName, 4, '!')
+            app.log(err.message, myName, 3, '!')
             return (err)
           })
       })
@@ -290,21 +289,21 @@ module.exports = function (app, sequelize) {
     return syncPromises
   }
   obj.timeStart = function (req, res, next) {
-    let myName = 'timeStart()'
-    req.appData.startTime = Date.now()
-    app.log('app start time: ' + req.appData.startTime, myName, 5)
+    let myName = 'timeStart'
+    req.appData.startTime = new Date()
+    app.log('app start time: ' + req.appData.startTime.toISOString(), myName, 4)
     return next()
   }
   obj.timeEnd = function (req, res, next) {
-    let myName = 'timeEnd()'
-    req.appData.stopTime = Date.now()
-    app.log('app end time: ' + req.appData.stopTime, myName, 5)
+    let myName = 'timeEnd'
+    req.appData.stopTime = new Date()
+    app.log('app end time: ' + req.appData.stopTime.toISOString(), myName, 4)
     return next()
   }
   obj.handleRedirects = function (req, res, next) {
     let myName = 'handleRedirects'
     if (app.locals.redirectFrom && (req.get('Host') === app.locals.redirectFrom)) {
-      app.log(`redirecting (301) from ${app.locals.redirectFrom} to ${app.locals.addr}`, myName, 6)
+      app.log(`redirecting (301) from ${app.locals.redirectFrom} to ${app.locals.addr}`, myName, 5)
       return res.redirect(301, 'https://' + app.locals.addr + req.originalUrl)
     }
     return next()
@@ -317,15 +316,12 @@ module.exports = function (app, sequelize) {
   }
   obj.setAppData = function (req, res, next) {
     let myName = 'setAppData()'
-    // app.log("original request: " + req.session.originalReq,myName,4);
     app.log('clearing appData', myName, 6)
     req.appData = {}
     app.log('setting app name', myName, 6)
     req.appData.title = app.locals.appName
-    // req.appData.modelName = obj.getModelName(req);
     req.appData.models = []
     req.appData.errors = []
-    // app.log("setting MODEL name: " + req.appData.modelName,myName,5);
     obj.clearMessageQueue(req)
     return next()
   }
@@ -335,7 +331,7 @@ module.exports = function (app, sequelize) {
       obj.show404(req, res)
     } else {
       let templateFile = req.appData.view
-      app.log('Query Params: ' + JSON.stringify(req.query), myName, 7, ' >>> ')
+      app.log('Query Params: ' + JSON.stringify(req.query), myName, 6, ' >>> ')
       let format = req.query.format || 'html'
       switch (format.toLowerCase()) {
         case 'json':
@@ -343,20 +339,22 @@ module.exports = function (app, sequelize) {
           let returnObj = {}
           req.appData.models.forEach(model => {
             app.log(`Loading model ${model} in JSON return data`, myName, 6)
-            // console.log(req.appData[model]);
             returnObj[model] = req.appData[model]
             returnObj['errors'] = req.appData.errors
           })
           return res.json(returnObj)
         default:
           app.log('Rendering template: ' + templateFile, myName, 6)
-          // if (app.headOptions) {
-          //   req.appData.headoptions = app.headOptions
-          // }
           req.appData.headoptions = app.headOptions
           req.appData.description = req.appData.description || app.locals.siteDescription
-          app.log(`Session user: ${JSON.stringify(req.session.user)}`, myName, 8)
-          return res.render(templateFile, req.appData)
+          app.log(`Session user: ${JSON.stringify(req.session.user)}`, myName, 6)
+          return res.render(templateFile, req.appData, function (err, html) {
+            let referrer = req.header('Referrer') || '-'
+            let userAgent = req.get('User-Agent') || '-'
+            let httpVersion = req.connection.alpnProtocol.toUpperCase() || '-'
+            app.log(`${req.ip} - - [${app.formatDateApache(req.appData.startTime)}] "${req.method} ${req.url} ${httpVersion}" 200 ${html.length} "${referrer}" "${userAgent}"`,"access",0)
+            res.send(html)
+          })
       }
     }
   }
@@ -654,7 +652,13 @@ module.exports = function (app, sequelize) {
     app.log(`404 triggered`, myName, 3)
     let fourOFourPath = path.join('./', app.locals.viewsDir, app.locals['404Page'])
     app.log(`Showing 404: ${fourOFourPath}`, myName, 3)
-    return res.status(404).render(app.locals['404Page'], req.appData)
+    return res.status(404).render(app.locals['404Page'], req.appData, function (err, html) {
+      let referrer = req.header('Referrer') || '-'
+      let userAgent = req.get('User-Agent') || '-'
+      let httpVersion = req.httpVersion || '-'
+      app.log(`${req.ip} - - [${app.formatDateApache(req.appData.startTime)}] "${req.method} ${req.url} ${httpVersion}" 404 ${html.length} "${referrer}" "${userAgent}"`,"access",0)
+      res.send(html)
+    })
   }
   /**
    * This function is meant to be used in route lines
@@ -751,6 +755,7 @@ module.exports = function (app, sequelize) {
   }
   obj.logRequest = function (req, res, next) {
     let myName = 'logRequest'
+    let dateString = req.appData.startTime.toLocaleString('en-US', { timeZone: 'UTC' });
     app.log(`${req.method} - ${req.protocol}://${req.hostname}${req.url} - (from ${req.ip} - ${req.get('User-Agent')})`, myName, 4)
     app.log(`Fresh: ${!!(req.fresh)}`, myName, 4)
     app.log(`Original URL: ${req.originalUrl}`, myName, 4)
@@ -877,9 +882,27 @@ module.exports = function (app, sequelize) {
     // return res.redirect('/')
     return obj.showPage(app.locals['404Page'])
   }
+  app.formatDateApache = function(dateObj) {
+    let myName = 'formatDateApache'
+    let months = [
+      'Jan'
+      ,'Feb'
+      ,'Mar'
+      ,'Apr'
+      ,'May'
+      ,'Jun'
+      ,'Jul'
+      ,'Aug'
+      ,'Sep'
+      ,'Nov'
+      ,'Dec'
+    ]
+    let d = dateObj.getUTCDate().toString()
+    let dateString = `${d.padStart(2,'0')}/${months[dateObj.getUTCMonth()]}/${dateObj.getUTCFullYear()}:${dateObj.getUTCHours().toString().padStart(2,'0')}:${dateObj.getUTCMinutes().toString().padStart(2,'0')}:${dateObj.getUTCSeconds().toString().padStart(2,'0')} +0000`
+    return dateString
+  }
   app.log = function (string, caller, debugLevel, prefix) {
     caller = caller || this.name
-    debugLevel = debugLevel || 6
     return obj.log(string, caller, debugLevel, prefix)
   }
   return obj

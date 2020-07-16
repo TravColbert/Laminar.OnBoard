@@ -1,4 +1,5 @@
 #!/usr/bin/node
+const { Console } = require('console')
 const path = require('path')
 console.log(`Current directory: ${process.cwd()}`)
 const cwd = path.join(__dirname, '/')
@@ -14,10 +15,23 @@ const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
 const app = express()
 const myName = 'setup'
-
 app.locals = JSON.parse(fs.readFileSync(path.join(cwd, 'config/config.json')))
+
+/**
+ * LOGGING - Get logging going asap
+ */
+let outputStream = process.stdout
+let accessStream = process.stdout
+let errorStream = process.stderr
+if(app.locals.hasOwnProperty('logOptions')) {
+  if(app.locals.logOptions.log) outputStream = fs.createWriteStream(app.locals.logOptions.log)
+  if(app.locals.logOptions.access) accessStream = fs.createWriteStream(app.locals.logOptions.access)
+  if(app.locals.logOptions.error) errorStream = fs.createWriteStream(app.locals.logOptions.error)
+}
+app.logStdOut = new Console(outputStream, errorStream)
+app.logStdAccess = new Console(accessStream)
+
 app.secrets = JSON.parse(fs.readFileSync(path.join(cwd, 'config/secrets.json')))
-app.debug = require('debug')('laminar')
 
 // Define the objects that are linked to domains:
 app.domainlinks = JSON.parse(fs.readFileSync(path.join(cwd, 'config/domainlinks.json')))
@@ -66,7 +80,7 @@ if (app.locals.hasOwnProperty('homeModule')) {
   }
 }
 
-app.log(path.join(cwd, 'db'), myName, 8)
+app.log(path.join(cwd, 'db'), myName, 6)
 
 let sessionConfig = {
   store: new SQLiteStore({
@@ -87,13 +101,13 @@ app.set('strict routing', true)
 if (app.locals.compression) app.use(compression())
 let staticOptions = app.locals.staticOptions || {}
 app.use(express.static(path.join(cwd, app.locals.staticDir),staticOptions))
-let favIcon = app.locals.favicon || 'public/img/laminar_favicon.ico'
+let favIcon = app.locals.favicon || 'public/img/favicon-laminar.ico'
 app.use('/favicon.ico', express.static(path.join(cwd, favIcon)), function (req, res, next) {
   let message = `Could not serve static file: ${path.join(cwd, favIcon)}`
   app.log(message)
   res.end()
 })
-let robots = app.locals.robots
+let robots = app.locals.robots || 'public/robots.txt'
 app.use('/robots.txt', express.static(path.join(cwd, robots)), function (req, res, next) {
   let message = `Could not serve static file: ${path.join(cwd, robots)}`
   app.log(message)
@@ -131,7 +145,6 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
     return app.tools.processFiles(modelFiles, app.tools.readModel)
   })
   .then(() => {
-    // Hydrate controllers
     return app.tools.readDir(path.join(cwd, app.locals.controllersDir))
   })
   .then(controllerFiles => {
@@ -144,7 +157,6 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
     return app.tools.processFiles(elementFiles, app.tools.readElement)
   })
   .then(() => {
-    // Bind associations and start the models
     return app.tools.readDir(path.join(cwd, app.locals.modelsDir, 'associations'))
   })
   .then(associationFiles => {
@@ -157,21 +169,18 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
     return app.tools.setupBasePermissions()
   })
   .then(() => {
-    // Run and post-startup model tasks (e.g. creating records)
     return app.tools.readDir(path.join(cwd, app.locals.modelsDir, 'modelstartups'), '.js')
   })
   .then(modelStartupFiles => {
     return app.tools.processFiles(modelStartupFiles, app.tools.readModelStartup)
   })
   .then(() => {
-    // Collect menu elements
     return app.tools.readDir(path.join(app.cwd, app.locals.navDir), '.json')
   })
   .then(menuFiles => {
     return app.tools.processFiles(menuFiles, app.tools.readMenu)
   })
   .then(() => {
-    // Parse headoptions file, if available
     return fs.readFile(path.join(cwd, 'config', 'headoptions.json'), (err, data) => {
       if (err) {
         app.log('No headoptions file found', myName, 5)
@@ -187,21 +196,21 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
      * SET BASE APP CONFIGURATON
      */
     app.use(
-      app.tools.handleRedirects,
-      app.tools.logRequest,
-      app.tools.enforceStrictRouting,
-      app.tools.setOriginalUrl,
-      app.tools.setAppData,
-      app.tools.timeStart
+      app.tools.handleRedirects
+      ,app.tools.enforceStrictRouting
+      ,app.tools.setOriginalUrl
+      ,app.tools.setAppData
+      ,app.tools.timeStart
+      ,app.tools.logRequest
     )
 
     /**
      * SET SESSION AND ACCOUNT DATA
      */
     app.use(
-      app.tools.setUserAccount,
-      app.tools.getUserDomains,
-      app.tools.setMessage
+      app.tools.setUserAccount
+      ,app.tools.getUserDomains
+      ,app.tools.setMessage
     )
 
     /**
