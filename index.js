@@ -24,9 +24,10 @@ let outputStream = process.stdout
 let accessStream = process.stdout
 let errorStream = process.stderr
 if(app.locals.hasOwnProperty('logOptions')) {
-  if(app.locals.logOptions.log) outputStream = fs.createWriteStream(app.locals.logOptions.log)
-  if(app.locals.logOptions.access) accessStream = fs.createWriteStream(app.locals.logOptions.access)
-  if(app.locals.logOptions.error) errorStream = fs.createWriteStream(app.locals.logOptions.error)
+  let options = {flags:"a"}
+  if(app.locals.logOptions.log) outputStream = fs.createWriteStream(app.locals.logOptions.log, options)
+  if(app.locals.logOptions.access) accessStream = fs.createWriteStream(app.locals.logOptions.access, options)
+  if(app.locals.logOptions.error) errorStream = fs.createWriteStream(app.locals.logOptions.error, options)
 }
 app.logStdOut = new Console(outputStream, errorStream)
 app.logStdAccess = new Console(accessStream)
