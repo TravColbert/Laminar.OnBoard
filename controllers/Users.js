@@ -51,12 +51,11 @@ module.exports = function (app, model) {
               return res.redirect('/login/')
             })
           }
-          return new Error('Authentication error')
+          throw new Error('Authentication error')
         })
         .catch(err => {
           app.log('User is not found or not verified or not allowed', myName, 4)
-          app.log('Authenticate failed!', myName, 4)
-          app.log(err.message)
+          app.log(err.message, myName, 4)
           return res.redirect('/login/')
         })
     },

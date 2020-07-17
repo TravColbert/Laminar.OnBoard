@@ -251,7 +251,7 @@ module.exports = function (app, sequelize) {
         }
         return app.controllers.domains.createDomainAndRoles(trashDomain, adminUser)
       } else {
-        app.log(`Found 'Trash' domain`, myName, 7)
+        app.log(`Found 'Trash' domain`, myName, 6)
         return domain
       }
     }).then(domain => {
@@ -259,10 +259,10 @@ module.exports = function (app, sequelize) {
     //   return trashDomain
     // }).then((domain) => {
       trashDomain = domain
-      app.log('Time to attach Super-Admin role to default domain...')
+      app.log('Time to attach Super-Admin role to default domain...', myName, 6)
       return superAdminRole.addDomains(defaultDomain)
     }).then(() => {
-      app.log('Time to attach Super-Admin role to trash domain...')
+      app.log('Time to attach Super-Admin role to trash domain...', myName, 6)
       return superAdminRole.addDomains(trashDomain)
     }).catch(err => {
       app.log(err.message, myName, 3, '!')
