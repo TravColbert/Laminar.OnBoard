@@ -28,34 +28,28 @@ module.exports = function (app, model) {
       app.log('Authenticating user: ' + loginAccountName, myName, 5)
       return app.controllers[model].getUserByObj({ email: loginAccountName, verified: true, disabled: false })
         .then((users) => {
-          if (users.length > 0) {
-            let user = users[0]
-            app.log('Checking passphrase...', myName, 5)
-            bcrypt.compare(req.body.password, user.password, (err, match) => {
-              if (err) {
-                return new Error('Authentication error')
+          if (!users || users.length === 0) throw new Error('User not found')
+          let user = users[0]
+          bcrypt.compare(req.body.password, user.password, (err, match) => {
+            if (err) {
+              return new Error('Authentication error')
+            }
+            if (match) {
+              req.session.user = {
+                id: user.id,
+                email: user.email,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                defaultDomainId: user.defaultDomainId
               }
-              if (match) {
-                app.log('Passwords match for user: ' + user.email, myName, 5)
-                req.session.user = {
-                  id: user.id,
-                  email: user.email,
-                  firstname: user.firstname,
-                  lastname: user.lastname,
-                  defaultDomainId: user.defaultDomainId
-                }
-                app.log(req.session.user, myName, 6)
-                return next()
-              }
-              app.log('Authenticate failed!', myName, 4)
-              return res.redirect('/login/')
-            })
-          }
-          throw new Error('Authentication error')
+              app.log(req.session.user, myName, 6)
+              return next()
+            }
+          })
         })
         .catch(err => {
           app.log('User is not found or not verified or not allowed', myName, 4)
-          app.log(err.message, myName, 4)
+          app.log(`error: ${err.message}`, myName, 4)
           return res.redirect('/login/')
         })
     },

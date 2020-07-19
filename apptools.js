@@ -47,26 +47,23 @@ module.exports = function (app, sequelize) {
     return new Promise((resolve, reject) => {
       app.log(`Reading dir: ${dir}`, myName, 5)
       fs.readdir(dir, (err, files) => {
-        if (err) {
-          reject(new Error(`(${myName}) : ${err.message}`))
+        if (err) reject(new Error(`(${myName}) : ${err.message}`))
+        // Filter extensions here
+        let fileList
+        if (extension) {
+          app.log(`Filtering by extension: ${extension}`, myName, 6)
+          fileList = files.filter(file => {
+            return (path.extname(file) === extension)
+          })
         } else {
-          // Filter extensions here
-          let fileList
-          if (extension) {
-            app.log(`Filtering by extension: ${extension}`, myName, 6)
-            fileList = files.filter(file => {
-              return (path.extname(file) === extension)
-            })
-          } else {
-            fileList = files
-          }
-          if (fileList == undefined || fileList === null || fileList.length < 1) {
-            app.log(`Didn\'t find any files. Sending empty list`, myName, 6)
-            resolve([])
-          } else {
-            app.log(`Found files: ${fileList}`, myName, 6)
-            resolve(fileList)
-          }
+          fileList = files
+        }
+        if (fileList == undefined || fileList === null || fileList.length < 1) {
+          app.log(`Didn\'t find any files. Sending empty list`, myName, 6)
+          resolve([])
+        } else {
+          app.log(`Found files: ${fileList}`, myName, 6)
+          resolve(fileList)
         }
       })
     })
