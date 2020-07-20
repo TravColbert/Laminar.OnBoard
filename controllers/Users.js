@@ -31,9 +31,9 @@ module.exports = function (app, model) {
           if (!users || users.length === 0) throw new Error('User not found')
           let user = users[0]
           bcrypt.compare(req.body.password, user.password, (err, match) => {
-            if (err) {
-              return new Error('Authentication error')
-            }
+            console.log(JSON.stringify(err))
+            console.log(JSON.stringify(match))
+            if (err) return new Error('Authentication error')
             if (match) {
               req.session.user = {
                 id: user.id,
@@ -42,9 +42,10 @@ module.exports = function (app, model) {
                 lastname: user.lastname,
                 defaultDomainId: user.defaultDomainId
               }
-              app.log(req.session.user, myName, 6)
               return next()
             }
+            app.log(`password!=match`, myName, 4)
+            return res.redirect('/login/')
           })
         })
         .catch(err => {
