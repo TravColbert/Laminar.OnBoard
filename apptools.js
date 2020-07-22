@@ -21,8 +21,8 @@ module.exports = function (app, sequelize) {
       debugLevel = debugLevel || 0
       prefix = prefix || ''
       if (debugLevel <= app.locals.logLevel) {
-        if(caller=="access") return app.logStdAccess.log(string)
-        return app.logStdOut.log('(%s) %s %s', caller, prefix, string)
+        if(caller=="access") return app.logging.logStdAccess.log(string)
+        return app.logging.logStdOut.log('(%s) %s %s', caller, prefix, string)
       }
       return false
     },

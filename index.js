@@ -16,22 +16,7 @@ const fileUpload = require('express-fileupload')
 const app = express()
 const myName = 'setup'
 app.locals = JSON.parse(fs.readFileSync(path.join(cwd, 'config/config.json')))
-
-/**
- * LOGGING - Get logging going asap
- */
-let outputStream = process.stdout
-let accessStream = process.stdout
-let errorStream = process.stderr
-if(app.locals.hasOwnProperty('logOptions')) {
-  let options = {flags:"a"}
-  if(app.locals.logOptions.log) outputStream = fs.createWriteStream(app.locals.logOptions.log, options)
-  if(app.locals.logOptions.access) accessStream = fs.createWriteStream(app.locals.logOptions.access, options)
-  if(app.locals.logOptions.error) errorStream = fs.createWriteStream(app.locals.logOptions.error, options)
-}
-app.logStdOut = new Console(outputStream, errorStream)
-app.logStdAccess = new Console(accessStream)
-
+app.logging = require(path.join(cwd,app.locals.modulesDir,`Logging.js`))(app)
 app.secrets = JSON.parse(fs.readFileSync(path.join(cwd, 'config/secrets.json')))
 
 // Define the objects that are linked to domains:
