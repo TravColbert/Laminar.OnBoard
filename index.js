@@ -66,8 +66,6 @@ if (app.locals.hasOwnProperty('homeModule')) {
   }
 }
 
-app.log(path.join(cwd, 'db'), myName, 6)
-
 let sessionConfig = {
   store: new SQLiteStore({
     db: 'sessions.db',
@@ -123,7 +121,7 @@ app.menu = []
 app.linkedObjects = {}
 
 // Prepare navigation object
-const navigation = require('./navigation')(app)
+const navigation = require(path.join(cwd, app.locals.modulesDir, 'Navigation'))(app)
 
 // Build app starting with model-hydration
 app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
