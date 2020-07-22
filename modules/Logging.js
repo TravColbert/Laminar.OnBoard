@@ -2,7 +2,6 @@ const fs = require('fs')
 const { Console } = require('console')
 
 module.exports = function(app) {
-  console.log(`I'm in the module...`)
   let myName = `Laminar.Logging`
   let outputStream = process.stdout
   let accessStream = process.stdout
