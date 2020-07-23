@@ -45,7 +45,7 @@ module.exports = function (app, sequelize) {
   obj.readDir = function (dir, extension) {
     let myName = 'readDir'
     return new Promise((resolve, reject) => {
-      app.log(`Reading dir: ${dir}`, myName, 5)
+      app.log(`Reading dir: ${dir}`, myName, 6)
       fs.readdir(dir, (err, files) => {
         if (err) reject(new Error(`(${myName}) : ${err.message}`))
         // Filter extensions here
@@ -152,7 +152,7 @@ module.exports = function (app, sequelize) {
     let myName = 'processFiles'
     let routeReadPromises = Promise.resolve()
     files.forEach(file => {
-      app.log(`Processing file: ${file}`, myName, 6)
+      app.log(`${file}`, myName, 6)
       routeReadPromises = routeReadPromises.then(data => {
         return cb(file)
       })
