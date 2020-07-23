@@ -13,7 +13,7 @@ const session = require('express-session')
 const SQLiteStore = require('connect-sqlite3')(session)
 const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
-const app = express()
+var app = express()
 const myName = 'setup'
 app.cwd = path.join(__dirname, '/')
 app.locals = JSON.parse(fs.readFileSync(path.join(cwd, 'config/config.json')))
@@ -23,47 +23,21 @@ app.secrets = JSON.parse(fs.readFileSync(path.join(cwd, 'config/secrets.json')))
 // Define the objects that are linked to domains:
 app.domainlinks = JSON.parse(fs.readFileSync(path.join(cwd, 'config/domainlinks.json')))
 
-// Configure host:port
-app.locals.url = 'https://' + app.locals.addr
-if (app.locals.port !== '443') app.locals.url += ':' + app.locals.port
-
-const options = {
-  key: fs.readFileSync(path.join(cwd, app.locals.keyFile)),
-  cert: fs.readFileSync(path.join(cwd, app.locals.certFile)),
-  secureOptions: constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1
-}
-
-// Setup our ORM (Sequelize)
-const Sequelize = require('sequelize')
-var sequelize = new Sequelize(
-  app.locals.dbConnection[app.locals.activeDbConnection].database,
-  app.locals.dbConnection[app.locals.activeDbConnection].user,
-  app.secrets.dbConnection[app.locals.activeDbConnection].password,
-  {
-    host: app.locals.dbConnection[app.locals.activeDbConnection].host,
-    dialect: app.locals.activeDbConnection,
-    // For SQLite only :
-    storage: cwd + app.locals.dbConnection[app.locals.activeDbConnection].storage,
-    // Logging:
-    logging: app.locals.dbConnection[app.locals.activeDbConnection].logging
-  }
-)
+// Setup our ORM
+var orm = require(path.join(app.cwd, app.locals.modulesDir, 'ORM'))(app)
 
 // Incorporate our tools file
-app.tools = require(path.join(cwd, 'apptools'))(app, sequelize)
+app.tools = require(path.join(app.cwd, app.locals.modulesDir, 'Tools'))(app, orm)
 
-app.mailjet = require('node-mailjet').connect(app.secrets['mail-api-key'], app.secrets['mail-api-secret'], {
-  url: app.locals.smtpServer, // default is the API url
-  version: 'v3.1', // default is '/v3'
-  perform_api_call: true // used for tests. default is true
-})
+// Mail-handler
+app.mail = require(path.join(app.cwd, app.locals.modulesDir, 'Mail'))(app)
 
 // Setup default Home module
 app.homeModule = false
 if (app.locals.hasOwnProperty('homeModule')) {
   if (app.locals.homeModule !== false && app.locals.homeModule !== null) {
     app.log('Including home module: ' + app.locals.homeModule, myName, 6)
-    app.homeModule = require(path.join(__dirname, app.locals.modulesDir, app.locals.homeModule))(app)
+    app.homeModule = require(path.join(app.cwd, app.locals.modulesDir, app.locals.homeModule))(app)
   }
 }
 
@@ -73,8 +47,9 @@ app.set('view engine', 'pug')
 app.set('query parser', true)
 app.set('strict routing', true)
 if (app.locals.compression) app.use(compression())
-let staticOptions = app.locals.staticOptions || {}
-app.use(express.static(path.join(cwd, app.locals.staticDir),staticOptions))
+
+app = require(path.join(app.cwd, app.locals.modulesDir, "Static"))(app,express)
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 let sessionConfig = {
@@ -102,20 +77,6 @@ app.linkedObjects = {}
 
 // Prepare navigation object
 const navigation = require(path.join(cwd, app.locals.modulesDir, 'Navigation'))(app)
-
-let staticFiles = [
-  {req:'/favicon.ico', file:app.locals.favicon || 'public/img/favicon-laminar.ico'},
-  {req:'/robots.txt', file:app.locals.robots || 'public/robots.txt'},
-  {req:'/sitemap.xml', file:app.locals.sitemap || 'public/sitemap.xml'}
-]
-staticFiles.forEach(fileObj => {
-  app.log(`Setting static file: ${fileObj.req}`, myName, 5)
-  app.use(fileObj.req, express.static(path.join(app.cwd, fileObj.file)), function (req, res, next) {
-    let message = `Could not serve static file: ${path.join(app.cwd, fileObj.file)}`
-    app.log(message)
-    res.end()
-  })
-})
 
 // Build app starting with model-hydration
 app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
@@ -243,9 +204,19 @@ app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
     app.log(err.message)
   })
 
+
 /**
  * START THE SERVER
  */
+app.locals.url = 'https://' + app.locals.addr
+if (app.locals.port !== '443') app.locals.url += ':' + app.locals.port
+
+const options = {
+  key: fs.readFileSync(path.join(cwd, app.locals.keyFile)),
+  cert: fs.readFileSync(path.join(cwd, app.locals.certFile)),
+  secureOptions: constants.SSL_OP_NO_TLSv1 | constants.SSL_OP_NO_TLSv1_1
+}
+
 let server = https.createServer(options, app)
 server.listen(app.locals.port, app.locals.host, () => {
   console.log(app.locals.appName + ' server listening on port ' + app.locals.port)
