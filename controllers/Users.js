@@ -4,6 +4,7 @@ module.exports = function (app, model) {
   if (!model) return false
   let myName = model + 'Controller'
   let myModel = model
+  let saltRounds = 10
   obj = {
     __create: function (obj) {
       let myName = '__create'
@@ -23,17 +24,15 @@ module.exports = function (app, model) {
     },
 
     authenticate: function (req, res, next) {
-      let myName = 'authenticate()'
+      let myName = 'authenticate'
       let loginAccountName = req.body.email.toLowerCase()
       app.log('Authenticating user: ' + loginAccountName, myName, 5)
       return app.controllers[model].getUserByObj({ email: loginAccountName, verified: true, disabled: false })
         .then((users) => {
-          if (!users || users.length === 0) throw new Error('User not found')
+          if (!users || users.length === 0) throw new Error(`User not found`)
           let user = users[0]
           bcrypt.compare(req.body.password, user.password, (err, match) => {
-            console.log(JSON.stringify(err))
-            console.log(JSON.stringify(match))
-            if (err) return new Error('Authentication error')
+            if (err) throw new Error(`Authentication error`)
             if (match) {
               req.session.user = {
                 id: user.id,
@@ -50,12 +49,12 @@ module.exports = function (app, model) {
         })
         .catch(err => {
           app.log('User is not found or not verified or not allowed', myName, 4)
-          app.log(`error: ${err.message}`, myName, 4)
+          app.log(`Error: ${err.message}`, myName, 4)
           return res.redirect('/login/')
         })
     },
     cryptPassword: function (password) {
-      let myName = 'cryptPassword()'
+      let myName = 'cryptPassword'
       return new Promise(function (resolve, reject) {
         bcrypt.genSalt(10, function (err, salt) {
           if (err) return reject(err)
@@ -69,7 +68,7 @@ module.exports = function (app, model) {
       })
     },
     ifUserHasRole: function (roleName, user, cb) {
-      let myName = 'userHasRole()'
+      let myName = 'userHasRole'
       let result = false
       // User must be the current session-user
       app.log('Checking if user has role: ' + roleName, myName, 6)
@@ -304,10 +303,12 @@ module.exports = function (app, model) {
     },
     getUserByEmail: function (email) {
       let myName = 'getUserByEmail'
-      let searchObj = {
-        where: { 'email': email }
-      }
-      return app.controllers[model].__get(searchObj)
+      // let searchObj = {
+      //   where: { 'email': email.toLowerCase() }
+      // }
+      let searchObj = { 'email': email.toLowerCase() }
+      return app.controllers[model].getUserByObj(searchObj)
+      // return app.controllers[model].__get(searchObj)
     },
     getUserByObj: function (obj) {
       let myName = 'getUserByObj'
