@@ -15,6 +15,7 @@ const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
 const app = express()
 const myName = 'setup'
+app.cwd = path.join(__dirname, '/')
 app.locals = JSON.parse(fs.readFileSync(path.join(cwd, 'config/config.json')))
 app.logging = require(path.join(cwd,app.locals.modulesDir,`Logging.js`))(app)
 app.secrets = JSON.parse(fs.readFileSync(path.join(cwd, 'config/secrets.json')))
@@ -66,6 +67,16 @@ if (app.locals.hasOwnProperty('homeModule')) {
   }
 }
 
+// Basic Express setup: templater, query-parsing, ...
+app.set('views', path.join(cwd, app.locals.viewsDir))
+app.set('view engine', 'pug')
+app.set('query parser', true)
+app.set('strict routing', true)
+if (app.locals.compression) app.use(compression())
+let staticOptions = app.locals.staticOptions || {}
+app.use(express.static(path.join(cwd, app.locals.staticDir),staticOptions))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 let sessionConfig = {
   store: new SQLiteStore({
     db: 'sessions.db',
@@ -76,42 +87,11 @@ let sessionConfig = {
   resave: false,
   saveUninitialized: false
 }
-
-// Basic Express setup: templater, query-parsing, ...
-app.set('views', path.join(cwd, app.locals.viewsDir))
-app.set('view engine', 'pug')
-app.set('query parser', true)
-app.set('strict routing', true)
-if (app.locals.compression) app.use(compression())
-let staticOptions = app.locals.staticOptions || {}
-app.use(express.static(path.join(cwd, app.locals.staticDir),staticOptions))
-let favIcon = app.locals.favicon || 'public/img/favicon-laminar.ico'
-app.use('/favicon.ico', express.static(path.join(cwd, favIcon)), function (req, res, next) {
-  let message = `Could not serve static file: ${path.join(cwd, favIcon)}`
-  app.log(message)
-  res.end()
-})
-let robots = app.locals.robots || 'public/robots.txt'
-app.use('/robots.txt', express.static(path.join(cwd, robots)), function (req, res, next) {
-  let message = `Could not serve static file: ${path.join(cwd, robots)}`
-  app.log(message)
-  res.end()
-})
-if (app.locals.sitemap) {
-  app.use('/sitemap.xml', express.static(path.join(cwd, app.locals.sitemap)), function (req, res, next) {
-    let message = `Could not serve static file: ${path.join(cwd, app.locals.sitemap)}`
-    app.log(message)
-    res.end()
-  })
-}
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
 app.use(session(sessionConfig))
 app.use(fileUpload())
 app.disable('x-powered-by')
 
 // Main app in-memory structures...
-app.cwd = cwd
 app.models = {}
 app.modelDefinitions = {}
 app.controllers = {}
@@ -122,6 +102,20 @@ app.linkedObjects = {}
 
 // Prepare navigation object
 const navigation = require(path.join(cwd, app.locals.modulesDir, 'Navigation'))(app)
+
+let staticFiles = [
+  {req:'/favicon.ico', file:app.locals.favicon || 'public/img/favicon-laminar.ico'},
+  {req:'/robots.txt', file:app.locals.robots || 'public/robots.txt'},
+  {req:'/sitemap.xml', file:app.locals.sitemap || 'public/sitemap.xml'}
+]
+staticFiles.forEach(fileObj => {
+  app.log(`Setting static file: ${fileObj.req}`, myName, 5)
+  app.use(fileObj.req, express.static(path.join(app.cwd, fileObj.file)), function (req, res, next) {
+    let message = `Could not serve static file: ${path.join(app.cwd, fileObj.file)}`
+    app.log(message)
+    res.end()
+  })
+})
 
 // Build app starting with model-hydration
 app.tools.readDir(path.join(app.cwd, app.locals.modelsDir), '.js')
