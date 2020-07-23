@@ -72,7 +72,8 @@ module.exports = function (app, sequelize) {
     let myName = 'readModel'
     return new Promise((resolve, reject) => {
       if (app.tools.isFileType(file, 'js')) {
-        let modelDefintion = require(path.join(__dirname, app.locals.modelsDir, file))(Sequelize, app)
+        // let modelDefintion = require(path.join(__dirname, app.locals.modelsDir, file))(Sequelize, app)
+        let modelDefintion = require(path.join(app.cwd, app.locals.modelsDir, file))(Sequelize, app)
         app.modelDefinitions[modelDefintion.tablename] = modelDefintion
         app.log(modelDefintion.tablename, myName, 5)
         app.models[modelDefintion.tablename] = sequelize.define(modelDefintion.tablename, modelDefintion.schema, modelDefintion.options)
@@ -87,7 +88,7 @@ module.exports = function (app, sequelize) {
         let fileNameParts = file.split('.')
         let controllerName = fileNameParts[0].toLowerCase()
         app.log(controllerName, myName, 5)
-        app.controllers[controllerName] = require(path.join(__dirname, app.locals.controllersDir, file))(app, controllerName)
+        app.controllers[controllerName] = require(path.join(app.cwd, app.locals.controllersDir, file))(app, controllerName)
       }
       resolve(true)
     })
@@ -96,7 +97,7 @@ module.exports = function (app, sequelize) {
     let myName = 'readMenu'
     return new Promise((resolve, reject) => {
       if (app.tools.isFileType(file, 'json')) {
-        let menuPath = path.join(__dirname, app.locals.navDir, file)
+        let menuPath = path.join(app.cwd, app.locals.navDir, file)
         app.log(`Menu filename: ${menuPath}`, myName, 5)
         app.menu = app.menu.concat(require(menuPath)['main'])
       }
@@ -110,7 +111,7 @@ module.exports = function (app, sequelize) {
         let fileNameParts = file.split('.')
         let elementName = fileNameParts[0].toLowerCase()
         app.log(elementName, myName, 5)
-        app.elements[elementName] = require(path.join(__dirname, app.locals.elementsDir, file))
+        app.elements[elementName] = require(path.join(app.cwd, app.locals.elementsDir, file))
       }
       resolve(true)
     })
@@ -122,7 +123,7 @@ module.exports = function (app, sequelize) {
         let fileNameParts = file.split('.')
         let routeName = fileNameParts[0].toLowerCase()
         app.log(routeName, myName, 5)
-        app.routes[routeName] = require(path.join(__dirname, app.locals.routesDir, file))(app)
+        app.routes[routeName] = require(path.join(app.cwd, app.locals.routesDir, file))(app)
       }
       resolve(true)
     })
@@ -132,7 +133,7 @@ module.exports = function (app, sequelize) {
     return new Promise((resolve, reject) => {
       if (app.tools.isFileType(file, 'js')) {
         app.log(file, myName, 5)
-        let association = require(path.join(__dirname, app.locals.modelsDir, 'associations', file))(app)
+        let association = require(path.join(app.cwd, app.locals.modelsDir, 'associations', file))(app)
       }
       resolve(true)
     })
