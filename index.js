@@ -26,20 +26,16 @@ app.domainlinks = JSON.parse(fs.readFileSync(path.join(cwd, 'config/domainlinks.
 // Setup our ORM
 var orm = require(path.join(app.cwd, app.locals.modulesDir, 'ORM'))(app)
 
-// Incorporate our tools file
-app.tools = require(path.join(app.cwd, app.locals.modulesDir, 'Tools'))(app, orm)
+if(orm) {
+  // Incorporate our tools file
+  app.tools = require(path.join(app.cwd, app.locals.modulesDir, 'Tools'))(app, orm)
+}
 
 // Mail-handler
 app.mail = require(path.join(app.cwd, app.locals.modulesDir, 'Mail'))(app)
 
 // Setup default Home module
-app.homeModule = false
-if (app.locals.hasOwnProperty('homeModule')) {
-  if (app.locals.homeModule !== false && app.locals.homeModule !== null) {
-    app.log('Including home module: ' + app.locals.homeModule, myName, 6)
-    app.homeModule = require(path.join(app.cwd, app.locals.modulesDir, app.locals.homeModule))(app)
-  }
-}
+app.homeModule = require(path.join(app.cwd, app.locals.modulesDir, 'HomeModule'))(app)
 
 // Basic Express setup: templater, query-parsing, ...
 app.set('views', path.join(cwd, app.locals.viewsDir))
