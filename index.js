@@ -5,17 +5,20 @@ console.log(`Current directory: ${process.cwd()}`)
 const cwd = path.join(__dirname, '/')
 console.log('Script directory is:', cwd)
 const fs = require('fs')
-const constants = require('crypto').constants;
+const constants = require('crypto').constants
+
 const https = require('https')
 const compression = require('compression')
 const express = require('express')
 const session = require('express-session')
+
 const SQLiteStore = require('connect-sqlite3')(session)
+
 const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
 var app = express()
 const myName = 'setup'
-app.cwd = path.join(__dirname, '/')
+app.cwd = cwd
 app.locals = JSON.parse(fs.readFileSync(path.join(cwd, 'config/config.json')))
 app.logging = require(path.join(cwd,app.locals.modulesDir,`Logging.js`))(app)
 app.secrets = JSON.parse(fs.readFileSync(path.join(cwd, 'config/secrets.json')))
