@@ -87,7 +87,7 @@ module.exports = function (app, sequelize) {
       if (app.tools.isFileType(file, 'js')) {
         let fileNameParts = file.split('.')
         let controllerName = fileNameParts[0].toLowerCase()
-        app.log(controllerName, myName, 5)
+        app.log(`Setting up controller: ${controllerName}`, myName, 6)
         app.controllers[controllerName] = require(path.join(app.cwd, app.locals.controllersDir, file))(app, controllerName)
       }
       resolve(true)
@@ -624,7 +624,6 @@ module.exports = function (app, sequelize) {
   obj.loginPage = function (req, res, next) {
     let myName = 'loginPage()'
     app.log('queueing login page', myName, 5)
-    // let salt = bcrypt.genSaltSync(10);
     req.appData.view = 'login'
     req.appData.pageClass = 'splash'
     req.appData.noindex = true
