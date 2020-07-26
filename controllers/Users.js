@@ -1,10 +1,14 @@
 const bcrypt = require('bcrypt')
+const path = require('path')
 
 module.exports = function (app, model) {
   if (!model) return false
   let myName = model + 'Controller'
   let myModel = model
   let saltRounds = 10
+  
+  const userSvc = require(path.join(app.cwd, "services", "userAuth"))(app)
+
   obj = {
     __create: function (obj) {
       let myName = '__create'
@@ -25,33 +29,66 @@ module.exports = function (app, model) {
 
     authenticate: function (req, res, next) {
       let myName = 'authenticate'
-      let loginAccountName = req.body.email.toLowerCase()
-      app.log('Authenticating user: ' + loginAccountName, myName, 5)
-      return app.controllers[model].getUserByObj({ email: loginAccountName, verified: true, disabled: false })
-        .then((users) => {
-          if (!users || users.length === 0) throw new Error(`User not found`)
-          let user = users[0]
-          bcrypt.compare(req.body.password, user.password, (err, match) => {
-            if (err) throw new Error(`Authentication error`)
-            if (match) {
-              req.session.user = {
-                id: user.id,
-                email: user.email,
-                firstname: user.firstname,
-                lastname: user.lastname,
-                defaultDomainId: user.defaultDomainId
-              }
-              return next()
-            }
-            app.log(`password!=match`, myName, 4)
-            return res.redirect('/login/')
-          })
-        })
-        .catch(err => {
-          app.log('User is not found or not verified or not allowed', myName, 4)
-          app.log(`Error: ${err.message}`, myName, 4)
-          return res.redirect('/login/')
-        })
+
+      let {email, password} = req.body
+
+      return app.controllers[model].userSvc.userIsEnabled(email)
+      .then((result) => {
+        if(!result) throw err(`User ${email} is not enabled`)
+        return app.controllers[model].userSvc.userIsVerified(email)
+      })
+      .then((result) => {
+        if(!result) throw err(`User ${email} is not verified`)
+        return app.controllers[model].userSvc.authenticate(email, password)
+      })
+      .then((result) => {
+        if(!result) return res.redirect('/login/')
+        return app.controllers[model].userSvc.get(email)
+      })
+      .then((user) => {
+        if(!user) throw err(`User ${email} is not found`)
+        req.session.user = {
+          id: user.id,
+          email: user.email,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          defaultDomainId: user.defaultDomainId
+        }
+        return next()
+      })
+      .catch(err => {
+        app.log('User is not found or not verified or not allowed', myName, 4)
+        app.log(`Error: ${err.message}`, myName, 4)
+        return res.redirect('/login/')
+      })
+
+      // let loginAccountName = req.body.email.toLowerCase()
+      // app.log('Authenticating user: ' + loginAccountName, myName, 5)
+      // return app.controllers[model].getUserByObj({ email: loginAccountName, verified: true, disabled: false })
+      //   .then((users) => {
+      //     if (!users || users.length === 0) throw new Error(`User not found`)
+      //     let user = users[0]
+      //     bcrypt.compare(req.body.password, user.password, (err, match) => {
+      //       if (err) throw new Error(`Authentication error`)
+      //       if (match) {
+      //         req.session.user = {
+      //           id: user.id,
+      //           email: user.email,
+      //           firstname: user.firstname,
+      //           lastname: user.lastname,
+      //           defaultDomainId: user.defaultDomainId
+      //         }
+      //         return next()
+      //       }
+      //       app.log(`password!=match`, myName, 4)
+      //       return res.redirect('/login/')
+      //     })
+      //   })
+      //   .catch(err => {
+      //     app.log('User is not found or not verified or not allowed', myName, 4)
+      //     app.log(`Error: ${err.message}`, myName, 4)
+      //     return res.redirect('/login/')
+      //   })
     },
     cryptPassword: function (password) {
       let myName = 'cryptPassword'
