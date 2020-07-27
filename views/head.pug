@@ -1,6 +1,5 @@
 head
-  - if(prehead)
-    include prehead.html
+  block earlyhead
   - let titleText = (pageTitle) ? pageTitle : title
   title= titleText
   meta(name="viewport" content="width=device-width,initial-scale=1")
