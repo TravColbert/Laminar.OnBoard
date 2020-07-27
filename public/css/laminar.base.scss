@@ -320,15 +320,15 @@ main {
   }
 }
 
-main.splash section:first-child article:first-child {
-  @media all and (min-width: 601px) {
-    background-attachment: local;
-    background-image: url(/img/logo-min.png);
-    background-position: 89% center;
-    background-repeat: no-repeat;
-    background-size: 38%;
-  }
-}
+// main.splash section:first-child article:first-child {
+//   @media all and (min-width: 601px) {
+//     background-attachment: local;
+//     background-image: url(/img/logo-min.png);
+//     background-position: 89% center;
+//     background-repeat: no-repeat;
+//     background-size: 38%;
+//   }
+// }
 
 aside {
   @extend .flexy-column;
