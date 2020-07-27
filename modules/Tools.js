@@ -347,6 +347,10 @@ module.exports = function (app, sequelize) {
           req.appData.description = req.appData.description || app.locals.siteDescription
           app.log(`Session user: ${JSON.stringify(req.session.user)}`, myName, 6)
           return res.render(templateFile, req.appData, function (err, html) {
+            if (err) {
+              app.log(`Caught error ==> ${err.message}`, myName, 3)
+              res.status(500).end()
+            }
             let referrer = req.header('Referrer') || '-'
             let userAgent = req.get('User-Agent') || '-'
             let httpVersion = req.connection.alpnProtocol.toUpperCase() || '-'
