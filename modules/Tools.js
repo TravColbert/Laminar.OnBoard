@@ -318,7 +318,7 @@ module.exports = function (app, sequelize) {
     if (req.connection) {
       if (req.connection.alpnProtocol) protocol = req.connection.alpnProtocol.toUpperCase()
     }
-    app.log(`Detected HTTP protocol: ${protocol}`)
+    app.log(`Detected HTTP protocol: ${protocol}`,myName,6)
     return protocol
   }
   obj.setAppData = function (req, res, next) {
