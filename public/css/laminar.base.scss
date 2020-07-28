@@ -111,8 +111,7 @@ body {
   font-size: 16px;
   font-family: settings.$generalfont;
   color: settings.$textcolor;
-  background-color: rgb(255,255,255);
-  // background-image: linear-gradient(to bottom right, rgb(240,250,250), rgb(210,215,215));
+  background-color: settings.$pagebackgroundcolor;
   background-size: cover;
   background-attachment: fixed;
   background-position-x: center;
