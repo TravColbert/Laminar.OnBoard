@@ -314,10 +314,12 @@ module.exports = function (app, sequelize) {
   }
   obj.getHttpVersion = function (req) {
     let myName = 'getHttpVersion'
-    let protocol
-    if (req.connection) protocol = req.connection.alpnProtocol || '-'
+    let protocol = '-'
+    if (req.connection) {
+      if (req.connection.alpnProtocol) protocol = req.connection.alpnProtocol.toUpperCase()
+    }
     app.log(`Detected HTTP protocol: ${protocol}`)
-    return protocol.toUpperCase()
+    return protocol
   }
   obj.setAppData = function (req, res, next) {
     let myName = 'setAppData()'
