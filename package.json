@@ -1,5 +1,5 @@
 {
-  "name": "Laminar.OnBoard",
+  "name": "laminar",
   "version": "1.0.0",
   "description": "Starting-point for a secure but simple Express web application",
   "main": "index.js",
