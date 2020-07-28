@@ -312,6 +312,13 @@ module.exports = function (app, sequelize) {
     app.log('Base path: ' + basePath, myName, 6)
     return app.paths[basePath] || '/'
   }
+  obj.getHttpVersion = function (req) {
+    let myName = 'getHttpVersion'
+    let protocol
+    if (req.connection) protocol = req.connection.alpnProtocol || '-'
+    app.log(`Detected HTTP protocol: ${protocol}`)
+    return protocol.toUpperCase()
+  }
   obj.setAppData = function (req, res, next) {
     let myName = 'setAppData()'
     app.log('clearing appData', myName, 6)
@@ -349,13 +356,13 @@ module.exports = function (app, sequelize) {
           return res.render(templateFile, req.appData, function (err, html) {
             if (err) {
               app.log(`Caught error ==> ${err.message}`, myName, 3)
-              res.status(500).end()
+              return res.status(500).end()
             }
             let referrer = req.header('Referrer') || '-'
             let userAgent = req.get('User-Agent') || '-'
-            let httpVersion = req.connection.alpnProtocol.toUpperCase() || '-'
+            let httpVersion = app.tools.getHttpVersion(req)
             app.log(`${req.ip} - - [${app.formatDateApache(req.appData.startTime)}] "${req.method} ${req.url} ${httpVersion}" 200 ${html.length} "${referrer}" "${userAgent}"`,"access",0)
-            res.send(html)
+            return res.send(html)
           })
       }
     }
