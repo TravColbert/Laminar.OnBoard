@@ -1,14 +1,8 @@
 extends index.pug
 
-//- block aside
-  aside.sidebar
-    .title Register Actions
-    .nav
-      .navitem One item
-      .navitem Two 
-      .navitem Three
-    .actions.secondary
-      input#submit.btn.normal(type="submit" value="Register" form="login-form")
+block head
+  link(rel="stylesheet" media="all" href="/css/laminar.base.min.css")
+  link(rel="stylesheet" media="all" href="/css/traviscolbert.min.css")
 
 block content
   section.home
@@ -25,9 +19,5 @@ block content
           input#password(type="password" name="password" placeholder="passphrase")
         div.forminput
           input#passwordverify(type="password" name="passwordverify" placeholder="verify passphrase")
-        //- div.layout-row.layout-justify-between
         div.forminput
           input#submit.btn.normal(type="submit" value="Go")
-
-block scripts
-  script(src='/js/bcrypt.min.js')
