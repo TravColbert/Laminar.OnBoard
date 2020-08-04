@@ -14,11 +14,7 @@ module.exports = function(app,express) {
   ]
   staticFiles.forEach(fileObj => {
     app.log(`Setting static file: ${fileObj.req}`, myName, 5)
-    app.use(fileObj.req, express.static(path.join(app.cwd, fileObj.file)), function (req, res, next) {
-      let message = `Could not serve static file: ${path.join(app.cwd, fileObj.file)}`
-      app.log(message)
-      res.end()
-    })
+    app.use(fileObj.req, express.static(path.join(app.cwd, fileObj.file)))
   })
   
   return app

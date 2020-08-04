@@ -321,6 +321,12 @@ module.exports = function (app, sequelize) {
     app.log(`Detected HTTP protocol: ${protocol}`,myName,6)
     return protocol
   }
+  obj.logHttpEvent = function (req, status, html) {
+    let referrer = req.header('Referrer') || '-'
+    let userAgent = req.get('User-Agent') || '-'
+    let httpVersion = app.tools.getHttpVersion(req)
+    app.log(`${req.ip} - - [${app.formatDateApache(req.appData.startTime)}] "${req.method} ${req.url} ${httpVersion}" ${status} ${html.length} "${referrer}" "${userAgent}"`,"access",0)
+  }
   obj.setAppData = function (req, res, next) {
     let myName = 'setAppData()'
     app.log('clearing appData', myName, 6)
@@ -358,12 +364,10 @@ module.exports = function (app, sequelize) {
           return res.render(templateFile, req.appData, function (err, html) {
             if (err) {
               app.log(`Caught error ==> ${err.message}`, myName, 3)
+              app.tools.logHttpEvent(req, 500, html)
               return res.status(500).end()
             }
-            let referrer = req.header('Referrer') || '-'
-            let userAgent = req.get('User-Agent') || '-'
-            let httpVersion = app.tools.getHttpVersion(req)
-            app.log(`${req.ip} - - [${app.formatDateApache(req.appData.startTime)}] "${req.method} ${req.url} ${httpVersion}" 200 ${html.length} "${referrer}" "${userAgent}"`,"access",0)
+            app.tools.logHttpEvent(req, 200, html)
             return res.send(html)
           })
       }
@@ -663,11 +667,8 @@ module.exports = function (app, sequelize) {
     let fourOFourPath = path.join('./', app.locals.viewsDir, app.locals['404Page'])
     app.log(`Showing 404: ${fourOFourPath}`, myName, 3)
     return res.status(404).render(app.locals['404Page'], req.appData, function (err, html) {
-      let referrer = req.header('Referrer') || '-'
-      let userAgent = req.get('User-Agent') || '-'
-      let httpVersion = req.httpVersion || '-'
-      app.log(`${req.ip} - - [${app.formatDateApache(req.appData.startTime)}] "${req.method} ${req.url} ${httpVersion}" 404 ${html.length} "${referrer}" "${userAgent}"`,"access",0)
-      res.send(html)
+      app.tools.logHttpEvent(req, 404, html)
+      return res.send(html)
     })
   }
   /**
