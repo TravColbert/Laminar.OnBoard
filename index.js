@@ -11,6 +11,7 @@ const https = require('https')
 const compression = require('compression')
 const express = require('express')
 const session = require('express-session')
+const helmet = require('helmet')
 
 const SQLiteStore = require('connect-sqlite3')(session)
 
@@ -49,6 +50,7 @@ if (app.locals.compression) app.use(compression())
 
 app = require(path.join(app.cwd, app.locals.modulesDir, "Static"))(app,express)
 
+app.use(helmet())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 let sessionConfig = {
